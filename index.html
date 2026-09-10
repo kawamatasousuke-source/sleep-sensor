@@ -1,395 +1,348 @@
-```html
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>睡眠センサー v9</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>IMAIMA 睡眠センサー</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-      background: #0f1115;
-      color: #f5f5f5;
-    }
+body {
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
 
-    .container {
-      width: min(1100px, 94%);
-      margin: 30px auto 60px;
-    }
+header {
+  background: #111;
+  color: white;
+  padding: 18px;
+  text-align: center;
+}
 
-    h1 {
-      margin-bottom: 8px;
-    }
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
 
-    h2 {
-      margin-top: 0;
-    }
+header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: .8;
+}
 
-    .subtitle {
-      color: #999;
-      margin-bottom: 25px;
-    }
+main {
+  max-width: 900px;
+  margin: auto;
+  padding: 16px;
+}
 
-    .card {
-      background: #191c22;
-      border: 1px solid #292d36;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
 
-    .status {
-      padding: 14px;
-      border-radius: 10px;
-      background: #222631;
-      margin-bottom: 10px;
-    }
+h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
 
-    .status.ok {
-      background: #173322;
-    }
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-size: 15px;
+  cursor: pointer;
+  margin: 4px;
+}
 
-    .status.warn {
-      background: #382d16;
-    }
+.primary {
+  background: #111;
+  color: white;
+}
 
-    .status.error {
-      background: #3a1d22;
-    }
+.secondary {
+  background: #e9e9e9;
+  color: #222;
+}
 
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      margin: 5px;
-      background: #303641;
-      color: white;
-      cursor: pointer;
-      font-size: 15px;
-    }
+.danger {
+  background: #d33;
+  color: white;
+}
 
-    button:hover {
-      background: #3c4350;
-    }
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
 
-    button.primary {
-      background: #ffffff;
-      color: #111;
-    }
+.status {
+  padding: 10px;
+  border-radius: 8px;
+  background: #eee;
+  font-size: 14px;
+  margin-top: 10px;
+}
 
-    button.danger {
-      background: #7d2630;
-    }
+.status.ok {
+  background: #dff5e3;
+  color: #176b2c;
+}
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+.status.error {
+  background: #ffe1e1;
+  color: #a00000;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-    }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
-    .stat {
-      background: #222631;
-      border-radius: 12px;
-      padding: 15px;
-    }
+.stat {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 14px;
+}
 
-    .stat-title {
-      color: #999;
-      font-size: 13px;
-      margin-bottom: 5px;
-    }
+.stat-label {
+  font-size: 12px;
+  color: #666;
+}
 
-    .stat-value {
-      font-size: 26px;
-      font-weight: bold;
-    }
+.stat-value {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 4px;
+}
 
-    canvas {
-      width: 100%;
-      max-height: 330px;
-      background: #111318;
-      border-radius: 12px;
-    }
+canvas {
+  width: 100%;
+  height: 260px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+}
 
-    .score {
-      font-size: 60px;
-      font-weight: bold;
-      margin: 5px 0;
-    }
+.result {
+  font-size: 18px;
+  line-height: 1.7;
+}
 
-    .evaluation {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eee;
+  margin: 3px;
+  font-size: 13px;
+}
 
-    .achievement {
-      padding: 14px;
-      margin: 8px 0;
-      border-radius: 10px;
-      background: #222631;
-    }
+.hidden {
+  display: none;
+}
 
-    .achievement.unlocked {
-      background: #273624;
-    }
+.history-item {
+  border-bottom: 1px solid #ddd;
+  padding: 12px 0;
+}
 
-    .achievement-title {
-      font-weight: bold;
-    }
+.history-item:last-child {
+  border-bottom: none;
+}
 
-    .achievement-desc {
-      color: #aaa;
-      font-size: 13px;
-      margin-top: 4px;
-    }
+.small {
+  font-size: 12px;
+  color: #777;
+}
 
-    .xpbar {
-      height: 14px;
-      background: #292d36;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
+#measurementTimer {
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin: 15px 0;
+}
 
-    .xpbar-inner {
-      height: 100%;
-      width: 0%;
-      background: #fff;
-      transition: width 0.4s;
-    }
+@media (max-width: 600px) {
+  main {
+    padding: 10px;
+  }
 
-    .history-item {
-      padding: 15px;
-      border-bottom: 1px solid #2b2f38;
-    }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
 
-    .history-item:last-child {
-      border-bottom: none;
-    }
+  button {
+    width: calc(100% - 8px);
+  }
+}
+</style>
 
-    .history-date {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .history-score {
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .small {
-      font-size: 13px;
-      color: #999;
-    }
-
-    .big-message {
-      text-align: center;
-      font-size: 20px;
-      padding: 25px 10px;
-      color: #bbb;
-    }
-
-    .firebase-status {
-      font-size: 13px;
-      color: #aaa;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        width: 92%;
-        margin-top: 20px;
-      }
-
-      .card {
-        padding: 15px;
-      }
-
-      .score {
-        font-size: 48px;
-      }
-
-      button {
-        width: 100%;
-        margin: 4px 0;
-      }
-    }
-  </style>
 </head>
 
 <body>
 
-<div class="container">
+<header>
+  <h1>IMAIMA 睡眠センサー</h1>
+  <p>加速度センサー＋マイクによる睡眠測定</p>
+</header>
 
-  <h1>睡眠センサー v9</h1>
-
-  <div class="subtitle">
-    加速度センサー＋マイクで睡眠状態を記録
-  </div>
+<main>
 
   <div class="card">
-    <h2>システム状態</h2>
-
+    <h2>Firebase</h2>
     <div id="firebaseStatus" class="status">
-      Firebase認証を開始しています...
-    </div>
-
-    <div id="sensorStatus" class="status">
-      センサー未接続
-    </div>
-
-    <div id="micStatus" class="status">
-      マイク未接続
-    </div>
-
-    <div class="firebase-status">
-      Firebaseは匿名認証を使用しています。
+      Firebase接続確認中...
     </div>
   </div>
 
   <div class="card">
-    <h2>測定</h2>
+    <h2>睡眠測定</h2>
 
-    <div class="grid">
+```
+<div id="measurementTimer">00:00:00</div>
 
-      <div class="stat">
-        <div class="stat-title">測定時間</div>
-        <div id="measureTime" class="stat-value">0秒</div>
-      </div>
+<div style="text-align:center;">
+  <button id="startButton" class="primary">
+    測定開始
+  </button>
 
-      <div class="stat">
-        <div class="stat-title">現在の動き</div>
-        <div id="currentMovement" class="stat-value">0.00</div>
-      </div>
+  <button id="stopButton" class="danger" disabled>
+    測定終了
+  </button>
+</div>
 
-      <div class="stat">
-        <div class="stat-title">現在の音量</div>
-        <div id="currentVolume" class="stat-value">0.00</div>
-      </div>
+<div id="sensorStatus" class="status">
+  測定待機中
+</div>
+```
 
-      <div class="stat">
-        <div class="stat-title">音イベント</div>
-        <div id="soundEvents" class="stat-value">0</div>
-      </div>
+  </div>
 
-    </div>
+  <div class="card">
+    <h2>現在の状態</h2>
 
-    <div style="margin-top:15px;">
+```
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">加速度</div>
+    <div id="motionValue" class="stat-value">0.00</div>
+  </div>
 
-      <button id="startButton" class="primary">
-        測定開始
-      </button>
+  <div class="stat">
+    <div class="stat-label">音量</div>
+    <div id="volumeValue" class="stat-value">0.00</div>
+  </div>
 
-      <button id="stopButton" disabled>
-        測定停止
-      </button>
+  <div class="stat">
+    <div class="stat-label">判定</div>
+    <div id="currentState" class="stat-value">待機</div>
+  </div>
 
-    </div>
+  <div class="stat">
+    <div class="stat-label">測定回数</div>
+    <div id="sampleCount" class="stat-value">0</div>
+  </div>
+</div>
+```
+
   </div>
 
   <div class="card">
     <h2>リアルタイムグラフ</h2>
-    <canvas id="sensorChart" width="1000" height="330"></canvas>
+    <canvas id="graph"></canvas>
   </div>
 
   <div class="card">
     <h2>今回の結果</h2>
 
-    <div id="resultArea">
-      <div class="big-message">
-        まだ測定結果がありません
-      </div>
-    </div>
+```
+<div id="resultArea" class="result">
+  まだ測定結果がありません。
+</div>
+```
+
   </div>
 
   <div class="card">
-    <h2>レベル・XP</h2>
+    <h2>ストリーク</h2>
 
-    <div class="grid">
+```
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">現在の連続日数</div>
+    <div id="currentStreak" class="stat-value">0日</div>
+  </div>
 
-      <div class="stat">
-        <div class="stat-title">レベル</div>
-        <div id="level" class="stat-value">Lv.1</div>
-      </div>
+  <div class="stat">
+    <div class="stat-label">最高記録</div>
+    <div id="bestStreak" class="stat-value">0日</div>
+  </div>
 
-      <div class="stat">
-        <div class="stat-title">XP</div>
-        <div id="xp" class="stat-value">0</div>
-      </div>
+  <div class="stat">
+    <div class="stat-label">累計測定日数</div>
+    <div id="totalDays" class="stat-value">0日</div>
+  </div>
 
-      <div class="stat">
-        <div class="stat-title">ストリーク</div>
-        <div id="streak" class="stat-value">0日</div>
-      </div>
+  <div class="stat">
+    <div class="stat-label">XP</div>
+    <div id="xpValue" class="stat-value">0</div>
+  </div>
+</div>
+```
 
-    </div>
-
-    <div class="xpbar">
-      <div id="xpbarInner" class="xpbar-inner"></div>
-    </div>
   </div>
 
   <div class="card">
     <h2>実績</h2>
-    <div id="achievementsArea"></div>
+    <div id="achievements"></div>
   </div>
 
   <div class="card">
     <h2>測定履歴</h2>
-    <div id="historyArea"></div>
-  </div>
 
-  <div class="card">
-    <h2>CSV出力</h2>
+```
+<button id="csvButton" class="secondary">
+  CSV出力
+</button>
 
-    <button id="exportRawButton">
-      生データCSV
-    </button>
+<div id="history"></div>
+```
 
-    <button id="exportSummaryButton">
-      10秒集計CSV
-    </button>
   </div>
 
   <div class="card">
     <h2>データ管理</h2>
 
-    <button id="resetCurrentButton">
-      今回の測定データをリセット
-    </button>
+```
+<button id="resetButton" class="danger">
+  全データリセット
+</button>
+```
 
-    <button id="resetAllButton" class="danger">
-      実績・履歴をリセット
-    </button>
   </div>
 
-</div>
+</main>
 
 <script type="module">
 
-/* =========================================================
-   Firebase SDK
-========================================================= */
-
 import {
   initializeApp
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 import {
   getFirestore,
@@ -401,19 +354,17 @@ import {
   deleteDoc,
   query,
   orderBy
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
   getAuth,
   signInAnonymously
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-/* =========================================================
-   Firebase設定
-========================================================= */
+/* =========================
+   Firebase
+========================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyBhfOVk4K5Ybjji16b1ZKRqXd1UJGypH9Y",
@@ -424,234 +375,112 @@ const firebaseConfig = {
   appId: "1:86707291255:web:01e2e67fa63c3513503272"
 };
 
-
-/* =========================================================
-   Firebase初期化
-========================================================= */
-
-const firebaseApp =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(firebaseApp);
-
-const auth =
-  getAuth(firebaseApp);
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
 
 let currentUser = null;
 
 
-/* =========================================================
-   LocalStorage
-========================================================= */
+/* =========================
+   Firebase Status
+========================= */
 
-const STORAGE_KEY =
-  "sleepSensorV9";
+function setFirebaseStatus(text, type = "") {
+  const element = document.getElementById("firebaseStatus");
 
-const OLD_STORAGE_KEY =
-  "sleepSensorV8";
+  element.textContent = text;
+  element.className = "status";
 
-const defaultSaveData = {
-  xp: 0,
-  achievements: [],
-  history: []
-};
+  if (type) {
+    element.classList.add(type);
+  }
+}
 
 
-function loadLocalData() {
+/* =========================
+   Wake Lock
+========================= */
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+
+  if (!("wakeLock" in navigator)) {
+    console.log("Wake Lock APIはこの端末・ブラウザでは利用できません");
+    return;
+  }
 
   try {
 
-    const current =
-      localStorage.getItem(STORAGE_KEY);
+    wakeLock = await navigator.wakeLock.request("screen");
 
-    if (current) {
+    console.log("画面自動消灯防止：ON");
 
-      const data =
-        JSON.parse(current);
-
-      return {
-        ...defaultSaveData,
-        ...data
-      };
-    }
-
-    const old =
-      localStorage.getItem(OLD_STORAGE_KEY);
-
-    if (old) {
-
-      const data =
-        JSON.parse(old);
-
-      return {
-        ...defaultSaveData,
-        ...data
-      };
-    }
+    wakeLock.addEventListener("release", () => {
+      console.log("画面自動消灯防止：OFF");
+    });
 
   } catch (error) {
 
-    console.error(
-      "LocalStorage読み込みエラー",
-      error
-    );
+    console.warn("Wake Lock取得失敗:", error);
+
+  }
+}
+
+
+async function releaseWakeLock() {
+
+  if (wakeLock) {
+
+    try {
+      await wakeLock.release();
+    } catch (error) {
+      console.warn("Wake Lock解除エラー:", error);
+    }
+
+    wakeLock = null;
+  }
+}
+
+
+/*
+   スマホで別アプリなどに移動してWake Lockが解除された場合、
+   アプリへ戻ってきたときに測定中なら再取得する。
+*/
+
+document.addEventListener("visibilitychange", async () => {
+
+  if (
+    document.visibilityState === "visible" &&
+    isMeasuring
+  ) {
+    await requestWakeLock();
   }
 
-  return {
-    ...defaultSaveData
-  };
-}
+});
 
 
-let saveData =
-  loadLocalData();
-
-
-function saveLocalData() {
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(saveData)
-  );
-}
-
-
-/* =========================================================
-   測定データ
-========================================================= */
-
-let rawData = [];
-
-let summaryData = [];
-
-let currentInterval = [];
-
-let measurementStartTime = null;
-
-let measurementTimer = null;
-
-let isMeasuring = false;
-
-let lastMotion = null;
-
-let movementHistory = [];
-
-let volumeHistory = [];
-
-let soundEvents = 0;
-
-let lastSoundEventTime = 0;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const firebaseStatus =
-  document.getElementById("firebaseStatus");
-
-const sensorStatus =
-  document.getElementById("sensorStatus");
-
-const micStatus =
-  document.getElementById("micStatus");
-
-const startButton =
-  document.getElementById("startButton");
-
-const stopButton =
-  document.getElementById("stopButton");
-
-const measureTime =
-  document.getElementById("measureTime");
-
-const currentMovement =
-  document.getElementById("currentMovement");
-
-const currentVolume =
-  document.getElementById("currentVolume");
-
-const soundEventsElement =
-  document.getElementById("soundEvents");
-
-const resultArea =
-  document.getElementById("resultArea");
-
-const achievementsArea =
-  document.getElementById("achievementsArea");
-
-const historyArea =
-  document.getElementById("historyArea");
-
-const levelElement =
-  document.getElementById("level");
-
-const xpElement =
-  document.getElementById("xp");
-
-const streakElement =
-  document.getElementById("streak");
-
-const xpbarInner =
-  document.getElementById("xpbarInner");
-
-const canvas =
-  document.getElementById("sensorChart");
-
-const ctx =
-  canvas.getContext("2d");
-
-
-/* =========================================================
-   Firebase状態表示
-========================================================= */
-
-function setFirebaseStatus(
-  message,
-  type = ""
-) {
-
-  firebaseStatus.textContent =
-    message;
-
-  firebaseStatus.className =
-    "status " + type;
-}
-
-
-/* =========================================================
-   Firebase匿名認証
-========================================================= */
+/* =========================
+   Authentication
+========================= */
 
 async function initializeAuthentication() {
 
   try {
 
-    setFirebaseStatus(
-      "Firebase匿名認証中..."
-    );
+    setFirebaseStatus("Firebase匿名認証中...");
 
     await signInAnonymously(auth);
 
-    currentUser =
-      auth.currentUser;
+    currentUser = auth.currentUser;
 
     if (!currentUser) {
-
-      throw new Error(
-        "Firebaseユーザーを取得できませんでした"
-      );
+      throw new Error("Firebaseユーザーを取得できませんでした");
     }
 
-    console.log(
-      "Firebase認証成功"
-    );
-
-    console.log(
-      "UID:",
-      currentUser.uid
-    );
+    console.log("Firebase認証成功");
+    console.log("UID:", currentUser.uid);
 
     setFirebaseStatus(
       "Firebase認証済み",
@@ -664,41 +493,818 @@ async function initializeAuthentication() {
 
   } catch (error) {
 
-    console.error(
-      "Firebase認証エラー:",
-      error
-    );
+    console.error("Firebase認証エラー:", error);
+
+    console.error("Firebase認証エラー詳細:", {
+      code: error.code,
+      message: error.message,
+      name: error.name
+    });
 
     setFirebaseStatus(
-      "Firebase認証エラー: " +
-      error.message,
+      "Firebase認証エラー: " + error.message,
       "error"
     );
+
   }
+
 }
 
 
-/* =========================================================
-   Firestore
-   users/{uid}/measurements/{date}
-========================================================= */
+/* =========================
+   Data
+========================= */
 
-async function saveResultToFirestore(
-  result
-) {
+let measurements = [];
 
-  if (!currentUser) {
+let profile = {
+  xp: 0,
+  currentStreak: 0,
+  bestStreak: 0,
+  totalDays: 0,
+  lastMeasurementDate: null
+};
 
-    console.warn(
-      "Firebaseユーザー未認証"
+
+/* =========================
+   Measurement variables
+========================= */
+
+let isMeasuring = false;
+let measurementStartTime = null;
+let timerInterval = null;
+
+let motionHistory = [];
+let volumeHistory = [];
+
+let currentMotion = 0;
+let currentVolume = 0;
+
+let stillCount = 0;
+let smallCount = 0;
+let largeCount = 0;
+
+let sampleCount = 0;
+
+let measurementData = [];
+
+let audioContext = null;
+let analyser = null;
+let microphone = null;
+let audioDataArray = null;
+
+let motionHandler = null;
+
+
+/* =========================
+   Utility
+========================= */
+
+function todayString() {
+
+  const now = new Date();
+
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+
+  return `${y}-${m}-${d}`;
+}
+
+
+function formatDuration(seconds) {
+
+  seconds = Math.max(0, Math.floor(seconds));
+
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  return [
+    String(h).padStart(2, "0"),
+    String(m).padStart(2, "0"),
+    String(s).padStart(2, "0")
+  ].join(":");
+}
+
+
+/* =========================
+   Device Motion
+========================= */
+
+function calculateMotion(event) {
+
+  const acc =
+    event.accelerationIncludingGravity;
+
+  if (!acc) return 0;
+
+  const x = acc.x || 0;
+  const y = acc.y || 0;
+  const z = acc.z || 0;
+
+  return Math.sqrt(
+    x * x +
+    y * y +
+    z * z
+  );
+}
+
+
+function handleMotion(event) {
+
+  if (!isMeasuring) return;
+
+  currentMotion = calculateMotion(event);
+
+  motionHistory.push({
+    time: Date.now(),
+    value: currentMotion
+  });
+
+  if (motionHistory.length > 300) {
+    motionHistory.shift();
+  }
+
+  updateDisplay();
+}
+
+
+/* =========================
+   Microphone
+========================= */
+
+async function startMicrophone() {
+
+  const stream =
+    await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+
+  audioContext =
+    new (window.AudioContext ||
+      window.webkitAudioContext)();
+
+  analyser =
+    audioContext.createAnalyser();
+
+  analyser.fftSize = 256;
+
+  microphone =
+    audioContext.createMediaStreamSource(stream);
+
+  microphone.connect(analyser);
+
+  audioDataArray =
+    new Uint8Array(
+      analyser.fftSize
     );
 
+  readVolume();
+
+  return stream;
+}
+
+
+function readVolume() {
+
+  if (!isMeasuring || !analyser) return;
+
+  analyser.getByteTimeDomainData(
+    audioDataArray
+  );
+
+  let sum = 0;
+
+  for (let i = 0; i < audioDataArray.length; i++) {
+
+    const value =
+      (audioDataArray[i] - 128) / 128;
+
+    sum += value * value;
+
+  }
+
+  currentVolume =
+    Math.sqrt(
+      sum / audioDataArray.length
+    );
+
+  volumeHistory.push({
+    time: Date.now(),
+    value: currentVolume
+  });
+
+  if (volumeHistory.length > 300) {
+    volumeHistory.shift();
+  }
+
+  updateDisplay();
+
+  requestAnimationFrame(readVolume);
+}
+
+
+/* =========================
+   Measurement
+========================= */
+
+async function startMeasurement() {
+
+  if (isMeasuring) return;
+
+  try {
+
+    /*
+       画面自動消灯防止
+    */
+
+    await requestWakeLock();
+
+    if (
+      typeof DeviceMotionEvent !== "undefined" &&
+      typeof DeviceMotionEvent.requestPermission === "function"
+    ) {
+
+      const permission =
+        await DeviceMotionEvent.requestPermission();
+
+      if (permission !== "granted") {
+        throw new Error(
+          "加速度センサーの使用が許可されませんでした"
+        );
+      }
+
+    }
+
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia) {
+
+      throw new Error(
+        "このブラウザではマイクを利用できません"
+      );
+
+    }
+
+    await startMicrophone();
+
+    isMeasuring = true;
+
+    measurementStartTime = Date.now();
+
+    motionHistory = [];
+    volumeHistory = [];
+    measurementData = [];
+
+    stillCount = 0;
+    smallCount = 0;
+    largeCount = 0;
+    sampleCount = 0;
+
+    currentMotion = 0;
+    currentVolume = 0;
+
+    motionHandler = handleMotion;
+
+    window.addEventListener(
+      "devicemotion",
+      motionHandler
+    );
+
+    document.getElementById(
+      "startButton"
+    ).disabled = true;
+
+    document.getElementById(
+      "stopButton"
+    ).disabled = false;
+
+    document.getElementById(
+      "sensorStatus"
+    ).textContent =
+      "測定中です。スマホを寝る場所の近くに置いてください。";
+
+    document.getElementById(
+      "sensorStatus"
+    ).className = "status ok";
+
+    timerInterval = setInterval(
+      updateTimer,
+      1000
+    );
+
+    updateTimer();
+
+    /*
+       10秒ごとにデータを集計
+    */
+
+    measurementInterval = setInterval(
+      summarize10Seconds,
+      10000
+    );
+
+  } catch (error) {
+
+    console.error(
+      "測定開始エラー:",
+      error
+    );
+
+    await releaseWakeLock();
+
+    document.getElementById(
+      "sensorStatus"
+    ).textContent =
+      "測定開始エラー: " +
+      error.message;
+
+    document.getElementById(
+      "sensorStatus"
+    ).className =
+      "status error";
+
+  }
+
+}
+
+
+let measurementInterval = null;
+
+
+function summarize10Seconds() {
+
+  if (!isMeasuring) return;
+
+  const recentMotion =
+    motionHistory.slice(-100);
+
+  let averageMotion = 0;
+
+  if (recentMotion.length > 0) {
+
+    averageMotion =
+      recentMotion.reduce(
+        (sum, item) => sum + item.value,
+        0
+      ) / recentMotion.length;
+
+  }
+
+  const averageVolume =
+    volumeHistory.length > 0
+      ? volumeHistory
+          .slice(-100)
+          .reduce(
+            (sum, item) => sum + item.value,
+            0
+          ) / Math.min(100, volumeHistory.length)
+      : 0;
+
+  let state = "静止";
+
+  /*
+     加速度の変化量を簡易的に判定。
+     端末によって値が異なるため、
+     実験後に閾値を調整する。
+  */
+
+  if (averageMotion < 9.85) {
+
+    stillCount++;
+    state = "静止";
+
+  } else if (averageMotion < 10.5) {
+
+    smallCount++;
+    state = "小さな動き";
+
+  } else {
+
+    largeCount++;
+    state = "大きな動き";
+
+  }
+
+  sampleCount++;
+
+  measurementData.push({
+    time: new Date().toISOString(),
+    motion: averageMotion,
+    volume: averageVolume,
+    state: state
+  });
+
+  document.getElementById(
+    "currentState"
+  ).textContent = state;
+
+  document.getElementById(
+    "sampleCount"
+  ).textContent = sampleCount;
+
+  drawGraph();
+
+}
+
+
+/* =========================
+   Timer
+========================= */
+
+function updateTimer() {
+
+  if (!measurementStartTime) return;
+
+  const elapsed =
+    Math.floor(
+      (Date.now() - measurementStartTime) /
+      1000
+    );
+
+  document.getElementById(
+    "measurementTimer"
+  ).textContent =
+    formatDuration(elapsed);
+
+}
+
+
+/* =========================
+   Display
+========================= */
+
+function updateDisplay() {
+
+  document.getElementById(
+    "motionValue"
+  ).textContent =
+    currentMotion.toFixed(2);
+
+  document.getElementById(
+    "volumeValue"
+  ).textContent =
+    currentVolume.toFixed(4);
+
+  drawGraph();
+
+}
+
+
+/* =========================
+   Graph
+========================= */
+
+function drawGraph() {
+
+  const canvas =
+    document.getElementById("graph");
+
+  const ctx =
+    canvas.getContext("2d");
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const dpr =
+    window.devicePixelRatio || 1;
+
+  canvas.width =
+    rect.width * dpr;
+
+  canvas.height =
+    rect.height * dpr;
+
+  ctx.scale(dpr, dpr);
+
+  const width = rect.width;
+  const height = rect.height;
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+  ctx.strokeStyle = "#ddd";
+  ctx.lineWidth = 1;
+
+  for (let i = 0; i <= 5; i++) {
+
+    const y =
+      (height / 5) * i;
+
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+
+  }
+
+  const data =
+    motionHistory.slice(-100);
+
+  if (data.length < 2) return;
+
+  let min =
+    Math.min(
+      ...data.map(d => d.value)
+    );
+
+  let max =
+    Math.max(
+      ...data.map(d => d.value)
+    );
+
+  if (max - min < 0.01) {
+    max = min + 1;
+  }
+
+  ctx.beginPath();
+
+  data.forEach((item, index) => {
+
+    const x =
+      (index / (data.length - 1)) *
+      width;
+
+    const y =
+      height -
+      ((item.value - min) /
+      (max - min)) *
+      height;
+
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+  });
+
+  ctx.strokeStyle = "#111";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+}
+
+
+/* =========================
+   Stop Measurement
+========================= */
+
+async function stopMeasurement() {
+
+  if (!isMeasuring) return;
+
+  isMeasuring = false;
+
+  if (measurementInterval) {
+
+    clearInterval(
+      measurementInterval
+    );
+
+    measurementInterval = null;
+
+  }
+
+  if (timerInterval) {
+
+    clearInterval(
+      timerInterval
+    );
+
+    timerInterval = null;
+
+  }
+
+  if (motionHandler) {
+
+    window.removeEventListener(
+      "devicemotion",
+      motionHandler
+    );
+
+    motionHandler = null;
+
+  }
+
+  if (audioContext) {
+
+    try {
+      await audioContext.close();
+    } catch (error) {
+      console.warn(error);
+    }
+
+    audioContext = null;
+  }
+
+  await releaseWakeLock();
+
+  document.getElementById(
+    "startButton"
+  ).disabled = false;
+
+  document.getElementById(
+    "stopButton"
+  ).disabled = true;
+
+  document.getElementById(
+    "sensorStatus"
+  ).textContent =
+    "測定終了";
+
+  document.getElementById(
+    "sensorStatus"
+  ).className =
+    "status";
+
+  const result =
+    calculateResult();
+
+  renderResult(result);
+
+  measurements.push(result);
+
+  await saveResultToFirestore(
+    result
+  );
+
+  updateStreak(result);
+
+  renderDashboard();
+
+}
+
+
+/* =========================
+   Result
+========================= */
+
+function calculateResult() {
+
+  const duration =
+    measurementStartTime
+      ? Math.floor(
+          (Date.now() -
+            measurementStartTime) /
+          1000
+        )
+      : 0;
+
+  const estimatedSleepSeconds =
+    (stillCount + smallCount) *
+    10;
+
+  const sleepHours =
+    estimatedSleepSeconds / 3600;
+
+  let score = 0;
+
+  /*
+     中高生の目安として8～10時間に
+     近いほど評価する。
+  */
+
+  if (
+    sleepHours >= 8 &&
+    sleepHours <= 10
+  ) {
+
+    score += 60;
+
+  } else if (
+    sleepHours >= 7 &&
+    sleepHours < 8
+  ) {
+
+    score += 45;
+
+  } else if (
+    sleepHours > 10 &&
+    sleepHours <= 11
+  ) {
+
+    score += 50;
+
+  } else {
+
+    score += 30;
+
+  }
+
+  const total =
+    stillCount +
+    smallCount +
+    largeCount;
+
+  const movementRate =
+    total > 0
+      ? largeCount / total
+      : 0;
+
+  if (movementRate < 0.1) {
+    score += 30;
+  } else if (movementRate < 0.2) {
+    score += 20;
+  } else {
+    score += 10;
+  }
+
+  const averageVolume =
+    measurementData.length > 0
+      ? measurementData.reduce(
+          (sum, item) =>
+            sum + item.volume,
+          0
+        ) / measurementData.length
+      : 0;
+
+  if (averageVolume < 0.05) {
+    score += 10;
+  } else if (averageVolume < 0.1) {
+    score += 5;
+  }
+
+  score =
+    Math.max(
+      0,
+      Math.min(100, Math.round(score))
+    );
+
+  return {
+    date: todayString(),
+    timestamp: new Date().toISOString(),
+    durationSeconds: duration,
+    estimatedSleepSeconds:
+      estimatedSleepSeconds,
+    sleepHours:
+      Number(sleepHours.toFixed(2)),
+    score: score,
+    stillCount: stillCount,
+    smallCount: smallCount,
+    largeCount: largeCount,
+    averageVolume:
+      Number(averageVolume.toFixed(4)),
+    samples:
+      measurementData
+  };
+
+}
+
+
+function renderResult(result) {
+
+  document.getElementById(
+    "resultArea"
+  ).innerHTML = `
+    <p><strong>睡眠時間の推定：</strong>
+      ${result.sleepHours}時間
+    </p>
+
+    <p><strong>睡眠スコア：</strong>
+      ${result.score} / 100
+    </p>
+
+    <p><strong>測定時間：</strong>
+      ${formatDuration(result.durationSeconds)}
+    </p>
+
+    <p><strong>静止：</strong>
+      ${result.stillCount}回
+    </p>
+
+    <p><strong>小さな動き：</strong>
+      ${result.smallCount}回
+    </p>
+
+    <p><strong>大きな動き：</strong>
+      ${result.largeCount}回
+    </p>
+  `;
+
+}
+
+
+/* =========================
+   Firestore
+========================= */
+
+async function saveResultToFirestore(result) {
+
+  if (!currentUser) {
+    console.warn(
+      "Firebaseユーザーがありません"
+    );
     return;
   }
 
   try {
 
-    const resultRef =
+    const measurementRef =
       doc(
         db,
         "users",
@@ -708,36 +1314,29 @@ async function saveResultToFirestore(
       );
 
     await setDoc(
-      resultRef,
-      result,
-      {
-        merge: true
-      }
+      measurementRef,
+      result
     );
 
     console.log(
-      "測定結果をFirestoreに保存しました"
+      "測定結果をFirestoreへ保存しました"
     );
 
   } catch (error) {
 
     console.error(
-      "測定結果保存エラー:",
+      "Firestore保存エラー:",
       error
     );
+
   }
+
 }
 
 
-/* =========================================================
-   プロフィール保存
-========================================================= */
-
 async function saveProfileToFirestore() {
 
-  if (!currentUser) {
-    return;
-  }
+  if (!currentUser) return;
 
   try {
 
@@ -750,18 +1349,8 @@ async function saveProfileToFirestore() {
 
     await setDoc(
       profileRef,
-      {
-        xp: saveData.xp,
-
-        achievements:
-          saveData.achievements,
-
-        updatedAt:
-          new Date().toISOString()
-      },
-      {
-        merge: true
-      }
+      profile,
+      { merge: true }
     );
 
   } catch (error) {
@@ -770,132 +1359,62 @@ async function saveProfileToFirestore() {
       "プロフィール保存エラー:",
       error
     );
+
   }
+
 }
 
 
-/* =========================================================
-   Firestore読み込み
-========================================================= */
-
 async function loadFromFirestore() {
 
-  if (!currentUser) {
-    return;
-  }
+  if (!currentUser) return;
 
   try {
-
-    const uid =
-      currentUser.uid;
-
-
-    /* プロフィール */
 
     const profileRef =
       doc(
         db,
         "users",
-        uid
+        currentUser.uid
       );
 
-    const profileSnap =
+    const profileSnapshot =
       await getDoc(profileRef);
 
-    if (profileSnap.exists()) {
+    if (profileSnapshot.exists()) {
 
-      const profile =
-        profileSnap.data();
+      profile = {
+        ...profile,
+        ...profileSnapshot.data()
+      };
 
-      if (
-        typeof profile.xp ===
-        "number"
-      ) {
-
-        saveData.xp =
-          profile.xp;
-      }
-
-      if (
-        Array.isArray(
-          profile.achievements
-        )
-      ) {
-
-        saveData.achievements =
-          profile.achievements;
-      }
     }
-
-
-    /* 測定履歴 */
 
     const measurementsRef =
       collection(
         db,
         "users",
-        uid,
+        currentUser.uid,
         "measurements"
       );
 
     const q =
       query(
         measurementsRef,
-        orderBy(
-          "date",
-          "desc"
-        )
+        orderBy("timestamp", "desc")
       );
 
     const snapshot =
       await getDocs(q);
 
-    const cloudHistory =
-      [];
+    measurements = [];
 
     snapshot.forEach(
-      (document) => {
-
-        cloudHistory.push(
-          document.data()
+      item => {
+        measurements.push(
+          item.data()
         );
       }
-    );
-
-
-    if (
-      cloudHistory.length > 0
-    ) {
-
-      saveData.history =
-        cloudHistory;
-
-    } else if (
-      saveData.history.length > 0
-    ) {
-
-      console.log(
-        "ローカル履歴をFirestoreへ移行します"
-      );
-
-      for (
-        const result
-        of saveData.history
-      ) {
-
-        await saveResultToFirestore(
-          result
-        );
-      }
-
-      await saveProfileToFirestore();
-    }
-
-
-    saveLocalData();
-
-    console.log(
-      "Firestore読み込み完了"
     );
 
   } catch (error) {
@@ -905,2200 +1424,437 @@ async function loadFromFirestore() {
       error
     );
 
-    setFirebaseStatus(
-      "Firebaseは使用できますが、データ読み込みに失敗しました",
-      "warn"
-    );
   }
+
 }
 
 
-/* =========================================================
-   加速度センサー
-========================================================= */
+/* =========================
+   Streak
+========================= */
 
-function handleMotion(event) {
+function updateStreak(result) {
 
-  if (!isMeasuring) {
-    return;
-  }
-
-  const acceleration =
-    event.accelerationIncludingGravity;
-
-  if (!acceleration) {
-    return;
-  }
-
-  const x =
-    acceleration.x || 0;
-
-  const y =
-    acceleration.y || 0;
-
-  const z =
-    acceleration.z || 0;
-
-  if (!lastMotion) {
-
-    lastMotion = {
-      x,
-      y,
-      z
-    };
-
-    return;
-  }
-
-  const dx =
-    x - lastMotion.x;
-
-  const dy =
-    y - lastMotion.y;
-
-  const dz =
-    z - lastMotion.z;
-
-  const movement =
-    Math.sqrt(
-      dx * dx +
-      dy * dy +
-      dz * dz
-    );
-
-  lastMotion = {
-    x,
-    y,
-    z
-  };
-
-  movementHistory.push(
-    movement
-  );
+  const date =
+    result.date;
 
   if (
-    movementHistory.length > 3
+    profile.lastMeasurementDate === date
   ) {
-
-    movementHistory.shift();
-  }
-
-  const smoothedMovement =
-    movementHistory.reduce(
-      (a, b) => a + b,
-      0
-    ) /
-    movementHistory.length;
-
-  currentMovement.textContent =
-    smoothedMovement.toFixed(2);
-
-  currentInterval.push({
-
-    time:
-      new Date().toISOString(),
-
-    movement:
-      smoothedMovement
-
-  });
-
-  drawChart();
-}
-
-
-/* =========================================================
-   マイク
-========================================================= */
-
-let audioContext = null;
-
-let analyser = null;
-
-let microphoneSource = null;
-
-let microphoneStream = null;
-
-let microphoneAnimation = null;
-
-
-async function setupMicrophone() {
-
-  try {
-
-    microphoneStream =
-      await navigator.mediaDevices.getUserMedia(
-        {
-          audio: true
-        }
-      );
-
-    audioContext =
-      new (
-        window.AudioContext ||
-        window.webkitAudioContext
-      )();
-
-    analyser =
-      audioContext.createAnalyser();
-
-    analyser.fftSize =
-      1024;
-
-    microphoneSource =
-      audioContext.createMediaStreamSource(
-        microphoneStream
-      );
-
-    microphoneSource.connect(
-      analyser
-    );
-
-    micStatus.textContent =
-      "マイク接続済み";
-
-    micStatus.className =
-      "status ok";
-
-    monitorMicrophone();
-
-  } catch (error) {
-
-    console.error(
-      "マイクエラー:",
-      error
-    );
-
-    micStatus.textContent =
-      "マイクを使用できません";
-
-    micStatus.className =
-      "status warn";
-  }
-}
-
-
-function monitorMicrophone() {
-
-  if (!analyser) {
     return;
   }
 
-  const buffer =
-    new Uint8Array(
-      analyser.fftSize
-    );
+  const previous =
+    profile.lastMeasurementDate;
 
-  function loop() {
+  if (!previous) {
 
-    if (!isMeasuring) {
-      return;
-    }
-
-    analyser.getByteTimeDomainData(
-      buffer
-    );
-
-    let sum = 0;
-
-    let peak = 0;
-
-    for (
-      let i = 0;
-      i < buffer.length;
-      i++
-    ) {
-
-      const value =
-        (buffer[i] - 128) /
-        128;
-
-      sum +=
-        value * value;
-
-      peak =
-        Math.max(
-          peak,
-          Math.abs(value)
-        );
-    }
-
-    const rms =
-      Math.sqrt(
-        sum / buffer.length
-      );
-
-    const volume =
-      rms * 100;
-
-    currentVolume.textContent =
-      volume.toFixed(2);
-
-    const now =
-      Date.now();
-
-    if (
-      volume >= 3 &&
-      now - lastSoundEventTime >
-      3000
-    ) {
-
-      soundEvents++;
-
-      lastSoundEventTime =
-        now;
-
-      soundEventsElement.textContent =
-        soundEvents;
-    }
-
-    currentInterval.push({
-
-      time:
-        new Date().toISOString(),
-
-      volume,
-
-      peak
-
-    });
-
-    microphoneAnimation =
-      requestAnimationFrame(
-        loop
-      );
-  }
-
-  loop();
-}
-
-
-/* =========================================================
-   10秒集計
-========================================================= */
-
-let lastSummaryTime = 0;
-
-
-function summarize10Seconds() {
-
-  const now =
-    Date.now();
-
-  if (
-    now - lastSummaryTime <
-    10000
-  ) {
-
-    return;
-  }
-
-  if (
-    currentInterval.length === 0
-  ) {
-
-    return;
-  }
-
-  lastSummaryTime =
-    now;
-
-  const movementValues =
-    currentInterval
-      .map(
-        item =>
-          item.movement
-      )
-      .filter(
-        value =>
-          typeof value ===
-          "number"
-      );
-
-  const volumeValues =
-    currentInterval
-      .map(
-        item =>
-          item.volume
-      )
-      .filter(
-        value =>
-          typeof value ===
-          "number"
-      );
-
-  const averageMovement =
-    movementValues.length
-      ? movementValues.reduce(
-          (a, b) => a + b,
-          0
-        ) /
-        movementValues.length
-      : 0;
-
-  const maxMovement =
-    movementValues.length
-      ? Math.max(
-          ...movementValues
-        )
-      : 0;
-
-  const averageVolume =
-    volumeValues.length
-      ? volumeValues.reduce(
-          (a, b) => a + b,
-          0
-        ) /
-        volumeValues.length
-      : 0;
-
-  let stillCount = 0;
-
-  let smallCount = 0;
-
-  let largeCount = 0;
-
-  for (
-    const value
-    of movementValues
-  ) {
-
-    if (value < 0.10) {
-
-      stillCount++;
-
-    } else if (
-      value < 0.60
-    ) {
-
-      smallCount++;
-
-    } else {
-
-      largeCount++;
-    }
-  }
-
-  const summary = {
-
-    timestamp:
-      new Date().toISOString(),
-
-    averageMovement,
-
-    maxMovement,
-
-    averageVolume,
-
-    stillCount,
-
-    smallCount,
-
-    largeCount
-
-  };
-
-  summaryData.push(
-    summary
-  );
-
-  currentInterval = [];
-}
-
-
-/* =========================================================
-   グラフ
-========================================================= */
-
-function drawChart() {
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  if (
-    movementHistory.length === 0
-  ) {
-
-    return;
-  }
-
-  const data =
-    movementHistory;
-
-  const max =
-    Math.max(
-      1,
-      ...data
-    );
-
-  ctx.beginPath();
-
-  data.forEach(
-    (value, index) => {
-
-      const x =
-        (
-          index /
-          Math.max(
-            1,
-            data.length - 1
-          )
-        ) *
-        canvas.width;
-
-      const y =
-        canvas.height -
-        (
-          value /
-          max
-        ) *
-        (
-          canvas.height -
-          20
-        );
-
-      if (index === 0) {
-
-        ctx.moveTo(
-          x,
-          y
-        );
-
-      } else {
-
-        ctx.lineTo(
-          x,
-          y
-        );
-      }
-    }
-  );
-
-  ctx.stroke();
-}
-
-
-/* =========================================================
-   測定開始
-========================================================= */
-
-async function startMeasurement() {
-
-  if (isMeasuring) {
-    return;
-  }
-
-  rawData = [];
-
-  summaryData = [];
-
-  currentInterval = [];
-
-  movementHistory = [];
-
-  volumeHistory = [];
-
-  soundEvents = 0;
-
-  lastSoundEventTime = 0;
-
-  lastSummaryTime = 0;
-
-  lastMotion = null;
-
-  measurementStartTime =
-    Date.now();
-
-  isMeasuring = true;
-
-  startButton.disabled =
-    true;
-
-  stopButton.disabled =
-    false;
-
-  sensorStatus.textContent =
-    "センサー測定中";
-
-  sensorStatus.className =
-    "status ok";
-
-  soundEventsElement.textContent =
-    "0";
-
-
-  if (
-    typeof DeviceMotionEvent !==
-    "undefined" &&
-    typeof DeviceMotionEvent.requestPermission ===
-    "function"
-  ) {
-
-    try {
-
-      const permission =
-        await DeviceMotionEvent.requestPermission();
-
-      if (
-        permission !== "granted"
-      ) {
-
-        throw new Error(
-          "モーションセンサーの許可が必要です"
-        );
-      }
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-
-      sensorStatus.textContent =
-        "センサーの許可が必要です";
-
-      sensorStatus.className =
-        "status warn";
-    }
-  }
-
-
-  window.addEventListener(
-    "devicemotion",
-    handleMotion
-  );
-
-
-  await setupMicrophone();
-
-
-  measurementTimer =
-    setInterval(
-      () => {
-
-        const elapsed =
-          Math.floor(
-            (
-              Date.now() -
-              measurementStartTime
-            ) / 1000
-          );
-
-        measureTime.textContent =
-          elapsed + "秒";
-
-        const latestMovement =
-          movementHistory.length
-            ? movementHistory[
-                movementHistory.length - 1
-              ]
-            : 0;
-
-        const latestVolume =
-          parseFloat(
-            currentVolume.textContent
-          ) || 0;
-
-        rawData.push({
-
-          timestamp:
-            new Date().toISOString(),
-
-          elapsed,
-
-          movement:
-            latestMovement,
-
-          volume:
-            latestVolume
-
-        });
-
-        summarize10Seconds();
-
-        drawChart();
-
-      },
-      1000
-    );
-}
-
-
-/* =========================================================
-   測定停止
-========================================================= */
-
-async function stopMeasurement() {
-
-  if (!isMeasuring) {
-    return;
-  }
-
-  isMeasuring = false;
-
-  clearInterval(
-    measurementTimer
-  );
-
-  measurementTimer =
-    null;
-
-  if (
-    microphoneAnimation
-  ) {
-
-    cancelAnimationFrame(
-      microphoneAnimation
-    );
-
-    microphoneAnimation =
-      null;
-  }
-
-  if (
-    microphoneStream
-  ) {
-
-    microphoneStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-  }
-
-  if (audioContext) {
-
-    try {
-
-      await audioContext.close();
-
-    } catch {}
-
-  }
-
-  audioContext =
-    null;
-
-  analyser =
-    null;
-
-  microphoneSource =
-    null;
-
-  microphoneStream =
-    null;
-
-  window.removeEventListener(
-    "devicemotion",
-    handleMotion
-  );
-
-  startButton.disabled =
-    false;
-
-  stopButton.disabled =
-    true;
-
-  sensorStatus.textContent =
-    "測定停止";
-
-  sensorStatus.className =
-    "status";
-
-  calculateResult();
-}
-
-
-/* =========================================================
-   結果計算
-========================================================= */
-
-function calculateResult() {
-
-  const elapsedSeconds =
-    measurementStartTime
-      ? Math.max(
-          0,
-          Math.floor(
-            (
-              Date.now() -
-              measurementStartTime
-            ) / 1000
-          )
-        )
-      : 0;
-
-  if (
-    elapsedSeconds <= 0
-  ) {
-
-    return;
-  }
-
-
-  summarize10Seconds();
-
-
-  let stillCount = 0;
-
-  let smallCount = 0;
-
-  let largeCount = 0;
-
-
-  for (
-    const item
-    of summaryData
-  ) {
-
-    stillCount +=
-      item.stillCount || 0;
-
-    smallCount +=
-      item.smallCount || 0;
-
-    largeCount +=
-      item.largeCount || 0;
-  }
-
-
-  const totalMovementCount =
-    stillCount +
-    smallCount +
-    largeCount;
-
-
-  const stillRatio =
-    totalMovementCount > 0
-      ? stillCount /
-        totalMovementCount
-      : 0;
-
-
-  const largeRatio =
-    totalMovementCount > 0
-      ? largeCount /
-        totalMovementCount
-      : 0;
-
-
-  const sleepSeconds =
-    (
-      stillCount +
-      smallCount
-    ) * 10;
-
-
-  const estimatedSleepSeconds =
-    Math.min(
-      sleepSeconds,
-      elapsedSeconds
-    );
-
-
-  const hours =
-    estimatedSleepSeconds /
-    3600;
-
-
-  /* 睡眠時間スコア */
-
-  let durationScore = 100;
-
-
-  if (hours < 8) {
-
-    durationScore =
-      100 -
-      (8 - hours) * 25;
-
-  } else if (
-    hours > 10
-  ) {
-
-    durationScore =
-      100 -
-      (hours - 10) * 10;
-  }
-
-
-  durationScore =
-    Math.max(
-      70,
-      Math.min(
-        100,
-        durationScore
-      )
-    );
-
-
-  /* 動きスコア */
-
-  let movementScore =
-    stillRatio * 100;
-
-
-  movementScore =
-    movementScore -
-    largeRatio * 40;
-
-
-  movementScore =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        movementScore
-      )
-    );
-
-
-  /* 音スコア */
-
-  const soundEventsPerHour =
-    hours > 0
-      ? soundEvents / hours
-      : soundEvents;
-
-
-  let soundScore =
-    100 -
-    soundEventsPerHour * 10;
-
-
-  soundScore =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        soundScore
-      )
-    );
-
-
-  /* 総合スコア */
-
-  const overallScore =
-    Math.round(
-      durationScore * 0.45 +
-      movementScore * 0.35 +
-      soundScore * 0.20
-    );
-
-
-  /* 評価 */
-
-  let evaluation = "";
-
-
-  if (
-    overallScore >= 90
-  ) {
-
-    evaluation =
-      "とても良い";
-
-  } else if (
-    overallScore >= 75
-  ) {
-
-    evaluation =
-      "良い";
-
-  } else if (
-    overallScore >= 60
-  ) {
-
-    evaluation =
-      "普通";
-
-  } else if (
-    overallScore >= 40
-  ) {
-
-    evaluation =
-      "改善の余地あり";
+    profile.currentStreak = 1;
 
   } else {
 
-    evaluation =
-      "要改善";
+    const previousDate =
+      new Date(previous);
+
+    const currentDate =
+      new Date(date);
+
+    const diff =
+      Math.round(
+        (
+          currentDate -
+          previousDate
+        ) /
+        (1000 * 60 * 60 * 24)
+      );
+
+    if (diff === 1) {
+
+      profile.currentStreak++;
+
+    } else {
+
+      profile.currentStreak = 1;
+
+    }
+
   }
 
+  profile.bestStreak =
+    Math.max(
+      profile.bestStreak,
+      profile.currentStreak
+    );
 
-  const result = {
+  profile.totalDays++;
 
-    date:
-      new Date()
-        .toISOString()
-        .slice(
-          0,
-          10
-        ),
+  profile.xp +=
+    10 + Math.round(result.score / 10);
 
-    timestamp:
-      new Date().toISOString(),
-
-    elapsedSeconds,
-
-    sleepSeconds:
-      estimatedSleepSeconds,
-
-    hours,
-
-    durationScore:
-      Math.round(
-        durationScore
-      ),
-
-    movementScore:
-      Math.round(
-        movementScore
-      ),
-
-    soundScore:
-      Math.round(
-        soundScore
-      ),
-
-    score:
-      overallScore,
-
-    evaluation,
-
-    stillRatio,
-
-    largeRatio,
-
-    soundEvents,
-
-    soundEventsPerHour,
-
-    rawCount:
-      rawData.length,
-
-    summaryCount:
-      summaryData.length
-  };
-
-
-  addHistory(
-    result
-  );
-
-
-  checkAchievements(
-    result
-  );
-
-
-  saveLocalData();
-
-
-  saveResultToFirestore(
-    result
-  );
-
+  profile.lastMeasurementDate =
+    date;
 
   saveProfileToFirestore();
 
-
-  renderResult(
-    result
-  );
-
-
-  renderDashboard();
 }
 
 
-/* =========================================================
-   履歴
-========================================================= */
-
-function addHistory(result) {
-
-  const existingIndex =
-    saveData.history.findIndex(
-      item =>
-        item.date ===
-        result.date
-    );
-
-
-  if (
-    existingIndex >= 0
-  ) {
-
-    saveData.history[
-      existingIndex
-    ] = result;
-
-  } else {
-
-    saveData.history.push(
-      result
-    );
-  }
-
-
-  saveData.history.sort(
-    (a, b) =>
-      b.date.localeCompare(
-        a.date
-      )
-  );
-}
-
-
-/* =========================================================
-   実績
-========================================================= */
-
-const achievements = [
-
-  {
-    id: "first",
-
-    title:
-      "はじめの一歩",
-
-    description:
-      "60秒以上測定する",
-
-    xp: 50,
-
-    check:
-      result =>
-        result.elapsedSeconds >=
-        60
-  },
-
-
-  {
-    id: "30min",
-
-    title:
-      "30分測定",
-
-    description:
-      "30分以上測定する",
-
-    xp: 50,
-
-    check:
-      result =>
-        result.elapsedSeconds >=
-        1800
-  },
-
-
-  {
-    id: "1hour",
-
-    title:
-      "1時間測定",
-
-    description:
-      "1時間以上測定する",
-
-    xp: 100,
-
-    check:
-      result =>
-        result.elapsedSeconds >=
-        3600
-  },
-
-
-  {
-    id: "8hour",
-
-    title:
-      "8時間測定",
-
-    description:
-      "8時間以上測定する",
-
-    xp: 200,
-
-    check:
-      result =>
-        result.elapsedSeconds >=
-        28800
-  },
-
-
-  {
-    id: "sleep8",
-
-    title:
-      "しっかり睡眠",
-
-    description:
-      "推定睡眠時間が8時間以上",
-
-    xp: 150,
-
-    check:
-      result =>
-        result.sleepSeconds >=
-        28800
-  },
-
-
-  {
-    id: "quiet",
-
-    title:
-      "静かな夜",
-
-    description:
-      "1時間以上測定し、音イベントを少なくする",
-
-    xp: 100,
-
-    check:
-      result =>
-        result.hours >= 1 &&
-        result.soundEvents <=
-        Math.max(
-          3,
-          result.hours * 8
-        )
-  },
-
-
-  {
-    id: "stable",
-
-    title:
-      "安定した睡眠",
-
-    description:
-      "1時間以上測定し、大きな動きを少なくする",
-
-    xp: 100,
-
-    check:
-      result =>
-        result.hours >= 1 &&
-        result.largeRatio < 0.15
-  },
-
-
-  {
-    id: "score90",
-
-    title:
-      "睡眠マスター",
-
-    description:
-      "1時間以上測定してスコア90以上",
-
-    xp: 200,
-
-    check:
-      result =>
-        result.hours >= 1 &&
-        result.score >= 90
-  },
-
-
-  {
-    id: "streak3",
-
-    title:
-      "3日継続",
-
-    description:
-      "3日連続で記録する",
-
-    xp: 100,
-
-    check:
-      () =>
-        calculateStreak() >= 3
-  },
-
-
-  {
-    id: "streak7",
-
-    title:
-      "7日継続",
-
-    description:
-      "7日連続で記録する",
-
-    xp: 300,
-
-    check:
-      () =>
-        calculateStreak() >= 7
-  },
-
-
-  {
-    id: "streak14",
-
-    title:
-      "14日継続",
-
-    description:
-      "14日連続で記録する",
-
-    xp: 500,
-
-    check:
-      () =>
-        calculateStreak() >= 14
-  },
-
-
-  {
-    id: "streak30",
-
-    title:
-      "30日継続",
-
-    description:
-      "30日連続で記録する",
-
-    xp: 1000,
-
-    check:
-      () =>
-        calculateStreak() >= 30
-  }
-
-];
-
-
-function checkAchievements(result) {
-
-  for (
-    const achievement
-    of achievements
-  ) {
-
-    if (
-      saveData.achievements
-        .includes(
-          achievement.id
-        )
-    ) {
-
-      continue;
-    }
-
-
-    let unlocked = false;
-
-
-    try {
-
-      unlocked =
-        achievement.check(
-          result
-        );
-
-    } catch (
-      error
-    ) {
-
-      console.error(
-        "実績判定エラー:",
-        error
-      );
-    }
-
-
-    if (unlocked) {
-
-      saveData.achievements.push(
-        achievement.id
-      );
-
-      saveData.xp +=
-        achievement.xp;
-
-      console.log(
-        "実績解除:",
-        achievement.title
-      );
-    }
-  }
-
-
-  saveLocalData();
-}
-
-
-/* =========================================================
-   ストリーク
-========================================================= */
-
-function calculateStreak() {
-
-  if (
-    saveData.history.length === 0
-  ) {
-
-    return 0;
-  }
-
-
-  const dates =
-    saveData.history
-      .map(
-        item =>
-          item.date
-      )
-      .sort(
-        (a, b) =>
-          b.localeCompare(a)
-      );
-
-
-  const uniqueDates =
-    [
-      ...new Set(dates)
-    ];
-
-
-  if (
-    uniqueDates.length === 0
-  ) {
-
-    return 0;
-  }
-
-
-  let streak = 1;
-
-
-  for (
-    let i = 1;
-    i < uniqueDates.length;
-    i++
-  ) {
-
-    const current =
-      new Date(
-        uniqueDates[i - 1]
-      );
-
-
-    const previous =
-      new Date(
-        uniqueDates[i]
-      );
-
-
-    const difference =
-      Math.round(
-        (
-          current -
-          previous
-        ) /
-        86400000
-      );
-
-
-    if (
-      difference === 1
-    ) {
-
-      streak++;
-
-    } else {
-
-      break;
-    }
-  }
-
-
-  return streak;
-}
-
-
-/* =========================================================
-   結果表示
-========================================================= */
-
-function renderResult(result) {
-
-  resultArea.innerHTML = `
-
-    <div class="score">
-      ${result.score}
-    </div>
-
-    <div class="evaluation">
-      ${result.evaluation}
-    </div>
-
-    <div class="grid">
-
-      <div class="stat">
-
-        <div class="stat-title">
-          測定時間
-        </div>
-
-        <div class="stat-value">
-          ${formatTime(
-            result.elapsedSeconds
-          )}
-        </div>
-
-      </div>
-
-
-      <div class="stat">
-
-        <div class="stat-title">
-          推定睡眠時間
-        </div>
-
-        <div class="stat-value">
-          ${formatTime(
-            result.sleepSeconds
-          )}
-        </div>
-
-      </div>
-
-
-      <div class="stat">
-
-        <div class="stat-title">
-          睡眠時間スコア
-        </div>
-
-        <div class="stat-value">
-          ${result.durationScore}
-        </div>
-
-      </div>
-
-
-      <div class="stat">
-
-        <div class="stat-title">
-          動きスコア
-        </div>
-
-        <div class="stat-value">
-          ${result.movementScore}
-        </div>
-
-      </div>
-
-
-      <div class="stat">
-
-        <div class="stat-title">
-          音スコア
-        </div>
-
-        <div class="stat-value">
-          ${result.soundScore}
-        </div>
-
-      </div>
-
-
-      <div class="stat">
-
-        <div class="stat-title">
-          音イベント
-        </div>
-
-        <div class="stat-value">
-          ${result.soundEvents}
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-}
-
-
-/* =========================================================
-   ダッシュボード
-========================================================= */
+/* =========================
+   Dashboard
+========================= */
 
 function renderDashboard() {
 
-  const xp =
-    saveData.xp;
+  document.getElementById(
+    "currentStreak"
+  ).textContent =
+    `${profile.currentStreak}日`;
 
+  document.getElementById(
+    "bestStreak"
+  ).textContent =
+    `${profile.bestStreak}日`;
 
-  const level =
-    Math.floor(
-      xp / 100
-    ) + 1;
+  document.getElementById(
+    "totalDays"
+  ).textContent =
+    `${profile.totalDays}日`;
 
-
-  const currentLevelXp =
-    xp % 100;
-
-
-  levelElement.textContent =
-    "Lv." + level;
-
-
-  xpElement.textContent =
-    xp;
-
-
-  xpbarInner.style.width =
-    currentLevelXp + "%";
-
-
-  streakElement.textContent =
-    calculateStreak() +
-    "日";
-
+  document.getElementById(
+    "xpValue"
+  ).textContent =
+    profile.xp;
 
   renderAchievements();
 
   renderHistory();
+
 }
 
 
-/* =========================================================
-   実績表示
-========================================================= */
+/* =========================
+   Achievements
+========================= */
 
 function renderAchievements() {
 
-  achievementsArea.innerHTML =
-    "";
-
-
-  for (
-    const achievement
-    of achievements
-  ) {
-
-    const unlocked =
-      saveData.achievements
-        .includes(
-          achievement.id
-        );
-
-
-    const div =
-      document.createElement(
-        "div"
-      );
-
-
-    div.className =
-      "achievement" +
-      (
-        unlocked
-          ? " unlocked"
-          : ""
-      );
-
-
-    div.innerHTML = `
-
-      <div class="achievement-title">
-
-        ${
-          unlocked
-            ? "✓ "
-            : "○ "
-        }
-
-        ${achievement.title}
-
-      </div>
-
-
-      <div class="achievement-desc">
-
-        ${achievement.description}
-
-        ／
-
-        ${achievement.xp}
-
-        XP
-
-      </div>
-
-    `;
-
-
-    achievementsArea.appendChild(
-      div
-    );
-  }
-}
-
-
-/* =========================================================
-   履歴表示
-========================================================= */
-
-function renderHistory() {
-
-  if (
-    saveData.history.length === 0
-  ) {
-
-    historyArea.innerHTML = `
-
-      <div class="big-message">
-        まだ履歴がありません
-      </div>
-
-    `;
-
-    return;
-  }
-
-
-  historyArea.innerHTML =
-    "";
-
-
-  for (
-    const result
-    of saveData.history
-  ) {
-
-    const div =
-      document.createElement(
-        "div"
-      );
-
-
-    div.className =
-      "history-item";
-
-
-    div.innerHTML = `
-
-      <div class="history-date">
-        ${result.date}
-      </div>
-
-      <div class="history-score">
-        スコア ${result.score}
-      </div>
-
-      <div class="small">
-        評価：${result.evaluation}
-      </div>
-
-      <div class="small">
-
-        測定：
-
-        ${formatTime(
-          result.elapsedSeconds
-        )}
-
-        ／
-
-        推定睡眠：
-
-        ${formatTime(
-          result.sleepSeconds
-        )}
-
-        ／
-
-        音イベント：
-
-        ${result.soundEvents}
-
-      </div>
-
-    `;
-
-
-    historyArea.appendChild(
-      div
-    );
-  }
-}
-
-
-/* =========================================================
-   時間フォーマット
-========================================================= */
-
-function formatTime(seconds) {
-
-  seconds =
-    Math.max(
-      0,
-      Math.floor(
-        seconds || 0
-      )
+  const area =
+    document.getElementById(
+      "achievements"
     );
 
+  const achievements = [
 
-  const hours =
-    Math.floor(
-      seconds / 3600
-    );
+    {
+      name: "初測定",
+      condition:
+        profile.totalDays >= 1
+    },
 
+    {
+      name: "3日連続",
+      condition:
+        profile.bestStreak >= 3
+    },
 
-  const minutes =
-    Math.floor(
-      (
-        seconds % 3600
-      ) / 60
-    );
+    {
+      name: "7日連続",
+      condition:
+        profile.bestStreak >= 7
+    },
 
+    {
+      name: "30日連続",
+      condition:
+        profile.bestStreak >= 30
+    },
 
-  const sec =
-    seconds % 60;
-
-
-  if (
-    hours > 0
-  ) {
-
-    return (
-      hours +
-      "時間 " +
-      minutes +
-      "分"
-    );
-  }
-
-
-  if (
-    minutes > 0
-  ) {
-
-    return (
-      minutes +
-      "分 " +
-      sec +
-      "秒"
-    );
-  }
-
-
-  return (
-    sec +
-    "秒"
-  );
-}
-
-
-/* =========================================================
-   CSV
-========================================================= */
-
-function downloadCSV(
-  data,
-  filename
-) {
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    alert(
-      "出力できるデータがありません"
-    );
-
-    return;
-  }
-
-
-  const headers =
-    Object.keys(
-      data[0]
-    );
-
-
-  const rows = [
-
-    headers,
-
-    ...data.map(
-      row =>
-        headers.map(
-          header =>
-            row[header] ?? ""
-        )
-    )
+    {
+      name: "10回測定",
+      condition:
+        profile.totalDays >= 10
+    }
 
   ];
 
+  area.innerHTML =
+    achievements.map(
+      achievement => `
+        <span class="badge">
+          ${
+            achievement.condition
+              ? "✓ "
+              : "🔒 "
+          }
+          ${achievement.name}
+        </span>
+      `
+    ).join("");
 
-  const csv =
-    rows
-      .map(
-        row =>
-          row
-            .map(
-              value =>
-                `"${String(value)
-                  .replace(
-                    /"/g,
-                    '""'
-                  )}"`
-            )
-            .join(",")
-      )
-      .join("\n");
-
-
-  const blob =
-    new Blob(
-      [
-        "\uFEFF" +
-        csv
-      ],
-      {
-        type:
-          "text/csv;charset=utf-8;"
-      }
-    );
-
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-
-  const a =
-    document.createElement(
-      "a"
-    );
-
-
-  a.href =
-    url;
-
-  a.download =
-    filename;
-
-
-  document.body.appendChild(
-    a
-  );
-
-
-  a.click();
-
-  a.remove();
-
-
-  URL.revokeObjectURL(
-    url
-  );
 }
 
 
-/* =========================================================
-   Firebase全削除
-========================================================= */
+/* =========================
+   History
+========================= */
 
-async function deleteAllCloudData() {
+function renderHistory() {
 
-  if (!currentUser) {
+  const area =
+    document.getElementById(
+      "history"
+    );
 
-    console.warn(
-      "Firebaseユーザー未認証"
+  if (measurements.length === 0) {
+
+    area.innerHTML =
+      "<p class='small'>測定履歴はありません。</p>";
+
+    return;
+  }
+
+  area.innerHTML =
+    measurements
+      .slice()
+      .sort(
+        (a, b) =>
+          String(b.timestamp)
+            .localeCompare(
+              String(a.timestamp)
+            )
+      )
+      .map(
+        item => `
+          <div class="history-item">
+
+            <strong>
+              ${item.date || "日付不明"}
+            </strong>
+
+            <div>
+              睡眠時間：
+              ${item.sleepHours ?? 0}時間
+            </div>
+
+            <div>
+              スコア：
+              ${item.score ?? 0} / 100
+            </div>
+
+            <div class="small">
+              測定時間：
+              ${formatDuration(
+                item.durationSeconds || 0
+              )}
+            </div>
+
+          </div>
+        `
+      )
+      .join("");
+
+}
+
+
+/* =========================
+   CSV
+========================= */
+
+function exportCSV() {
+
+  if (measurements.length === 0) {
+
+    alert(
+      "出力できる測定データがありません。"
     );
 
     return;
   }
 
+  const header = [
+    "date",
+    "sleepHours",
+    "score",
+    "durationSeconds",
+    "stillCount",
+    "smallCount",
+    "largeCount",
+    "averageVolume"
+  ];
 
-  const uid =
-    currentUser.uid;
-
-
-  const measurementsRef =
-    collection(
-      db,
-      "users",
-      uid,
-      "measurements"
+  const rows =
+    measurements.map(
+      item => [
+        item.date,
+        item.sleepHours,
+        item.score,
+        item.durationSeconds,
+        item.stillCount,
+        item.smallCount,
+        item.largeCount,
+        item.averageVolume
+      ]
     );
 
+  const csv = [
+    header,
+    ...rows
+  ]
+    .map(
+      row =>
+        row.map(
+          value =>
+            `"${String(value ?? "")
+              .replaceAll('"', '""')}"`
+        ).join(",")
+    )
+    .join("\n");
 
-  const snapshot =
-    await getDocs(
-      measurementsRef
+  const blob =
+    new Blob(
+      ["\ufeff" + csv],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
     );
 
+  const url =
+    URL.createObjectURL(blob);
 
-  for (
-    const document
-    of snapshot.docs
-  ) {
+  const a =
+    document.createElement("a");
 
-    await deleteDoc(
-      document.ref
-    );
-  }
+  a.href = url;
 
+  a.download =
+    `sleep-data-${todayString()}.csv`;
 
-  const profileRef =
-    doc(
-      db,
-      "users",
-      uid
-    );
+  a.click();
 
+  URL.revokeObjectURL(url);
 
-  await deleteDoc(
-    profileRef
-  );
-
-
-  console.log(
-    "Firebaseデータを削除しました"
-  );
 }
 
 
-/* =========================================================
-   今回の測定だけリセット
-========================================================= */
+/* =========================
+   Reset
+========================= */
 
-document
-  .getElementById(
-    "resetCurrentButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
+async function resetAllData() {
 
-      if (isMeasuring) {
+  if (
+    !confirm(
+      "本当に全データを削除しますか？"
+    )
+  ) {
+    return;
+  }
 
-        alert(
-          "測定中はリセットできません。先に測定を停止してください。"
-        );
+  if (!currentUser) {
 
-        return;
-      }
+    alert(
+      "Firebase認証が完了していません。"
+    );
 
+    return;
+  }
 
-      rawData = [];
+  try {
 
-      summaryData = [];
-
-      currentInterval = [];
-
-      movementHistory = [];
-
-      volumeHistory = [];
-
-      soundEvents = 0;
-
-      lastMotion = null;
-
-
-      measureTime.textContent =
-        "0秒";
-
-
-      currentMovement.textContent =
-        "0.00";
-
-
-      currentVolume.textContent =
-        "0.00";
-
-
-      soundEventsElement.textContent =
-        "0";
-
-
-      ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
+    const measurementsRef =
+      collection(
+        db,
+        "users",
+        currentUser.uid,
+        "measurements"
       );
 
+    const snapshot =
+      await getDocs(
+        measurementsRef
+      );
 
-      resultArea.innerHTML = `
+    for (
+      const item of snapshot.docs
+    ) {
 
-        <div class="big-message">
-          今回の測定データをリセットしました
-        </div>
-
-      `;
-
-    }
-  );
-
-
-/* =========================================================
-   全データリセット
-========================================================= */
-
-document
-  .getElementById(
-    "resetAllButton"
-  )
-  .addEventListener(
-    "click",
-    async () => {
-
-      if (isMeasuring) {
-
-        alert(
-          "測定中はリセットできません。先に測定を停止してください。"
-        );
-
-        return;
-      }
-
-
-      const confirmed =
-        confirm(
-          "実績・履歴・XPを端末とFirebaseからすべて削除します。\n\n本当に削除しますか？"
-        );
-
-
-      if (!confirmed) {
-        return;
-      }
-
-
-      try {
-
-        await deleteAllCloudData();
-
-
-        saveData = {
-
-          xp: 0,
-
-          achievements: [],
-
-          history: []
-
-        };
-
-
-        localStorage.removeItem(
-          STORAGE_KEY
-        );
-
-        localStorage.removeItem(
-          OLD_STORAGE_KEY
-        );
-
-
-        renderDashboard();
-
-
-        alert(
-          "実績・履歴・XPを削除しました。"
-        );
-
-
-        await saveProfileToFirestore();
-
-
-      } catch (error) {
-
-        console.error(
-          "全削除エラー:",
-          error
-        );
-
-
-        alert(
-          "削除中にエラーが発生しました。\n" +
-          error.message
-        );
-      }
+      await deleteDoc(item.ref);
 
     }
-  );
+
+    profile = {
+      xp: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      totalDays: 0,
+      lastMeasurementDate: null
+    };
+
+    measurements = [];
+
+    await saveProfileToFirestore();
+
+    renderDashboard();
+
+    document.getElementById(
+      "resultArea"
+    ).textContent =
+      "データをリセットしました。";
+
+  } catch (error) {
+
+    console.error(
+      "リセットエラー:",
+      error
+    );
+
+    alert(
+      "データのリセットに失敗しました。"
+    );
+
+  }
+
+}
 
 
-/* =========================================================
-   ボタン
-========================================================= */
+/* =========================
+   Buttons
+========================= */
 
-startButton.addEventListener(
+document.getElementById(
+  "startButton"
+).addEventListener(
   "click",
   startMeasurement
 );
 
-
-stopButton.addEventListener(
+document.getElementById(
+  "stopButton"
+).addEventListener(
   "click",
   stopMeasurement
 );
 
+document.getElementById(
+  "csvButton"
+).addEventListener(
+  "click",
+  exportCSV
+);
 
-document
-  .getElementById(
-    "exportRawButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      downloadCSV(
-        rawData,
-        "sleep_raw.csv"
-      );
-
-    }
-  );
+document.getElementById(
+  "resetButton"
+).addEventListener(
+  "click",
+  resetAllData
+);
 
 
-document
-  .getElementById(
-    "exportSummaryButton"
-  )
-  .addEventListener(
-    "click",
-    () => {
+/* =========================
+   Initial
+========================= */
 
-      downloadCSV(
-        summaryData,
-        "sleep_10sec_summary.csv"
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   初期表示
-========================================================= */
-
-renderDashboard();
-
-
-/* =========================================================
-   Firebase開始
-========================================================= */
+drawGraph();
 
 initializeAuthentication();
 
@@ -3106,4 +1862,3 @@ initializeAuthentication();
 
 </body>
 </html>
-```
