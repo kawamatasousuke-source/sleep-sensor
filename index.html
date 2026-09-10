@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>睡眠センサー実験 v2</title>
+<title>睡眠センサー実験 v3</title>
 
 <style>
   body {
@@ -91,6 +91,10 @@
     margin-top: 8px;
   }
 
+  #micStatus {
+    font-weight: 700;
+  }
+
   .tableContainer {
     overflow-x: auto;
     max-height: 400px;
@@ -114,16 +118,24 @@
   .summaryTable th {
     background: #f5f5f5;
   }
+
+  .ok {
+    font-weight: 700;
+  }
+
+  .error {
+    font-weight: 700;
+  }
 </style>
 </head>
 
 <body>
 
-<h1>睡眠センサー実験 v2</h1>
+<h1>睡眠センサー実験 v3</h1>
 
 <p>
   スマートフォンの加速度センサー＋マイクを使って、
-  10秒ごとに睡眠中の状態を推定します。
+  10秒ごとに睡眠中の状態を実験的に推定します。
 </p>
 
 <div class="card">
@@ -148,8 +160,18 @@
     停止中
   </p>
 
+  <p>
+    マイク状態：
+    <span id="micStatus">未開始</span>
+  </p>
+
+  <p>
+    加速度センサー：
+    <span id="motionStatus">未開始</span>
+  </p>
+
   <p class="small">
-    スマートフォンではHTTPS環境で開いてください。<br>
+    HTTPS環境で使用してください。<br>
     マイクの音声そのものは保存せず、音量の数値だけを使用します。
   </p>
 
@@ -222,30 +244,22 @@
 
     <div>
       <div>平均Movement</div>
-      <div class="value" id="intervalAvgMovement">
-        0.00
-      </div>
+      <div class="value" id="intervalAvgMovement">0.00</div>
     </div>
 
     <div>
       <div>最大Movement</div>
-      <div class="value" id="intervalMaxMovement">
-        0.00
-      </div>
+      <div class="value" id="intervalMaxMovement">0.00</div>
     </div>
 
     <div>
       <div>平均音量</div>
-      <div class="value" id="intervalAvgVolume">
-        0.000
-      </div>
+      <div class="value" id="intervalAvgVolume">0.000</div>
     </div>
 
     <div>
       <div>最大音量</div>
-      <div class="value" id="intervalMaxVolume">
-        0.000
-      </div>
+      <div class="value" id="intervalMaxVolume">0.000</div>
     </div>
 
   </div>
@@ -315,7 +329,6 @@
 
 <script>
 
-
 // ==================================================
 // 基本設定
 // ==================================================
@@ -326,10 +339,11 @@ let startTime = 0;
 
 let timerId = null;
 
+let intervalTimerId = null;
 
-// 直近のセンサー値
+
+// 最新センサー値
 let latestMovement = 0;
-
 let latestVolume = 0;
 
 
@@ -337,25 +351,19 @@ let latestVolume = 0;
 let data = [];
 
 
-// グラフ用データ
+// グラフ
 let graphData = [];
 
 const MAX_GRAPH_POINTS = 300;
 
 
-// 10秒間の一時データ
+// 10秒集計
 let intervalData = [];
 
-
-// 10秒ごとの集計結果
 let summaryData = [];
 
-
-// 10秒
 const INTERVAL_SECONDS = 10;
 
-
-// 現在の10秒区間の開始秒数
 let currentIntervalStart = 0;
 
 
@@ -370,7 +378,7 @@ let microphoneStream = null;
 
 let audioData = null;
 
-let audioLoopId = null;
+let microphoneTimerId = null;
 
 
 // ==================================================
@@ -394,6 +402,12 @@ const statusEl =
 
 const sleepStateEl =
   document.getElementById("sleepState");
+
+const micStatusEl =
+  document.getElementById("micStatus");
+
+const motionStatusEl =
+  document.getElementById("motionStatus");
 
 
 // ==================================================
@@ -427,7 +441,30 @@ summaryCsvBtn.addEventListener(
 
 async function startMeasurement() {
 
+  if (measuring) {
+    return;
+  }
+
   try {
+
+    // ------------------------------------------
+    // HTTPS確認
+    // ------------------------------------------
+
+    if (
+      location.protocol !== "https:" &&
+      location.hostname !== "localhost" &&
+      location.hostname !== "127.0.0.1"
+    ) {
+
+      alert(
+        "このページはHTTPSで開いてください。\n\n" +
+        "GitHub PagesのURLなら通常はHTTPSです。"
+      );
+
+      return;
+    }
+
 
     // ------------------------------------------
     // 加速度センサー確認
@@ -446,7 +483,7 @@ async function startMeasurement() {
 
 
     // ------------------------------------------
-    // iPhone / iPadの許可
+    // iPhone / iPadの場合
     // ------------------------------------------
 
     if (
@@ -472,7 +509,7 @@ async function startMeasurement() {
 
 
     // ------------------------------------------
-    // マイク確認
+    // マイクAPI確認
     // ------------------------------------------
 
     if (
@@ -481,8 +518,8 @@ async function startMeasurement() {
     ) {
 
       alert(
-        "このブラウザではマイクを利用できません。\n" +
-        "HTTPS環境で開いてください。"
+        "このブラウザではマイクを利用できません。\n\n" +
+        "HTTPSで開いているか確認してください。"
       );
 
       return;
@@ -493,19 +530,32 @@ async function startMeasurement() {
     // マイク許可
     // ------------------------------------------
 
+    micStatusEl.textContent =
+      "マイク許可を確認中";
+
+
     const stream =
       await navigator.mediaDevices.getUserMedia({
 
         audio: {
+
           echoCancellation: false,
+
           noiseSuppression: false,
+
           autoGainControl: false
+
         }
 
       });
 
 
-    microphoneStream = stream;
+    microphoneStream =
+      stream;
+
+
+    micStatusEl.textContent =
+      "マイク許可OK";
 
 
     // ------------------------------------------
@@ -540,36 +590,29 @@ async function startMeasurement() {
       "timer"
     ).textContent = "00:00";
 
-
     document.getElementById(
       "movement"
     ).textContent = "0.00";
-
 
     document.getElementById(
       "volume"
     ).textContent = "0.000";
 
-
     document.getElementById(
       "count"
     ).textContent = "0";
-
 
     document.getElementById(
       "intervalAvgMovement"
     ).textContent = "0.00";
 
-
     document.getElementById(
       "intervalMaxMovement"
     ).textContent = "0.00";
 
-
     document.getElementById(
       "intervalAvgVolume"
     ).textContent = "0.000";
-
 
     document.getElementById(
       "intervalMaxVolume"
@@ -581,14 +624,26 @@ async function startMeasurement() {
 
 
     // ------------------------------------------
+    // 測定状態ON
+    // ------------------------------------------
+
+    measuring = true;
+
+    startTime =
+      performance.now();
+
+
+    // ------------------------------------------
     // マイク開始
     // ------------------------------------------
 
-    setupMicrophone(stream);
+    setupMicrophone(
+      stream
+    );
 
 
     // ------------------------------------------
-    // 加速度センサー開始
+    // 加速度開始
     // ------------------------------------------
 
     window.addEventListener(
@@ -597,17 +652,13 @@ async function startMeasurement() {
     );
 
 
+    motionStatusEl.textContent =
+      "待機中";
+
+
     // ------------------------------------------
-    // 測定開始
+    // ボタン
     // ------------------------------------------
-
-    measuring = true;
-
-    startTime =
-      performance.now();
-
-    currentIntervalStart = 0;
-
 
     startBtn.disabled = true;
 
@@ -622,12 +673,31 @@ async function startMeasurement() {
       "測定中";
 
 
+    // ------------------------------------------
+    // タイマー
+    // ------------------------------------------
+
     timerId =
       setInterval(
         updateTimer,
         100
       );
 
+
+    // ------------------------------------------
+    // 10秒集計タイマー
+    // ------------------------------------------
+
+    intervalTimerId =
+      setInterval(
+        processInterval,
+        100
+      );
+
+
+    // ------------------------------------------
+    // グラフ
+    // ------------------------------------------
 
     requestAnimationFrame(
       drawGraph
@@ -636,12 +706,41 @@ async function startMeasurement() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "開始エラー:",
+      error
+    );
+
+
+    measuring = false;
+
+
+    if (
+      microphoneStream
+    ) {
+
+      microphoneStream
+        .getTracks()
+        .forEach(
+          track => track.stop()
+        );
+
+      microphoneStream = null;
+
+    }
+
 
     alert(
       "センサーまたはマイクを開始できませんでした。\n\n" +
+      "エラー：\n" +
+      error.name +
+      "\n\n" +
       error.message
     );
+
+
+    micStatusEl.textContent =
+      "開始失敗";
 
   }
 
@@ -652,45 +751,95 @@ async function startMeasurement() {
 // マイク設定
 // ==================================================
 
-function setupMicrophone(stream) {
+async function setupMicrophone(
+  stream
+) {
 
-  audioContext =
-    new (
+  try {
+
+    const AudioContextClass =
       window.AudioContext ||
-      window.webkitAudioContext
-    )();
+      window.webkitAudioContext;
 
 
-  analyser =
-    audioContext.createAnalyser();
+    if (!AudioContextClass) {
+
+      throw new Error(
+        "AudioContextが利用できません。"
+      );
+
+    }
 
 
-  analyser.fftSize =
-    1024;
+    audioContext =
+      new AudioContextClass();
 
 
-  analyser.smoothingTimeConstant =
-    0.3;
+    // Android Chrome対策
+    if (
+      audioContext.state ===
+      "suspended"
+    ) {
+
+      await audioContext.resume();
+
+    }
 
 
-  microphone =
-    audioContext.createMediaStreamSource(
-      stream
+    analyser =
+      audioContext.createAnalyser();
+
+
+    analyser.fftSize =
+      2048;
+
+
+    analyser.smoothingTimeConstant =
+      0;
+
+
+    microphone =
+      audioContext.createMediaStreamSource(
+        stream
+      );
+
+
+    microphone.connect(
+      analyser
     );
 
 
-  microphone.connect(
-    analyser
-  );
+    audioData =
+      new Float32Array(
+        analyser.fftSize
+      );
 
 
-  audioData =
-    new Uint8Array(
-      analyser.fftSize
+    micStatusEl.textContent =
+      "測定中";
+
+
+    // ------------------------------------------
+    // マイクを一定間隔で測定
+    // ------------------------------------------
+
+    measureMicrophone();
+
+
+  } catch (error) {
+
+    console.error(
+      "マイク設定エラー:",
+      error
     );
 
 
-  measureMicrophone();
+    micStatusEl.textContent =
+      "エラー";
+
+    throw error;
+
+  }
 
 }
 
@@ -702,6 +851,7 @@ function setupMicrophone(stream) {
 function measureMicrophone() {
 
   if (
+    !measuring ||
     !analyser ||
     !audioData
   ) {
@@ -711,7 +861,7 @@ function measureMicrophone() {
   }
 
 
-  analyser.getByteTimeDomainData(
+  analyser.getFloatTimeDomainData(
     audioData
   );
 
@@ -725,13 +875,11 @@ function measureMicrophone() {
     i++
   ) {
 
-    const normalized =
-      (audioData[i] - 128) / 128;
-
+    const value =
+      audioData[i];
 
     sum +=
-      normalized *
-      normalized;
+      value * value;
 
   }
 
@@ -747,11 +895,41 @@ function measureMicrophone() {
     rms;
 
 
+  // ------------------------------------------
+  // マイク入力が存在するか確認
+  // ------------------------------------------
+
+  if (
+    rms > 0.0001
+  ) {
+
+    micStatusEl.textContent =
+      "入力あり";
+
+  } else {
+
+    micStatusEl.textContent =
+      "入力待機中";
+
+  }
+
+
+  document.getElementById(
+    "volume"
+  ).textContent =
+    latestVolume.toFixed(3);
+
+
+  // ------------------------------------------
+  // マイクだけの記録
+  // ------------------------------------------
+
   if (measuring) {
 
-    audioLoopId =
-      requestAnimationFrame(
-        measureMicrophone
+    microphoneTimerId =
+      setTimeout(
+        measureMicrophone,
+        50
       );
 
   }
@@ -760,10 +938,12 @@ function measureMicrophone() {
 
 
 // ==================================================
-// 加速度測定
+// 加速度
 // ==================================================
 
-function handleMotion(event) {
+function handleMotion(
+  event
+) {
 
   if (!measuring) {
     return;
@@ -775,7 +955,12 @@ function handleMotion(event) {
 
 
   if (!acceleration) {
+
+    motionStatusEl.textContent =
+      "データなし";
+
     return;
+
   }
 
 
@@ -789,10 +974,6 @@ function handleMotion(event) {
     Number(acceleration.z) || 0;
 
 
-  // ------------------------------------------
-  // 加速度の大きさ
-  // ------------------------------------------
-
   const magnitude =
     Math.sqrt(
       x * x +
@@ -800,10 +981,6 @@ function handleMotion(event) {
       z * z
     );
 
-
-  // ------------------------------------------
-  // 重力成分との差
-  // ------------------------------------------
 
   const movement =
     Math.abs(
@@ -814,6 +991,10 @@ function handleMotion(event) {
 
   latestMovement =
     movement;
+
+
+  motionStatusEl.textContent =
+    "入力あり";
 
 
   const elapsed =
@@ -857,7 +1038,9 @@ function handleMotion(event) {
   };
 
 
-  data.push(record);
+  data.push(
+    record
+  );
 
 
   // ------------------------------------------
@@ -889,10 +1072,13 @@ function handleMotion(event) {
 
 
   // ------------------------------------------
-  // 10秒集計用
+  // 10秒集計
   // ------------------------------------------
 
   intervalData.push({
+
+    elapsed:
+      elapsed,
 
     movement:
       movement,
@@ -905,28 +1091,11 @@ function handleMotion(event) {
 
   updateDisplay();
 
-
-  // ------------------------------------------
-  // 10秒経過判定
-  // ------------------------------------------
-
-  if (
-    elapsed -
-    currentIntervalStart >=
-    INTERVAL_SECONDS
-  ) {
-
-    calculateInterval(
-      elapsed
-    );
-
-  }
-
 }
 
 
 // ==================================================
-// 画面表示
+// 表示
 // ==================================================
 
 function updateDisplay() {
@@ -997,15 +1166,61 @@ function updateTimer() {
 
 
 // ==================================================
+// 10秒区間処理
+// ==================================================
+
+function processInterval() {
+
+  if (!measuring) {
+    return;
+  }
+
+
+  const elapsed =
+    (
+      performance.now() -
+      startTime
+    ) / 1000;
+
+
+  if (
+    elapsed -
+    currentIntervalStart >=
+    INTERVAL_SECONDS
+  ) {
+
+    calculateInterval(
+      currentIntervalStart,
+      currentIntervalStart +
+      INTERVAL_SECONDS
+    );
+
+  }
+
+}
+
+
+// ==================================================
 // 10秒集計
 // ==================================================
 
 function calculateInterval(
-  currentElapsed
+  startSeconds,
+  endSeconds
 ) {
 
+  const targetData =
+    intervalData.filter(
+      d =>
+        d.elapsed >=
+        startSeconds &&
+        d.elapsed <
+        endSeconds
+    );
+
+
   if (
-    intervalData.length === 0
+    targetData.length === 0
   ) {
 
     return;
@@ -1018,7 +1233,7 @@ function calculateInterval(
   // ------------------------------------------
 
   const movements =
-    intervalData.map(
+    targetData.map(
       d => d.movement
     );
 
@@ -1044,7 +1259,7 @@ function calculateInterval(
   // ------------------------------------------
 
   const volumes =
-    intervalData.map(
+    targetData.map(
       d => d.volume
     );
 
@@ -1074,14 +1289,6 @@ function calculateInterval(
       avgMovement,
       maxMovement
     );
-
-
-  const startSeconds =
-    currentIntervalStart;
-
-
-  const endSeconds =
-    currentElapsed;
 
 
   const result = {
@@ -1120,7 +1327,7 @@ function calculateInterval(
 
 
   // ------------------------------------------
-  // 最新10秒表示
+  // 最新10秒
   // ------------------------------------------
 
   document.getElementById(
@@ -1157,11 +1364,8 @@ function calculateInterval(
 
 
   // ------------------------------------------
-  // 次の10秒区間
+  // 次の区間
   // ------------------------------------------
-
-  intervalData = [];
-
 
   currentIntervalStart =
     endSeconds;
@@ -1177,24 +1381,6 @@ function judgeSleepState(
   avgMovement,
   maxMovement
 ) {
-
-  /*
-    現在は実験用の仮設定。
-
-    平均Movementが小さい
-    ＋最大Movementも小さい
-    ↓
-    静止
-
-    中程度
-    ↓
-    小さな動き
-
-    大きい
-    ↓
-    大きな動き
-  */
-
 
   if (
     avgMovement < 0.20 &&
@@ -1222,7 +1408,7 @@ function judgeSleepState(
 
 
 // ==================================================
-// 秒数を mm:ss に変換
+// 秒数 → mm:ss
 // ==================================================
 
 function formatSeconds(
@@ -1255,7 +1441,7 @@ function formatSeconds(
 
 
 // ==================================================
-// 表に追加
+// 表追加
 // ==================================================
 
 function addSummaryTableRow(
@@ -1314,7 +1500,7 @@ function addSummaryTableRow(
 // 測定停止
 // ==================================================
 
-function stopMeasurement() {
+async function stopMeasurement() {
 
   if (!measuring) {
     return;
@@ -1349,17 +1535,28 @@ function stopMeasurement() {
   }
 
 
-  // ------------------------------------------
-  // マイク測定停止
-  // ------------------------------------------
+  if (intervalTimerId) {
 
-  if (audioLoopId) {
-
-    cancelAnimationFrame(
-      audioLoopId
+    clearInterval(
+      intervalTimerId
     );
 
-    audioLoopId = null;
+    intervalTimerId = null;
+
+  }
+
+
+  // ------------------------------------------
+  // マイク停止
+  // ------------------------------------------
+
+  if (microphoneTimerId) {
+
+    clearTimeout(
+      microphoneTimerId
+    );
+
+    microphoneTimerId = null;
 
   }
 
@@ -1375,7 +1572,15 @@ function stopMeasurement() {
 
   if (audioContext) {
 
-    audioContext.close();
+    try {
+
+      await audioContext.close();
+
+    } catch (e) {
+
+      console.error(e);
+
+    }
 
     audioContext = null;
 
@@ -1383,7 +1588,7 @@ function stopMeasurement() {
 
 
   // ------------------------------------------
-  // マイクのストリーム停止
+  // ストリーム停止
   // ------------------------------------------
 
   if (microphoneStream) {
@@ -1391,7 +1596,8 @@ function stopMeasurement() {
     microphoneStream
       .getTracks()
       .forEach(
-        track => track.stop()
+        track =>
+          track.stop()
       );
 
     microphoneStream = null;
@@ -1400,21 +1606,24 @@ function stopMeasurement() {
 
 
   // ------------------------------------------
-  // 残っている10秒未満のデータを集計
+  // 残りのデータ
   // ------------------------------------------
 
+  const elapsed =
+    (
+      performance.now() -
+      startTime
+    ) / 1000;
+
+
   if (
-    intervalData.length > 0
+    intervalData.length > 0 &&
+    elapsed >
+    currentIntervalStart
   ) {
 
-    const elapsed =
-      (
-        performance.now() -
-        startTime
-      ) / 1000;
-
-
     calculateInterval(
+      currentIntervalStart,
       elapsed
     );
 
@@ -1438,6 +1647,14 @@ function stopMeasurement() {
 
   statusEl.textContent =
     "測定終了";
+
+
+  micStatusEl.textContent =
+    "停止";
+
+
+  motionStatusEl.textContent =
+    "停止";
 
 
   // ------------------------------------------
@@ -1666,9 +1883,8 @@ function drawGraph() {
     ctx.strokeStyle =
       "#222";
 
-
-    ctx.lineWidth = 2;
-
+    ctx.lineWidth =
+      2;
 
     ctx.beginPath();
 
@@ -1678,7 +1894,10 @@ function drawGraph() {
 
         const x =
           i /
-          (MAX_GRAPH_POINTS - 1) *
+          Math.max(
+            1,
+            graphData.length - 1
+          ) *
           w;
 
 
@@ -1721,9 +1940,8 @@ function drawGraph() {
     ctx.strokeStyle =
       "#777";
 
-
-    ctx.lineWidth = 2;
-
+    ctx.lineWidth =
+      2;
 
     ctx.beginPath();
 
@@ -1733,7 +1951,10 @@ function drawGraph() {
 
         const x =
           i /
-          (MAX_GRAPH_POINTS - 1) *
+          Math.max(
+            1,
+            graphData.length - 1
+          ) *
           w;
 
 
@@ -1804,7 +2025,7 @@ function drawGraph() {
 
 
 // ==================================================
-// 生データCSV保存
+// 生データCSV
 // ==================================================
 
 function saveCSV() {
@@ -1862,7 +2083,7 @@ function saveCSV() {
 
 
 // ==================================================
-// 10秒集計CSV保存
+// 10秒集計CSV
 // ==================================================
 
 function saveSummaryCSV() {
@@ -1920,7 +2141,7 @@ function saveSummaryCSV() {
 
 
 // ==================================================
-// CSV共通処理
+// CSV共通
 // ==================================================
 
 function downloadCSV(
