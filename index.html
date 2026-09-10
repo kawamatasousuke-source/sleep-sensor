@@ -238,6 +238,7 @@ canvas {
 
 ```
 <div class="stats">
+
   <div class="stat">
     <div class="stat-label">加速度</div>
     <div id="motionValue" class="stat-value">0.00</div>
@@ -257,6 +258,7 @@ canvas {
     <div class="stat-label">測定回数</div>
     <div id="sampleCount" class="stat-value">0</div>
   </div>
+
 </div>
 ```
 
@@ -283,6 +285,7 @@ canvas {
 
 ```
 <div class="stats">
+
   <div class="stat">
     <div class="stat-label">現在の連続日数</div>
     <div id="currentStreak" class="stat-value">0日</div>
@@ -302,6 +305,7 @@ canvas {
     <div class="stat-label">XP</div>
     <div id="xpValue" class="stat-value">0</div>
   </div>
+
 </div>
 ```
 
@@ -387,7 +391,9 @@ let currentUser = null;
 ========================= */
 
 function setFirebaseStatus(text, type = "") {
-  const element = document.getElementById("firebaseStatus");
+
+  const element =
+    document.getElementById("firebaseStatus");
 
   element.textContent = text;
   element.className = "status";
@@ -395,6 +401,7 @@ function setFirebaseStatus(text, type = "") {
   if (type) {
     element.classList.add(type);
   }
+
 }
 
 
@@ -407,58 +414,89 @@ let wakeLock = null;
 async function requestWakeLock() {
 
   if (!("wakeLock" in navigator)) {
-    console.log("Wake Lock APIはこの端末・ブラウザでは利用できません");
+
+    console.log(
+      "Wake Lock APIはこの端末・ブラウザでは利用できません"
+    );
+
     return;
+
   }
 
   try {
 
-    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock =
+      await navigator.wakeLock.request("screen");
 
-    console.log("画面自動消灯防止：ON");
+    console.log(
+      "画面自動消灯防止：ON"
+    );
 
-    wakeLock.addEventListener("release", () => {
-      console.log("画面自動消灯防止：OFF");
-    });
+    wakeLock.addEventListener(
+      "release",
+      () => {
+
+        console.log(
+          "画面自動消灯防止：OFF"
+        );
+
+      }
+    );
 
   } catch (error) {
 
-    console.warn("Wake Lock取得失敗:", error);
+    console.warn(
+      "Wake Lock取得失敗:",
+      error
+    );
 
   }
+
 }
 
 
 async function releaseWakeLock() {
 
-  if (wakeLock) {
+  if (!wakeLock) return;
 
-    try {
-      await wakeLock.release();
-    } catch (error) {
-      console.warn("Wake Lock解除エラー:", error);
-    }
+  try {
 
-    wakeLock = null;
+    await wakeLock.release();
+
+  } catch (error) {
+
+    console.warn(
+      "Wake Lock解除エラー:",
+      error
+    );
+
   }
+
+  wakeLock = null;
+
 }
 
 
 /*
-   スマホで別アプリなどに移動してWake Lockが解除された場合、
-   アプリへ戻ってきたときに測定中なら再取得する。
+  スマホ側の仕様でWake Lockが解除された場合、
+  アプリ画面に戻ってきたときに再取得する。
 */
 
-document.addEventListener("visibilitychange", async () => {
+document.addEventListener(
+  "visibilitychange",
+  async () => {
 
-  if (
-    document.visibilityState === "visible" &&
-    isMeasuring
-  ) {
-    await requestWakeLock();
+    if (
+      document.visibilityState === "visible" &&
+      isMeasuring
+    ) {
+
+      await requestWakeLock();
+
+    }
+
   }
-
-});
+);
 
 
 /* =========================
@@ -469,18 +507,31 @@ async function initializeAuthentication() {
 
   try {
 
-    setFirebaseStatus("Firebase匿名認証中...");
+    setFirebaseStatus(
+      "Firebase匿名認証中..."
+    );
 
     await signInAnonymously(auth);
 
-    currentUser = auth.currentUser;
+    currentUser =
+      auth.currentUser;
 
     if (!currentUser) {
-      throw new Error("Firebaseユーザーを取得できませんでした");
+
+      throw new Error(
+        "Firebaseユーザーを取得できませんでした"
+      );
+
     }
 
-    console.log("Firebase認証成功");
-    console.log("UID:", currentUser.uid);
+    console.log(
+      "Firebase認証成功"
+    );
+
+    console.log(
+      "UID:",
+      currentUser.uid
+    );
 
     setFirebaseStatus(
       "Firebase認証済み",
@@ -493,16 +544,23 @@ async function initializeAuthentication() {
 
   } catch (error) {
 
-    console.error("Firebase認証エラー:", error);
+    console.error(
+      "Firebase認証エラー:",
+      error
+    );
 
-    console.error("Firebase認証エラー詳細:", {
-      code: error.code,
-      message: error.message,
-      name: error.name
-    });
+    console.error(
+      "Firebase認証エラー詳細:",
+      {
+        code: error.code,
+        message: error.message,
+        name: error.name
+      }
+    );
 
     setFirebaseStatus(
-      "Firebase認証エラー: " + error.message,
+      "Firebase認証エラー: " +
+      error.message,
       "error"
     );
 
@@ -518,11 +576,13 @@ async function initializeAuthentication() {
 let measurements = [];
 
 let profile = {
+
   xp: 0,
   currentStreak: 0,
   bestStreak: 0,
   totalDays: 0,
   lastMeasurementDate: null
+
 };
 
 
@@ -531,17 +591,25 @@ let profile = {
 ========================= */
 
 let isMeasuring = false;
+
 let measurementStartTime = null;
+
 let timerInterval = null;
 
+let measurementInterval = null;
+
 let motionHistory = [];
+
 let volumeHistory = [];
 
 let currentMotion = 0;
+
 let currentVolume = 0;
 
 let stillCount = 0;
+
 let smallCount = 0;
+
 let largeCount = 0;
 
 let sampleCount = 0;
@@ -549,8 +617,13 @@ let sampleCount = 0;
 let measurementData = [];
 
 let audioContext = null;
+
 let analyser = null;
+
 let microphone = null;
+
+let microphoneStream = null;
+
 let audioDataArray = null;
 
 let motionHandler = null;
@@ -564,27 +637,55 @@ function todayString() {
 
   const now = new Date();
 
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
+  const y =
+    now.getFullYear();
+
+  const m =
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
+
+  const d =
+    String(
+      now.getDate()
+    ).padStart(2, "0");
 
   return `${y}-${m}-${d}`;
+
 }
 
 
 function formatDuration(seconds) {
 
-  seconds = Math.max(0, Math.floor(seconds));
+  seconds =
+    Math.max(
+      0,
+      Math.floor(seconds)
+    );
 
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
+  const h =
+    Math.floor(
+      seconds / 3600
+    );
+
+  const m =
+    Math.floor(
+      (seconds % 3600) / 60
+    );
+
+  const s =
+    seconds % 60;
 
   return [
+
     String(h).padStart(2, "0"),
+
     String(m).padStart(2, "0"),
+
     String(s).padStart(2, "0")
+
   ].join(":");
+
 }
 
 
@@ -599,15 +700,21 @@ function calculateMotion(event) {
 
   if (!acc) return 0;
 
-  const x = acc.x || 0;
-  const y = acc.y || 0;
-  const z = acc.z || 0;
+  const x =
+    acc.x || 0;
+
+  const y =
+    acc.y || 0;
+
+  const z =
+    acc.z || 0;
 
   return Math.sqrt(
     x * x +
     y * y +
     z * z
   );
+
 }
 
 
@@ -615,18 +722,27 @@ function handleMotion(event) {
 
   if (!isMeasuring) return;
 
-  currentMotion = calculateMotion(event);
+  currentMotion =
+    calculateMotion(event);
 
   motionHistory.push({
+
     time: Date.now(),
+
     value: currentMotion
+
   });
 
-  if (motionHistory.length > 300) {
+  if (
+    motionHistory.length > 300
+  ) {
+
     motionHistory.shift();
+
   }
 
   updateDisplay();
+
 }
 
 
@@ -636,14 +752,18 @@ function handleMotion(event) {
 
 async function startMicrophone() {
 
-  const stream =
+  microphoneStream =
     await navigator.mediaDevices.getUserMedia({
+
       audio: true
+
     });
 
   audioContext =
-    new (window.AudioContext ||
-      window.webkitAudioContext)();
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
 
   analyser =
     audioContext.createAnalyser();
@@ -651,9 +771,13 @@ async function startMicrophone() {
   analyser.fftSize = 256;
 
   microphone =
-    audioContext.createMediaStreamSource(stream);
+    audioContext.createMediaStreamSource(
+      microphoneStream
+    );
 
-  microphone.connect(analyser);
+  microphone.connect(
+    analyser
+  );
 
   audioDataArray =
     new Uint8Array(
@@ -662,13 +786,19 @@ async function startMicrophone() {
 
   readVolume();
 
-  return stream;
 }
 
 
 function readVolume() {
 
-  if (!isMeasuring || !analyser) return;
+  if (
+    !isMeasuring ||
+    !analyser
+  ) {
+
+    return;
+
+  }
 
   analyser.getByteTimeDomainData(
     audioDataArray
@@ -676,32 +806,50 @@ function readVolume() {
 
   let sum = 0;
 
-  for (let i = 0; i < audioDataArray.length; i++) {
+  for (
+    let i = 0;
+    i < audioDataArray.length;
+    i++
+  ) {
 
     const value =
-      (audioDataArray[i] - 128) / 128;
+      (
+        audioDataArray[i] - 128
+      ) / 128;
 
-    sum += value * value;
+    sum +=
+      value * value;
 
   }
 
   currentVolume =
     Math.sqrt(
-      sum / audioDataArray.length
+      sum /
+      audioDataArray.length
     );
 
   volumeHistory.push({
+
     time: Date.now(),
+
     value: currentVolume
+
   });
 
-  if (volumeHistory.length > 300) {
+  if (
+    volumeHistory.length > 300
+  ) {
+
     volumeHistory.shift();
+
   }
 
   updateDisplay();
 
-  requestAnimationFrame(readVolume);
+  requestAnimationFrame(
+    readVolume
+  );
+
 }
 
 
@@ -716,10 +864,16 @@ async function startMeasurement() {
   try {
 
     /*
-       画面自動消灯防止
+      測定開始時に画面自動消灯を防止
     */
 
     await requestWakeLock();
+
+
+    /*
+      iPhone / iPadなどで
+      加速度センサーの許可を取得
+    */
 
     if (
       typeof DeviceMotionEvent !== "undefined" &&
@@ -729,16 +883,27 @@ async function startMeasurement() {
       const permission =
         await DeviceMotionEvent.requestPermission();
 
-      if (permission !== "granted") {
+      if (
+        permission !== "granted"
+      ) {
+
         throw new Error(
           "加速度センサーの使用が許可されませんでした"
         );
+
       }
 
     }
 
-    if (!navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia) {
+
+    /*
+      マイクが利用可能か確認
+    */
+
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ) {
 
       throw new Error(
         "このブラウザではマイクを利用できません"
@@ -746,30 +911,58 @@ async function startMeasurement() {
 
     }
 
+
+    /*
+      マイク開始
+    */
+
     await startMicrophone();
+
+
+    /*
+      測定開始
+    */
 
     isMeasuring = true;
 
-    measurementStartTime = Date.now();
+    measurementStartTime =
+      Date.now();
 
     motionHistory = [];
+
     volumeHistory = [];
+
     measurementData = [];
 
     stillCount = 0;
+
     smallCount = 0;
+
     largeCount = 0;
+
     sampleCount = 0;
 
     currentMotion = 0;
+
     currentVolume = 0;
 
-    motionHandler = handleMotion;
+
+    /*
+      加速度センサー
+    */
+
+    motionHandler =
+      handleMotion;
 
     window.addEventListener(
       "devicemotion",
       motionHandler
     );
+
+
+    /*
+      ボタン
+    */
 
     document.getElementById(
       "startButton"
@@ -779,30 +972,45 @@ async function startMeasurement() {
       "stopButton"
     ).disabled = false;
 
+
+    /*
+      ステータス
+    */
+
     document.getElementById(
       "sensorStatus"
     ).textContent =
       "測定中です。スマホを寝る場所の近くに置いてください。";
 
+
     document.getElementById(
       "sensorStatus"
-    ).className = "status ok";
+    ).className =
+      "status ok";
 
-    timerInterval = setInterval(
-      updateTimer,
-      1000
-    );
+
+    /*
+      タイマー
+    */
+
+    timerInterval =
+      setInterval(
+        updateTimer,
+        1000
+      );
 
     updateTimer();
 
+
     /*
-       10秒ごとにデータを集計
+      10秒ごとにデータ集計
     */
 
-    measurementInterval = setInterval(
-      summarize10Seconds,
-      10000
-    );
+    measurementInterval =
+      setInterval(
+        summarize10Seconds,
+        10000
+      );
 
   } catch (error) {
 
@@ -811,7 +1019,31 @@ async function startMeasurement() {
       error
     );
 
+    isMeasuring = false;
+
     await releaseWakeLock();
+
+    if (audioContext) {
+
+      try {
+        await audioContext.close();
+      } catch (e) {}
+
+      audioContext = null;
+
+    }
+
+    if (microphoneStream) {
+
+      microphoneStream
+        .getTracks()
+        .forEach(
+          track => track.stop()
+        );
+
+      microphoneStream = null;
+
+    }
 
     document.getElementById(
       "sensorStatus"
@@ -829,79 +1061,112 @@ async function startMeasurement() {
 }
 
 
-let measurementInterval = null;
-
+/* =========================
+   10秒集計
+========================= */
 
 function summarize10Seconds() {
 
   if (!isMeasuring) return;
+
 
   const recentMotion =
     motionHistory.slice(-100);
 
   let averageMotion = 0;
 
-  if (recentMotion.length > 0) {
+  if (
+    recentMotion.length > 0
+  ) {
 
     averageMotion =
       recentMotion.reduce(
-        (sum, item) => sum + item.value,
+        (sum, item) =>
+          sum + item.value,
         0
-      ) / recentMotion.length;
+      ) /
+      recentMotion.length;
 
   }
 
+
+  const recentVolume =
+    volumeHistory.slice(-100);
+
   const averageVolume =
-    volumeHistory.length > 0
-      ? volumeHistory
-          .slice(-100)
-          .reduce(
-            (sum, item) => sum + item.value,
-            0
-          ) / Math.min(100, volumeHistory.length)
+    recentVolume.length > 0
+      ? recentVolume.reduce(
+          (sum, item) =>
+            sum + item.value,
+          0
+        ) /
+        recentVolume.length
       : 0;
+
 
   let state = "静止";
 
+
   /*
-     加速度の変化量を簡易的に判定。
-     端末によって値が異なるため、
-     実験後に閾値を調整する。
+    現在は簡易判定。
+    実際に一晩測定したデータを見て
+    後で閾値を調整する。
   */
 
-  if (averageMotion < 9.85) {
+  if (
+    averageMotion < 9.85
+  ) {
 
     stillCount++;
+
     state = "静止";
 
-  } else if (averageMotion < 10.5) {
+  } else if (
+    averageMotion < 10.5
+  ) {
 
     smallCount++;
+
     state = "小さな動き";
 
   } else {
 
     largeCount++;
+
     state = "大きな動き";
 
   }
 
+
   sampleCount++;
 
+
   measurementData.push({
-    time: new Date().toISOString(),
-    motion: averageMotion,
-    volume: averageVolume,
-    state: state
+
+    time:
+      new Date().toISOString(),
+
+    motion:
+      averageMotion,
+
+    volume:
+      averageVolume,
+
+    state:
+      state
+
   });
+
 
   document.getElementById(
     "currentState"
-  ).textContent = state;
+  ).textContent =
+    state;
 
   document.getElementById(
     "sampleCount"
-  ).textContent = sampleCount;
+  ).textContent =
+    sampleCount;
 
   drawGraph();
 
@@ -914,18 +1179,24 @@ function summarize10Seconds() {
 
 function updateTimer() {
 
-  if (!measurementStartTime) return;
+  if (!measurementStartTime) {
+    return;
+  }
 
   const elapsed =
     Math.floor(
-      (Date.now() - measurementStartTime) /
-      1000
+      (
+        Date.now() -
+        measurementStartTime
+      ) / 1000
     );
 
   document.getElementById(
     "measurementTimer"
   ).textContent =
-    formatDuration(elapsed);
+    formatDuration(
+      elapsed
+    );
 
 }
 
@@ -958,7 +1229,9 @@ function updateDisplay() {
 function drawGraph() {
 
   const canvas =
-    document.getElementById("graph");
+    document.getElementById(
+      "graph"
+    );
 
   const ctx =
     canvas.getContext("2d");
@@ -975,10 +1248,20 @@ function drawGraph() {
   canvas.height =
     rect.height * dpr;
 
-  ctx.scale(dpr, dpr);
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
 
-  const width = rect.width;
-  const height = rect.height;
+  const width =
+    rect.width;
+
+  const height =
+    rect.height;
 
   ctx.clearRect(
     0,
@@ -987,64 +1270,127 @@ function drawGraph() {
     height
   );
 
-  ctx.strokeStyle = "#ddd";
+
+  /*
+    グリッド
+  */
+
+  ctx.strokeStyle =
+    "#ddd";
+
   ctx.lineWidth = 1;
 
-  for (let i = 0; i <= 5; i++) {
+  for (
+    let i = 0;
+    i <= 5;
+    i++
+  ) {
 
     const y =
       (height / 5) * i;
 
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
+
+    ctx.moveTo(
+      0,
+      y
+    );
+
+    ctx.lineTo(
+      width,
+      y
+    );
+
     ctx.stroke();
 
   }
 
+
   const data =
     motionHistory.slice(-100);
 
-  if (data.length < 2) return;
+  if (
+    data.length < 2
+  ) {
+
+    return;
+
+  }
+
 
   let min =
     Math.min(
-      ...data.map(d => d.value)
+      ...data.map(
+        d => d.value
+      )
     );
 
   let max =
     Math.max(
-      ...data.map(d => d.value)
+      ...data.map(
+        d => d.value
+      )
     );
 
-  if (max - min < 0.01) {
-    max = min + 1;
+
+  if (
+    max - min < 0.01
+  ) {
+
+    max =
+      min + 1;
+
   }
+
 
   ctx.beginPath();
 
-  data.forEach((item, index) => {
 
-    const x =
-      (index / (data.length - 1)) *
-      width;
+  data.forEach(
+    (item, index) => {
 
-    const y =
-      height -
-      ((item.value - min) /
-      (max - min)) *
-      height;
+      const x =
+        (
+          index /
+          (data.length - 1)
+        ) *
+        width;
 
-    if (index === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
+      const y =
+        height -
+        (
+          (item.value - min) /
+          (max - min)
+        ) *
+        height;
+
+      if (
+        index === 0
+      ) {
+
+        ctx.moveTo(
+          x,
+          y
+        );
+
+      } else {
+
+        ctx.lineTo(
+          x,
+          y
+        );
+
+      }
+
     }
+  );
 
-  });
 
-  ctx.strokeStyle = "#111";
+  ctx.strokeStyle =
+    "#111";
+
   ctx.lineWidth = 2;
+
   ctx.stroke();
 
 }
@@ -1058,9 +1404,21 @@ async function stopMeasurement() {
 
   if (!isMeasuring) return;
 
+
+  /*
+    先に測定状態をOFF
+  */
+
   isMeasuring = false;
 
-  if (measurementInterval) {
+
+  /*
+    10秒タイマー停止
+  */
+
+  if (
+    measurementInterval
+  ) {
 
     clearInterval(
       measurementInterval
@@ -1070,7 +1428,14 @@ async function stopMeasurement() {
 
   }
 
-  if (timerInterval) {
+
+  /*
+    表示タイマー停止
+  */
+
+  if (
+    timerInterval
+  ) {
 
     clearInterval(
       timerInterval
@@ -1080,7 +1445,14 @@ async function stopMeasurement() {
 
   }
 
-  if (motionHandler) {
+
+  /*
+    加速度センサー停止
+  */
+
+  if (
+    motionHandler
+  ) {
 
     window.removeEventListener(
       "devicemotion",
@@ -1091,18 +1463,68 @@ async function stopMeasurement() {
 
   }
 
-  if (audioContext) {
+
+  /*
+    マイク停止
+  */
+
+  if (
+    microphoneStream
+  ) {
+
+    microphoneStream
+      .getTracks()
+      .forEach(
+        track => track.stop()
+      );
+
+    microphoneStream = null;
+
+  }
+
+
+  /*
+    AudioContext停止
+  */
+
+  if (
+    audioContext
+  ) {
 
     try {
+
       await audioContext.close();
+
     } catch (error) {
-      console.warn(error);
+
+      console.warn(
+        error
+      );
+
     }
 
     audioContext = null;
+
   }
 
+
+  microphone = null;
+
+  analyser = null;
+
+  audioDataArray = null;
+
+
+  /*
+    Wake Lock解除
+  */
+
   await releaseWakeLock();
+
+
+  /*
+    ボタン
+  */
 
   document.getElementById(
     "startButton"
@@ -1111,6 +1533,7 @@ async function stopMeasurement() {
   document.getElementById(
     "stopButton"
   ).disabled = true;
+
 
   document.getElementById(
     "sensorStatus"
@@ -1122,18 +1545,40 @@ async function stopMeasurement() {
   ).className =
     "status";
 
+
+  /*
+    結果計算
+  */
+
   const result =
     calculateResult();
 
-  renderResult(result);
+  renderResult(
+    result
+  );
 
-  measurements.push(result);
+
+  measurements.push(
+    result
+  );
+
+
+  /*
+    Firestore保存
+  */
 
   await saveResultToFirestore(
     result
   );
 
-  updateStreak(result);
+
+  /*
+    ストリーク更新
+  */
+
+  updateStreak(
+    result
+  );
 
   renderDashboard();
 
@@ -1149,24 +1594,32 @@ function calculateResult() {
   const duration =
     measurementStartTime
       ? Math.floor(
-          (Date.now() -
-            measurementStartTime) /
-          1000
+          (
+            Date.now() -
+            measurementStartTime
+          ) / 1000
         )
       : 0;
 
+
   const estimatedSleepSeconds =
-    (stillCount + smallCount) *
-    10;
+    (
+      stillCount +
+      smallCount
+    ) * 10;
+
 
   const sleepHours =
-    estimatedSleepSeconds / 3600;
+    estimatedSleepSeconds /
+    3600;
+
 
   let score = 0;
 
+
   /*
-     中高生の目安として8～10時間に
-     近いほど評価する。
+    8～10時間に近いほど
+    高く評価
   */
 
   if (
@@ -1196,23 +1649,37 @@ function calculateResult() {
 
   }
 
+
   const total =
     stillCount +
     smallCount +
     largeCount;
+
 
   const movementRate =
     total > 0
       ? largeCount / total
       : 0;
 
-  if (movementRate < 0.1) {
+
+  if (
+    movementRate < 0.1
+  ) {
+
     score += 30;
-  } else if (movementRate < 0.2) {
+
+  } else if (
+    movementRate < 0.2
+  ) {
+
     score += 20;
+
   } else {
+
     score += 10;
+
   }
+
 
   const averageVolume =
     measurementData.length > 0
@@ -1220,37 +1687,75 @@ function calculateResult() {
           (sum, item) =>
             sum + item.volume,
           0
-        ) / measurementData.length
+        ) /
+        measurementData.length
       : 0;
 
-  if (averageVolume < 0.05) {
+
+  if (
+    averageVolume < 0.05
+  ) {
+
     score += 10;
-  } else if (averageVolume < 0.1) {
+
+  } else if (
+    averageVolume < 0.1
+  ) {
+
     score += 5;
+
   }
+
 
   score =
     Math.max(
       0,
-      Math.min(100, Math.round(score))
+      Math.min(
+        100,
+        Math.round(score)
+      )
     );
 
+
   return {
-    date: todayString(),
-    timestamp: new Date().toISOString(),
-    durationSeconds: duration,
+
+    date:
+      todayString(),
+
+    timestamp:
+      new Date().toISOString(),
+
+    durationSeconds:
+      duration,
+
     estimatedSleepSeconds:
       estimatedSleepSeconds,
+
     sleepHours:
-      Number(sleepHours.toFixed(2)),
-    score: score,
-    stillCount: stillCount,
-    smallCount: smallCount,
-    largeCount: largeCount,
+      Number(
+        sleepHours.toFixed(2)
+      ),
+
+    score:
+      score,
+
+    stillCount:
+      stillCount,
+
+    smallCount:
+      smallCount,
+
+    largeCount:
+      largeCount,
+
     averageVolume:
-      Number(averageVolume.toFixed(4)),
+      Number(
+        averageVolume.toFixed(4)
+      ),
+
     samples:
       measurementData
+
   };
 
 }
@@ -1261,29 +1766,39 @@ function renderResult(result) {
   document.getElementById(
     "resultArea"
   ).innerHTML = `
-    <p><strong>睡眠時間の推定：</strong>
+
+    <p>
+      <strong>睡眠時間の推定：</strong>
       ${result.sleepHours}時間
     </p>
 
-    <p><strong>睡眠スコア：</strong>
+    <p>
+      <strong>睡眠スコア：</strong>
       ${result.score} / 100
     </p>
 
-    <p><strong>測定時間：</strong>
-      ${formatDuration(result.durationSeconds)}
+    <p>
+      <strong>測定時間：</strong>
+      ${formatDuration(
+        result.durationSeconds
+      )}
     </p>
 
-    <p><strong>静止：</strong>
+    <p>
+      <strong>静止：</strong>
       ${result.stillCount}回
     </p>
 
-    <p><strong>小さな動き：</strong>
+    <p>
+      <strong>小さな動き：</strong>
       ${result.smallCount}回
     </p>
 
-    <p><strong>大きな動き：</strong>
+    <p>
+      <strong>大きな動き：</strong>
       ${result.largeCount}回
     </p>
+
   `;
 
 }
@@ -1293,14 +1808,20 @@ function renderResult(result) {
    Firestore
 ========================= */
 
-async function saveResultToFirestore(result) {
+async function saveResultToFirestore(
+  result
+) {
 
   if (!currentUser) {
+
     console.warn(
       "Firebaseユーザーがありません"
     );
+
     return;
+
   }
+
 
   try {
 
@@ -1313,10 +1834,12 @@ async function saveResultToFirestore(result) {
         result.date
       );
 
+
     await setDoc(
       measurementRef,
       result
     );
+
 
     console.log(
       "測定結果をFirestoreへ保存しました"
@@ -1338,6 +1861,7 @@ async function saveProfileToFirestore() {
 
   if (!currentUser) return;
 
+
   try {
 
     const profileRef =
@@ -1347,10 +1871,13 @@ async function saveProfileToFirestore() {
         currentUser.uid
       );
 
+
     await setDoc(
       profileRef,
       profile,
-      { merge: true }
+      {
+        merge: true
+      }
     );
 
   } catch (error) {
@@ -1369,6 +1896,7 @@ async function loadFromFirestore() {
 
   if (!currentUser) return;
 
+
   try {
 
     const profileRef =
@@ -1378,17 +1906,27 @@ async function loadFromFirestore() {
         currentUser.uid
       );
 
-    const profileSnapshot =
-      await getDoc(profileRef);
 
-    if (profileSnapshot.exists()) {
+    const profileSnapshot =
+      await getDoc(
+        profileRef
+      );
+
+
+    if (
+      profileSnapshot.exists()
+    ) {
 
       profile = {
+
         ...profile,
+
         ...profileSnapshot.data()
+
       };
 
     }
+
 
     const measurementsRef =
       collection(
@@ -1398,24 +1936,34 @@ async function loadFromFirestore() {
         "measurements"
       );
 
+
     const q =
       query(
         measurementsRef,
-        orderBy("timestamp", "desc")
+        orderBy(
+          "timestamp",
+          "desc"
+        )
       );
+
 
     const snapshot =
       await getDocs(q);
 
+
     measurements = [];
+
 
     snapshot.forEach(
       item => {
+
         measurements.push(
           item.data()
         );
+
       }
     );
+
 
   } catch (error) {
 
@@ -1433,19 +1981,27 @@ async function loadFromFirestore() {
    Streak
 ========================= */
 
-function updateStreak(result) {
+function updateStreak(
+  result
+) {
 
   const date =
     result.date;
 
+
   if (
-    profile.lastMeasurementDate === date
+    profile.lastMeasurementDate ===
+    date
   ) {
+
     return;
+
   }
+
 
   const previous =
     profile.lastMeasurementDate;
+
 
   if (!previous) {
 
@@ -1459,16 +2015,25 @@ function updateStreak(result) {
     const currentDate =
       new Date(date);
 
+
     const diff =
       Math.round(
         (
           currentDate -
           previousDate
         ) /
-        (1000 * 60 * 60 * 24)
+        (
+          1000 *
+          60 *
+          60 *
+          24
+        )
       );
 
-    if (diff === 1) {
+
+    if (
+      diff === 1
+    ) {
 
       profile.currentStreak++;
 
@@ -1480,19 +2045,27 @@ function updateStreak(result) {
 
   }
 
+
   profile.bestStreak =
     Math.max(
       profile.bestStreak,
       profile.currentStreak
     );
 
+
   profile.totalDays++;
 
+
   profile.xp +=
-    10 + Math.round(result.score / 10);
+    10 +
+    Math.round(
+      result.score / 10
+    );
+
 
   profile.lastMeasurementDate =
     date;
+
 
   saveProfileToFirestore();
 
@@ -1510,20 +2083,24 @@ function renderDashboard() {
   ).textContent =
     `${profile.currentStreak}日`;
 
+
   document.getElementById(
     "bestStreak"
   ).textContent =
     `${profile.bestStreak}日`;
+
 
   document.getElementById(
     "totalDays"
   ).textContent =
     `${profile.totalDays}日`;
 
+
   document.getElementById(
     "xpValue"
   ).textContent =
     profile.xp;
+
 
   renderAchievements();
 
@@ -1542,6 +2119,7 @@ function renderAchievements() {
     document.getElementById(
       "achievements"
     );
+
 
   const achievements = [
 
@@ -1577,19 +2155,27 @@ function renderAchievements() {
 
   ];
 
+
   area.innerHTML =
-    achievements.map(
-      achievement => `
-        <span class="badge">
-          ${
-            achievement.condition
-              ? "✓ "
-              : "🔒 "
-          }
-          ${achievement.name}
-        </span>
-      `
-    ).join("");
+    achievements
+      .map(
+        achievement => `
+
+          <span class="badge">
+
+            ${
+              achievement.condition
+                ? "✓ "
+                : "🔒 "
+            }
+
+            ${achievement.name}
+
+          </span>
+
+        `
+      )
+      .join("");
 
 }
 
@@ -1605,26 +2191,35 @@ function renderHistory() {
       "history"
     );
 
-  if (measurements.length === 0) {
+
+  if (
+    measurements.length === 0
+  ) {
 
     area.innerHTML =
       "<p class='small'>測定履歴はありません。</p>";
 
     return;
+
   }
+
 
   area.innerHTML =
     measurements
       .slice()
       .sort(
         (a, b) =>
-          String(b.timestamp)
-            .localeCompare(
-              String(a.timestamp)
+          String(
+            b.timestamp
+          ).localeCompare(
+            String(
+              a.timestamp
             )
+          )
       )
       .map(
         item => `
+
           <div class="history-item">
 
             <strong>
@@ -1649,6 +2244,7 @@ function renderHistory() {
             </div>
 
           </div>
+
         `
       )
       .join("");
@@ -1662,16 +2258,21 @@ function renderHistory() {
 
 function exportCSV() {
 
-  if (measurements.length === 0) {
+  if (
+    measurements.length === 0
+  ) {
 
     alert(
       "出力できる測定データがありません。"
     );
 
     return;
+
   }
 
+
   const header = [
+
     "date",
     "sleepHours",
     "score",
@@ -1680,11 +2281,14 @@ function exportCSV() {
     "smallCount",
     "largeCount",
     "averageVolume"
+
   ];
+
 
   const rows =
     measurements.map(
       item => [
+
         item.date,
         item.sleepHours,
         item.score,
@@ -1693,45 +2297,71 @@ function exportCSV() {
         item.smallCount,
         item.largeCount,
         item.averageVolume
+
       ]
     );
 
+
   const csv = [
+
     header,
     ...rows
+
   ]
     .map(
       row =>
-        row.map(
-          value =>
-            `"${String(value ?? "")
-              .replaceAll('"', '""')}"`
-        ).join(",")
+        row
+          .map(
+            value =>
+              `"${String(
+                value ?? ""
+              ).replaceAll(
+                '"',
+                '""'
+              )}"`
+          )
+          .join(",")
     )
     .join("\n");
 
+
   const blob =
     new Blob(
-      ["\ufeff" + csv],
+      [
+        "\ufeff" + csv
+      ],
       {
-        type: "text/csv;charset=utf-8;"
+        type:
+          "text/csv;charset=utf-8;"
       }
     );
 
+
   const url =
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
+
 
   const a =
-    document.createElement("a");
+    document.createElement(
+      "a"
+    );
+
 
   a.href = url;
+
 
   a.download =
     `sleep-data-${todayString()}.csv`;
 
+
   a.click();
 
-  URL.revokeObjectURL(url);
+
+  URL.revokeObjectURL(
+    url
+  );
 
 }
 
@@ -1747,8 +2377,11 @@ async function resetAllData() {
       "本当に全データを削除しますか？"
     )
   ) {
+
     return;
+
   }
+
 
   if (!currentUser) {
 
@@ -1757,7 +2390,9 @@ async function resetAllData() {
     );
 
     return;
+
   }
+
 
   try {
 
@@ -1769,37 +2404,53 @@ async function resetAllData() {
         "measurements"
       );
 
+
     const snapshot =
       await getDocs(
         measurementsRef
       );
 
+
     for (
       const item of snapshot.docs
     ) {
 
-      await deleteDoc(item.ref);
+      await deleteDoc(
+        item.ref
+      );
 
     }
 
+
     profile = {
+
       xp: 0,
+
       currentStreak: 0,
+
       bestStreak: 0,
+
       totalDays: 0,
+
       lastMeasurementDate: null
+
     };
+
 
     measurements = [];
 
+
     await saveProfileToFirestore();
 
+
     renderDashboard();
+
 
     document.getElementById(
       "resultArea"
     ).textContent =
       "データをリセットしました。";
+
 
   } catch (error) {
 
@@ -1807,6 +2458,7 @@ async function resetAllData() {
       "リセットエラー:",
       error
     );
+
 
     alert(
       "データのリセットに失敗しました。"
@@ -1828,6 +2480,7 @@ document.getElementById(
   startMeasurement
 );
 
+
 document.getElementById(
   "stopButton"
 ).addEventListener(
@@ -1835,12 +2488,14 @@ document.getElementById(
   stopMeasurement
 );
 
+
 document.getElementById(
   "csvButton"
 ).addEventListener(
   "click",
   exportCSV
 );
+
 
 document.getElementById(
   "resetButton"
