@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -236,6 +237,7 @@
 <div class="container">
 
   <h1>睡眠センサー v9</h1>
+
   <div class="subtitle">
     加速度センサー＋マイクで睡眠状態を記録
   </div>
@@ -288,6 +290,7 @@
     </div>
 
     <div style="margin-top:15px;">
+
       <button id="startButton" class="primary">
         測定開始
       </button>
@@ -295,6 +298,7 @@
       <button id="stopButton" disabled>
         測定停止
       </button>
+
     </div>
   </div>
 
@@ -317,6 +321,7 @@
     <h2>レベル・XP</h2>
 
     <div class="grid">
+
       <div class="stat">
         <div class="stat-title">レベル</div>
         <div id="level" class="stat-value">Lv.1</div>
@@ -331,6 +336,7 @@
         <div class="stat-title">ストリーク</div>
         <div id="streak" class="stat-value">0日</div>
       </div>
+
     </div>
 
     <div class="xpbar">
@@ -374,11 +380,10 @@
 
 </div>
 
-
 <script type="module">
 
 /* =========================================================
-   Firebase
+   Firebase SDK
 ========================================================= */
 
 import {
@@ -411,23 +416,12 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-
-  apiKey: "YOUR_FIREBASE_API_KEY",
-
-  authDomain:
-    "sleep-sensor-af01f.firebaseapp.com",
-
-  projectId:
-    "sleep-sensor-af01f",
-
-  storageBucket:
-    "sleep-sensor-af01f.firebasestorage.app",
-
-  messagingSenderId:
-    "ここに既存のmessagingSenderId",
-
-  appId:
-    "ここに既存のappId"
+  apiKey: "AIzaSyBhfOVk4K5Ybjji16b1ZKRqXd1UJGypH9Y",
+  authDomain: "sleep-sensor-af01f.firebaseapp.com",
+  projectId: "sleep-sensor-af01f",
+  storageBucket: "sleep-sensor-af01f.firebasestorage.app",
+  messagingSenderId: "86707291255",
+  appId: "1:86707291255:web:01e2e67fa63c3513503272"
 };
 
 
@@ -457,7 +451,6 @@ const STORAGE_KEY =
 const OLD_STORAGE_KEY =
   "sleepSensorV8";
 
-
 const defaultSaveData = {
   xp: 0,
   achievements: [],
@@ -483,7 +476,6 @@ function loadLocalData() {
       };
     }
 
-
     const old =
       localStorage.getItem(OLD_STORAGE_KEY);
 
@@ -498,7 +490,6 @@ function loadLocalData() {
       };
     }
 
-
   } catch (error) {
 
     console.error(
@@ -506,7 +497,6 @@ function loadLocalData() {
       error
     );
   }
-
 
   return {
     ...defaultSaveData
@@ -631,7 +621,7 @@ function setFirebaseStatus(
 
 
 /* =========================================================
-   Firebase認証
+   Firebase匿名認証
 ========================================================= */
 
 async function initializeAuthentication() {
@@ -647,14 +637,12 @@ async function initializeAuthentication() {
     currentUser =
       auth.currentUser;
 
-
     if (!currentUser) {
 
       throw new Error(
         "Firebaseユーザーを取得できませんでした"
       );
     }
-
 
     console.log(
       "Firebase認証成功"
@@ -665,18 +653,14 @@ async function initializeAuthentication() {
       currentUser.uid
     );
 
-
     setFirebaseStatus(
       "Firebase認証済み",
       "ok"
     );
 
-
     await loadFromFirestore();
 
-
     renderDashboard();
-
 
   } catch (error) {
 
@@ -712,7 +696,6 @@ async function saveResultToFirestore(
     return;
   }
 
-
   try {
 
     const resultRef =
@@ -724,7 +707,6 @@ async function saveResultToFirestore(
         result.date
       );
 
-
     await setDoc(
       resultRef,
       result,
@@ -733,11 +715,9 @@ async function saveResultToFirestore(
       }
     );
 
-
     console.log(
       "測定結果をFirestoreに保存しました"
     );
-
 
   } catch (error) {
 
@@ -759,7 +739,6 @@ async function saveProfileToFirestore() {
     return;
   }
 
-
   try {
 
     const profileRef =
@@ -768,7 +747,6 @@ async function saveProfileToFirestore() {
         "users",
         currentUser.uid
       );
-
 
     await setDoc(
       profileRef,
@@ -785,7 +763,6 @@ async function saveProfileToFirestore() {
         merge: true
       }
     );
-
 
   } catch (error) {
 
@@ -807,16 +784,13 @@ async function loadFromFirestore() {
     return;
   }
 
-
   try {
 
     const uid =
       currentUser.uid;
 
 
-    /* -------------------------
-       プロフィール
-    ------------------------- */
+    /* プロフィール */
 
     const profileRef =
       doc(
@@ -825,16 +799,13 @@ async function loadFromFirestore() {
         uid
       );
 
-
     const profileSnap =
       await getDoc(profileRef);
-
 
     if (profileSnap.exists()) {
 
       const profile =
         profileSnap.data();
-
 
       if (
         typeof profile.xp ===
@@ -844,7 +815,6 @@ async function loadFromFirestore() {
         saveData.xp =
           profile.xp;
       }
-
 
       if (
         Array.isArray(
@@ -858,9 +828,7 @@ async function loadFromFirestore() {
     }
 
 
-    /* -------------------------
-       測定履歴
-    ------------------------- */
+    /* 測定履歴 */
 
     const measurementsRef =
       collection(
@@ -869,7 +837,6 @@ async function loadFromFirestore() {
         uid,
         "measurements"
       );
-
 
     const q =
       query(
@@ -880,14 +847,11 @@ async function loadFromFirestore() {
         )
       );
 
-
     const snapshot =
       await getDocs(q);
 
-
     const cloudHistory =
       [];
-
 
     snapshot.forEach(
       (document) => {
@@ -898,11 +862,6 @@ async function loadFromFirestore() {
       }
     );
 
-
-    /*
-      クラウドに履歴が存在する場合は
-      クラウドを優先する。
-    */
 
     if (
       cloudHistory.length > 0
@@ -915,16 +874,9 @@ async function loadFromFirestore() {
       saveData.history.length > 0
     ) {
 
-      /*
-        v8から引き継いだ
-        LocalStorageデータがあれば
-        新しいユーザー領域へ移行
-      */
-
       console.log(
         "ローカル履歴をFirestoreへ移行します"
       );
-
 
       for (
         const result
@@ -936,18 +888,15 @@ async function loadFromFirestore() {
         );
       }
 
-
       await saveProfileToFirestore();
     }
 
 
     saveLocalData();
 
-
     console.log(
       "Firestore読み込み完了"
     );
-
 
   } catch (error) {
 
@@ -965,7 +914,7 @@ async function loadFromFirestore() {
 
 
 /* =========================================================
-   センサー
+   加速度センサー
 ========================================================= */
 
 function handleMotion(event) {
@@ -974,15 +923,12 @@ function handleMotion(event) {
     return;
   }
 
-
   const acceleration =
     event.accelerationIncludingGravity;
-
 
   if (!acceleration) {
     return;
   }
-
 
   const x =
     acceleration.x || 0;
@@ -992,7 +938,6 @@ function handleMotion(event) {
 
   const z =
     acceleration.z || 0;
-
 
   if (!lastMotion) {
 
@@ -1005,7 +950,6 @@ function handleMotion(event) {
     return;
   }
 
-
   const dx =
     x - lastMotion.x;
 
@@ -1015,7 +959,6 @@ function handleMotion(event) {
   const dz =
     z - lastMotion.z;
 
-
   const movement =
     Math.sqrt(
       dx * dx +
@@ -1023,18 +966,15 @@ function handleMotion(event) {
       dz * dz
     );
 
-
   lastMotion = {
     x,
     y,
     z
   };
 
-
   movementHistory.push(
     movement
   );
-
 
   if (
     movementHistory.length > 3
@@ -1043,7 +983,6 @@ function handleMotion(event) {
     movementHistory.shift();
   }
 
-
   const smoothedMovement =
     movementHistory.reduce(
       (a, b) => a + b,
@@ -1051,19 +990,18 @@ function handleMotion(event) {
     ) /
     movementHistory.length;
 
-
   currentMovement.textContent =
     smoothedMovement.toFixed(2);
 
-
   currentInterval.push({
+
     time:
       new Date().toISOString(),
 
     movement:
       smoothedMovement
-  });
 
+  });
 
   drawChart();
 }
@@ -1095,32 +1033,26 @@ async function setupMicrophone() {
         }
       );
 
-
     audioContext =
       new (
         window.AudioContext ||
         window.webkitAudioContext
       )();
 
-
     analyser =
       audioContext.createAnalyser();
 
-
     analyser.fftSize =
       1024;
-
 
     microphoneSource =
       audioContext.createMediaStreamSource(
         microphoneStream
       );
 
-
     microphoneSource.connect(
       analyser
     );
-
 
     micStatus.textContent =
       "マイク接続済み";
@@ -1128,9 +1060,7 @@ async function setupMicrophone() {
     micStatus.className =
       "status ok";
 
-
     monitorMicrophone();
-
 
   } catch (error) {
 
@@ -1139,10 +1069,8 @@ async function setupMicrophone() {
       error
     );
 
-
     micStatus.textContent =
       "マイクを使用できません";
-
 
     micStatus.className =
       "status warn";
@@ -1156,12 +1084,10 @@ function monitorMicrophone() {
     return;
   }
 
-
   const buffer =
     new Uint8Array(
       analyser.fftSize
     );
-
 
   function loop() {
 
@@ -1169,16 +1095,13 @@ function monitorMicrophone() {
       return;
     }
 
-
     analyser.getByteTimeDomainData(
       buffer
     );
 
-
     let sum = 0;
 
     let peak = 0;
-
 
     for (
       let i = 0;
@@ -1190,8 +1113,8 @@ function monitorMicrophone() {
         (buffer[i] - 128) /
         128;
 
-
-      sum += value * value;
+      sum +=
+        value * value;
 
       peak =
         Math.max(
@@ -1200,24 +1123,19 @@ function monitorMicrophone() {
         );
     }
 
-
     const rms =
       Math.sqrt(
         sum / buffer.length
       );
 
-
     const volume =
       rms * 100;
-
 
     currentVolume.textContent =
       volume.toFixed(2);
 
-
     const now =
       Date.now();
-
 
     if (
       volume >= 3 &&
@@ -1230,27 +1148,26 @@ function monitorMicrophone() {
       lastSoundEventTime =
         now;
 
-
       soundEventsElement.textContent =
         soundEvents;
     }
 
-
     currentInterval.push({
+
       time:
         new Date().toISOString(),
 
       volume,
-      peak
-    });
 
+      peak
+
+    });
 
     microphoneAnimation =
       requestAnimationFrame(
         loop
       );
   }
-
 
   loop();
 }
@@ -1268,7 +1185,6 @@ function summarize10Seconds() {
   const now =
     Date.now();
 
-
   if (
     now - lastSummaryTime <
     10000
@@ -1277,7 +1193,6 @@ function summarize10Seconds() {
     return;
   }
 
-
   if (
     currentInterval.length === 0
   ) {
@@ -1285,34 +1200,32 @@ function summarize10Seconds() {
     return;
   }
 
-
   lastSummaryTime =
     now;
-
 
   const movementValues =
     currentInterval
       .map(
-        item => item.movement
+        item =>
+          item.movement
       )
       .filter(
         value =>
           typeof value ===
           "number"
       );
-
 
   const volumeValues =
     currentInterval
       .map(
-        item => item.volume
+        item =>
+          item.volume
       )
       .filter(
         value =>
           typeof value ===
           "number"
       );
-
 
   const averageMovement =
     movementValues.length
@@ -1323,14 +1236,12 @@ function summarize10Seconds() {
         movementValues.length
       : 0;
 
-
   const maxMovement =
     movementValues.length
       ? Math.max(
           ...movementValues
         )
       : 0;
-
 
   const averageVolume =
     volumeValues.length
@@ -1341,13 +1252,11 @@ function summarize10Seconds() {
         volumeValues.length
       : 0;
 
-
   let stillCount = 0;
 
   let smallCount = 0;
 
   let largeCount = 0;
-
 
   for (
     const value
@@ -1370,7 +1279,6 @@ function summarize10Seconds() {
     }
   }
 
-
   const summary = {
 
     timestamp:
@@ -1387,13 +1295,12 @@ function summarize10Seconds() {
     smallCount,
 
     largeCount
-  };
 
+  };
 
   summaryData.push(
     summary
   );
-
 
   currentInterval = [];
 }
@@ -1412,7 +1319,6 @@ function drawChart() {
     canvas.height
   );
 
-
   if (
     movementHistory.length === 0
   ) {
@@ -1420,10 +1326,8 @@ function drawChart() {
     return;
   }
 
-
   const data =
     movementHistory;
-
 
   const max =
     Math.max(
@@ -1431,27 +1335,31 @@ function drawChart() {
       ...data
     );
 
-
   ctx.beginPath();
-
 
   data.forEach(
     (value, index) => {
 
       const x =
-        (index /
+        (
+          index /
           Math.max(
             1,
             data.length - 1
-          )) *
+          )
+        ) *
         canvas.width;
-
 
       const y =
         canvas.height -
-        (value / max) *
-        (canvas.height - 20);
-
+        (
+          value /
+          max
+        ) *
+        (
+          canvas.height -
+          20
+        );
 
       if (index === 0) {
 
@@ -1470,7 +1378,6 @@ function drawChart() {
     }
   );
 
-
   ctx.stroke();
 }
 
@@ -1484,7 +1391,6 @@ async function startMeasurement() {
   if (isMeasuring) {
     return;
   }
-
 
   rawData = [];
 
@@ -1504,13 +1410,10 @@ async function startMeasurement() {
 
   lastMotion = null;
 
-
   measurementStartTime =
     Date.now();
 
-
   isMeasuring = true;
-
 
   startButton.disabled =
     true;
@@ -1518,13 +1421,11 @@ async function startMeasurement() {
   stopButton.disabled =
     false;
 
-
   sensorStatus.textContent =
     "センサー測定中";
 
   sensorStatus.className =
     "status ok";
-
 
   soundEventsElement.textContent =
     "0";
@@ -1541,7 +1442,6 @@ async function startMeasurement() {
 
       const permission =
         await DeviceMotionEvent.requestPermission();
-
 
       if (
         permission !== "granted"
@@ -1588,10 +1488,8 @@ async function startMeasurement() {
             ) / 1000
           );
 
-
         measureTime.textContent =
           elapsed + "秒";
-
 
         const latestMovement =
           movementHistory.length
@@ -1600,12 +1498,10 @@ async function startMeasurement() {
               ]
             : 0;
 
-
         const latestVolume =
           parseFloat(
             currentVolume.textContent
           ) || 0;
-
 
         rawData.push({
 
@@ -1619,8 +1515,8 @@ async function startMeasurement() {
 
           volume:
             latestVolume
-        });
 
+        });
 
         summarize10Seconds();
 
@@ -1642,18 +1538,14 @@ async function stopMeasurement() {
     return;
   }
 
-
   isMeasuring = false;
-
 
   clearInterval(
     measurementTimer
   );
 
-
   measurementTimer =
     null;
-
 
   if (
     microphoneAnimation
@@ -1667,7 +1559,6 @@ async function stopMeasurement() {
       null;
   }
 
-
   if (
     microphoneStream
   ) {
@@ -1680,14 +1571,15 @@ async function stopMeasurement() {
       );
   }
 
-
   if (audioContext) {
 
     try {
-      await audioContext.close();
-    } catch {}
-  }
 
+      await audioContext.close();
+
+    } catch {}
+
+  }
 
   audioContext =
     null;
@@ -1701,12 +1593,10 @@ async function stopMeasurement() {
   microphoneStream =
     null;
 
-
   window.removeEventListener(
     "devicemotion",
     handleMotion
   );
-
 
   startButton.disabled =
     false;
@@ -1714,13 +1604,11 @@ async function stopMeasurement() {
   stopButton.disabled =
     true;
 
-
   sensorStatus.textContent =
     "測定停止";
 
   sensorStatus.className =
     "status";
-
 
   calculateResult();
 }
@@ -1745,7 +1633,6 @@ function calculateResult() {
         )
       : 0;
 
-
   if (
     elapsedSeconds <= 0
   ) {
@@ -1753,11 +1640,6 @@ function calculateResult() {
     return;
   }
 
-
-  /*
-    10秒ごとの集計を
-    最後にもう一度行う
-  */
 
   summarize10Seconds();
 
@@ -1805,21 +1687,12 @@ function calculateResult() {
       : 0;
 
 
-  /*
-    簡易睡眠時間推定
-  */
-
   const sleepSeconds =
     (
       stillCount +
       smallCount
     ) * 10;
 
-
-  /*
-    実際の測定時間を
-    超えないようにする
-  */
 
   const estimatedSleepSeconds =
     Math.min(
@@ -1833,9 +1706,7 @@ function calculateResult() {
     3600;
 
 
-  /* -------------------------
-     睡眠時間スコア
-  ------------------------- */
+  /* 睡眠時間スコア */
 
   let durationScore = 100;
 
@@ -1866,9 +1737,7 @@ function calculateResult() {
     );
 
 
-  /* -------------------------
-     動きスコア
-  ------------------------- */
+  /* 動きスコア */
 
   let movementScore =
     stillRatio * 100;
@@ -1889,9 +1758,7 @@ function calculateResult() {
     );
 
 
-  /* -------------------------
-     音スコア
-  ------------------------- */
+  /* 音スコア */
 
   const soundEventsPerHour =
     hours > 0
@@ -1914,9 +1781,7 @@ function calculateResult() {
     );
 
 
-  /* -------------------------
-     総合スコア
-  ------------------------- */
+  /* 総合スコア */
 
   const overallScore =
     Math.round(
@@ -1926,9 +1791,7 @@ function calculateResult() {
     );
 
 
-  /* -------------------------
-     評価
-  ------------------------- */
+  /* 評価 */
 
   let evaluation = "";
 
@@ -2101,9 +1964,13 @@ const achievements = [
 
   {
     id: "first",
-    title: "はじめの一歩",
+
+    title:
+      "はじめの一歩",
+
     description:
       "60秒以上測定する",
+
     xp: 50,
 
     check:
@@ -2115,9 +1982,13 @@ const achievements = [
 
   {
     id: "30min",
-    title: "30分測定",
+
+    title:
+      "30分測定",
+
     description:
       "30分以上測定する",
+
     xp: 50,
 
     check:
@@ -2129,9 +2000,13 @@ const achievements = [
 
   {
     id: "1hour",
-    title: "1時間測定",
+
+    title:
+      "1時間測定",
+
     description:
       "1時間以上測定する",
+
     xp: 100,
 
     check:
@@ -2143,9 +2018,13 @@ const achievements = [
 
   {
     id: "8hour",
-    title: "8時間測定",
+
+    title:
+      "8時間測定",
+
     description:
       "8時間以上測定する",
+
     xp: 200,
 
     check:
@@ -2157,9 +2036,13 @@ const achievements = [
 
   {
     id: "sleep8",
-    title: "しっかり睡眠",
+
+    title:
+      "しっかり睡眠",
+
     description:
       "推定睡眠時間が8時間以上",
+
     xp: 150,
 
     check:
@@ -2171,9 +2054,13 @@ const achievements = [
 
   {
     id: "quiet",
-    title: "静かな夜",
+
+    title:
+      "静かな夜",
+
     description:
       "1時間以上測定し、音イベントを少なくする",
+
     xp: 100,
 
     check:
@@ -2189,9 +2076,13 @@ const achievements = [
 
   {
     id: "stable",
-    title: "安定した睡眠",
+
+    title:
+      "安定した睡眠",
+
     description:
       "1時間以上測定し、大きな動きを少なくする",
+
     xp: 100,
 
     check:
@@ -2203,9 +2094,13 @@ const achievements = [
 
   {
     id: "score90",
-    title: "睡眠マスター",
+
+    title:
+      "睡眠マスター",
+
     description:
       "1時間以上測定してスコア90以上",
+
     xp: 200,
 
     check:
@@ -2217,9 +2112,13 @@ const achievements = [
 
   {
     id: "streak3",
-    title: "3日継続",
+
+    title:
+      "3日継続",
+
     description:
       "3日連続で記録する",
+
     xp: 100,
 
     check:
@@ -2230,9 +2129,13 @@ const achievements = [
 
   {
     id: "streak7",
-    title: "7日継続",
+
+    title:
+      "7日継続",
+
     description:
       "7日連続で記録する",
+
     xp: 300,
 
     check:
@@ -2243,9 +2146,13 @@ const achievements = [
 
   {
     id: "streak14",
-    title: "14日継続",
+
+    title:
+      "14日継続",
+
     description:
       "14日連続で記録する",
+
     xp: 500,
 
     check:
@@ -2256,9 +2163,13 @@ const achievements = [
 
   {
     id: "streak30",
-    title: "30日継続",
+
+    title:
+      "30日継続",
+
     description:
       "30日連続で記録する",
+
     xp: 1000,
 
     check:
@@ -2314,10 +2225,8 @@ function checkAchievements(result) {
         achievement.id
       );
 
-
       saveData.xp +=
         achievement.xp;
-
 
       console.log(
         "実績解除:",
@@ -2348,7 +2257,8 @@ function calculateStreak() {
   const dates =
     saveData.history
       .map(
-        item => item.date
+        item =>
+          item.date
       )
       .sort(
         (a, b) =>
@@ -2437,6 +2347,7 @@ function renderResult(result) {
     <div class="grid">
 
       <div class="stat">
+
         <div class="stat-title">
           測定時間
         </div>
@@ -2446,10 +2357,12 @@ function renderResult(result) {
             result.elapsedSeconds
           )}
         </div>
+
       </div>
 
 
       <div class="stat">
+
         <div class="stat-title">
           推定睡眠時間
         </div>
@@ -2459,10 +2372,12 @@ function renderResult(result) {
             result.sleepSeconds
           )}
         </div>
+
       </div>
 
 
       <div class="stat">
+
         <div class="stat-title">
           睡眠時間スコア
         </div>
@@ -2470,10 +2385,12 @@ function renderResult(result) {
         <div class="stat-value">
           ${result.durationScore}
         </div>
+
       </div>
 
 
       <div class="stat">
+
         <div class="stat-title">
           動きスコア
         </div>
@@ -2481,10 +2398,12 @@ function renderResult(result) {
         <div class="stat-value">
           ${result.movementScore}
         </div>
+
       </div>
 
 
       <div class="stat">
+
         <div class="stat-title">
           音スコア
         </div>
@@ -2492,10 +2411,12 @@ function renderResult(result) {
         <div class="stat-value">
           ${result.soundScore}
         </div>
+
       </div>
 
 
       <div class="stat">
+
         <div class="stat-title">
           音イベント
         </div>
@@ -2503,6 +2424,7 @@ function renderResult(result) {
         <div class="stat-value">
           ${result.soundEvents}
         </div>
+
       </div>
 
     </div>
@@ -2594,17 +2516,28 @@ function renderAchievements() {
     div.innerHTML = `
 
       <div class="achievement-title">
+
         ${
           unlocked
             ? "✓ "
             : "○ "
         }
+
         ${achievement.title}
+
       </div>
 
+
       <div class="achievement-desc">
+
         ${achievement.description}
-        ／ ${achievement.xp} XP
+
+        ／
+
+        ${achievement.xp}
+
+        XP
+
       </div>
 
     `;
@@ -2628,9 +2561,11 @@ function renderHistory() {
   ) {
 
     historyArea.innerHTML = `
+
       <div class="big-message">
         まだ履歴がありません
       </div>
+
     `;
 
     return;
@@ -2671,7 +2606,9 @@ function renderHistory() {
       </div>
 
       <div class="small">
+
         測定：
+
         ${formatTime(
           result.elapsedSeconds
         )}
@@ -2679,6 +2616,7 @@ function renderHistory() {
         ／
 
         推定睡眠：
+
         ${formatTime(
           result.sleepSeconds
         )}
@@ -2686,7 +2624,9 @@ function renderHistory() {
         ／
 
         音イベント：
+
         ${result.soundEvents}
+
       </div>
 
     `;
@@ -2894,10 +2834,6 @@ async function deleteAllCloudData() {
     currentUser.uid;
 
 
-  /* -------------------------
-     measurements削除
-  ------------------------- */
-
   const measurementsRef =
     collection(
       db,
@@ -2923,10 +2859,6 @@ async function deleteAllCloudData() {
     );
   }
 
-
-  /* -------------------------
-     profile削除
-  ------------------------- */
 
   const profileRef =
     doc(
@@ -3009,10 +2941,13 @@ document
 
 
       resultArea.innerHTML = `
+
         <div class="big-message">
           今回の測定データをリセットしました
         </div>
+
       `;
+
     }
   );
 
@@ -3056,9 +2991,13 @@ document
 
 
         saveData = {
+
           xp: 0,
+
           achievements: [],
+
           history: []
+
         };
 
 
@@ -3079,11 +3018,6 @@ document
         );
 
 
-        /*
-          Firebaseの匿名ユーザー自体は
-          削除せず、そのまま利用する。
-        */
-
         await saveProfileToFirestore();
 
 
@@ -3100,6 +3034,7 @@ document
           error.message
         );
       }
+
     }
   );
 
@@ -3132,6 +3067,7 @@ document
         rawData,
         "sleep_raw.csv"
       );
+
     }
   );
 
@@ -3148,6 +3084,7 @@ document
         summaryData,
         "sleep_10sec_summary.csv"
       );
+
     }
   );
 
@@ -3165,8 +3102,8 @@ renderDashboard();
 
 initializeAuthentication();
 
-
 </script>
 
 </body>
 </html>
+```
