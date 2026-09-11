@@ -474,6 +474,9 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  linkWithRedirect,
+  getRedirectResult,
   signInAnonymously,
   onAuthStateChanged,
   signOut
@@ -538,6 +541,9 @@ let smallCount = 0;
 let largeCount = 0;
 let soundEvents = 0;
 let lastSoundTime = 0;
+let soundAboveSince = 0;
+let soundPeakSince = 0;
+let lastSoundVolume = 0;
 
 /* =========================
    DOM
@@ -726,29 +732,66 @@ async function loadFromFirestore() {
   try {
     const snap = await getDoc(doc(db, "users", firebaseUser.uid));
 
-    if (!snap.exists()) return;
+    if (!snap.exists()) {
+      // Googleアカウント側にまだデータがない場合は、端末のデータをそのまま保存
+      await saveToFirestore();
+      return;
+    }
 
     const remote = snap.data();
 
-    if (Array.isArray(remote.history)) {
-      saveData.history = remote.history;
+    // 端末側とクラウド側を日付で統合。新しい記録を優先する。
+    const historyMap = new Map();
+
+    for (const item of (Array.isArray(remote.history) ? remote.history : [])) {
+      if (item && item.date) historyMap.set(item.date, item);
     }
 
-    if (Array.isArray(remote.achievements)) {
-      saveData.achievements = remote.achievements;
+    for (const item of (Array.isArray(saveData.history) ? saveData.history : [])) {
+      if (!item || !item.date) continue;
+      const old = historyMap.get(item.date);
+      if (!old || new Date(item.timestamp || 0) >= new Date(old.timestamp || 0)) {
+        historyMap.set(item.date, item);
+      }
     }
 
+    saveData.history = Array.from(historyMap.values())
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+
+    // 実績は両方を統合
+    const achievementIds = new Set();
+    const mergedAchievements = [];
+
+    for (const item of (Array.isArray(remote.achievements) ? remote.achievements : [])) {
+      const id = typeof item === "string" ? item : item?.id;
+      if (id && !achievementIds.has(id)) {
+        achievementIds.add(id);
+        mergedAchievements.push(item);
+      }
+    }
+
+    for (const item of (Array.isArray(saveData.achievements) ? saveData.achievements : [])) {
+      const id = typeof item === "string" ? item : item?.id;
+      if (id && !achievementIds.has(id)) {
+        achievementIds.add(id);
+        mergedAchievements.push(item);
+      }
+    }
+
+    saveData.achievements = mergedAchievements;
+
+    // XPは二重加算を避けるため大きい方を採用
     if (typeof remote.xp === "number") {
-      saveData.xp = remote.xp;
+      saveData.xp = Math.max(saveData.xp, remote.xp);
     }
 
     saveAll();
+    await saveToFirestore();
     renderDashboard();
   } catch (error) {
     console.error("Firestore読み込みエラー:", error);
   }
 }
-
 function queueFirestoreSave() {
   if (!firebaseUser || firebaseUser.isAnonymous) return;
 
@@ -766,26 +809,68 @@ function queueFirestoreSave() {
 googleSignInBtn.addEventListener("click", async () => {
   try {
     googleSignInBtn.disabled = true;
+    localStorage.setItem("sleepSensorGooglePending", "1");
 
-    const result = await signInWithPopup(auth, googleProvider);
-    firebaseUser = result.user;
-
-    await loadFromFirestore();
-    await saveToFirestore();
-
-    showToast("Googleと連携しました");
+    // スマホでポップアップがすぐ閉じる問題を避けるため、リダイレクト方式を使用。
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      await linkWithRedirect(auth.currentUser, googleProvider);
+    } else {
+      await signInWithRedirect(auth, googleProvider);
+    }
   } catch (error) {
+    localStorage.removeItem("sleepSensorGooglePending");
     console.error("Googleログインエラー:", error);
 
-    if (error.code === "auth/popup-closed-by-user") {
-      showToast("Google連携をキャンセルしました");
+    if (error.code === "auth/provider-already-linked") {
+      showToast("すでにGoogleと連携されています");
+    } else if (error.code === "auth/unauthorized-domain") {
+      showToast("Firebaseでこのサイトのドメイン許可が必要です");
+    } else if (error.code === "auth/operation-not-allowed") {
+      showToast("FirebaseでGoogleログインを有効にしてください");
+    } else {
+      showToast("Google連携を開始できませんでした");
+    }
+
+    googleSignInBtn.disabled = false;
+  }
+});
+
+// Googleリダイレクトから戻ってきたときの結果を処理
+(async () => {
+  try {
+    const result = await getRedirectResult(auth);
+
+    if (result?.user) {
+      firebaseUser = result.user;
+      firebaseReady = true;
+      await loadFromFirestore();
+      showToast("Googleと同期しました");
+    }
+  } catch (error) {
+    console.error("Googleリダイレクト認証エラー:", error);
+
+    if (error.code === "auth/credential-already-in-use") {
+      // 既存のGoogleアカウントだった場合は、そのアカウントでログインして端末データと統合
+      try {
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      } catch (retryError) {
+        console.error("Google再認証エラー:", retryError);
+      }
+    }
+
+    if (error.code === "auth/unauthorized-domain") {
+      showToast("FirebaseでGitHub Pagesのドメイン許可が必要です");
+    } else if (error.code === "auth/operation-not-allowed") {
+      showToast("FirebaseでGoogleログインを有効にしてください");
     } else {
       showToast("Google連携に失敗しました");
     }
   } finally {
+    localStorage.removeItem("sleepSensorGooglePending");
     googleSignInBtn.disabled = false;
   }
-});
+})();
 
 googleSignOutBtn.addEventListener("click", async () => {
   try {
@@ -1009,10 +1094,35 @@ function measureMicrophone() {
 
   const now = Date.now();
 
-  if (volume >= 3 && now - lastSoundTime > 3000) {
+  /*
+    一瞬のノイズを音イベントに数えない。
+    一定以上の音量が約0.8秒続いたときだけ1イベントとして記録し、
+    次のイベントまでは20秒あける。
+  */
+  const SOUND_THRESHOLD = 12;
+  const SOUND_HOLD_MS = 800;
+  const SOUND_COOLDOWN_MS = 20000;
+
+  if (volume >= SOUND_THRESHOLD) {
+    if (!soundAboveSince) soundAboveSince = now;
+    soundPeakSince = Math.max(soundPeakSince, volume);
+  } else {
+    soundAboveSince = 0;
+    soundPeakSince = 0;
+  }
+
+  if (
+    soundAboveSince &&
+    now - soundAboveSince >= SOUND_HOLD_MS &&
+    now - lastSoundTime >= SOUND_COOLDOWN_MS
+  ) {
     soundEvents++;
     lastSoundTime = now;
+    soundAboveSince = 0;
+    soundPeakSince = 0;
   }
+
+  lastSoundVolume = volume;
 
   setTimeout(measureMicrophone, 50);
 }
@@ -1286,6 +1396,9 @@ async function startMeasurement() {
   previousZ = null;
   movementHistory = [];
   lastSoundTime = 0;
+  soundAboveSince = 0;
+  soundPeakSince = 0;
+  lastSoundVolume = 0;
 
   statusEl.textContent = "測定中";
   startBtn.disabled = true;
@@ -1390,8 +1503,9 @@ function calculateScore(duration) {
       ? soundEvents / (duration / 3600)
       : 0;
 
+  // 音イベントは「回数が少ないほど良い」指標。以前より急激に0点になりにくくする。
   const soundScore =
-    Math.max(0, 100 - soundRatio * 10);
+    Math.max(0, 100 - soundRatio * 3);
 
   const overall =
     durationScore * 0.45 +
@@ -1891,6 +2005,9 @@ document.getElementById("resetBtn")
     smallCount = 0;
     largeCount = 0;
     soundEvents = 0;
+    soundAboveSince = 0;
+    soundPeakSince = 0;
+    lastSoundVolume = 0;
 
     elapsedEl.textContent = "00:00:00";
     movementEl.textContent = "0.000";
