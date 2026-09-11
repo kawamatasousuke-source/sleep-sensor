@@ -1,498 +1,391 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>No Sleep No Life v16</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <title>No Sleep No Life v17</title>
 
-<style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #08090c;
-  color: #f5f5f7;
-}
-
-.container {
-  width: min(100% - 24px, 900px);
-  margin: auto;
-  padding: 20px 0 50px;
-}
-
-h1 { margin-bottom: 5px; }
-
-.subtitle {
-  color: #8e8e93;
-  margin-top: 0;
-}
-
-.card {
-  background: #121318;
-  border: 1px solid #252730;
-  border-radius: 18px;
-  padding: 18px;
-  margin-top: 15px;
-}
-
-.card h2 { margin-top: 0; }
-
-.status-grid,
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.status {
-  background: #1a1c22;
-  padding: 12px;
-  border-radius: 12px;
-}
-
-.status span {
-  display: block;
-  color: #8e8e93;
-  font-size: 13px;
-  margin-bottom: 4px;
-}
-
-.value {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-button {
-  width: 100%;
-  border: 0;
-  border-radius: 13px;
-  padding: 14px;
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  background: #f2f2f7;
-  color: #111;
-}
-
-button:disabled { opacity: 0.4; }
-
-button.stop {
-  background: #33353d;
-  color: white;
-}
-
-button.danger {
-  background: #352023;
-  color: #ff8f8f;
-}
-
-button.google {
-  background: #f2f2f7;
-  color: #111;
-}
-
-.account-status {
-  color: #8e8e93;
-  font-size: 13px;
-  line-height: 1.6;
-  margin-top: 8px;
-}
-
-.big-score {
-  font-size: 64px;
-  font-weight: 800;
-  text-align: center;
-  margin: 10px 0;
-}
-
-.evaluation {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.stat {
-  background: #1a1c22;
-  border-radius: 13px;
-  padding: 14px;
-}
-
-.stat-label {
-  color: #8e8e93;
-  font-size: 13px;
-}
-
-.stat-value {
-  font-size: 21px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-canvas {
-  width: 100%;
-  height: 260px;
-  background: #0b0c10;
-  border-radius: 12px;
-}
-
-.progress {
-  height: 12px;
-  background: #292b32;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.progress-inner {
-  height: 100%;
-  width: 0%;
-  background: #f2f2f7;
-  transition: width 0.3s;
-}
-
-.achievement {
-  padding: 13px;
-  border-radius: 13px;
-  background: #1a1c22;
-  margin-top: 9px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.achievement.locked { opacity: 0.35; }
-
-.achievement-icon {
-  font-size: 27px;
-  width: 40px;
-  text-align: center;
-}
-
-.achievement-title { font-weight: bold; }
-
-.achievement-desc {
-  color: #8e8e93;
-  font-size: 13px;
-  margin-top: 3px;
-}
-
-.level {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.history-row {
-  background: #1a1c22;
-  border-radius: 12px;
-  padding: 13px;
-  margin-top: 8px;
-}
-
-.history-top {
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-}
-
-.history-detail {
-  color: #999ba3;
-  font-size: 13px;
-  margin-top: 5px;
-}
-
-.hidden { display: none; }
-
-.notice {
-  background: #191b21;
-  border-radius: 12px;
-  padding: 12px;
-  color: #aaa;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
-  background: #f2f2f7;
-  color: #111;
-  padding: 13px 20px;
-  border-radius: 30px;
-  font-weight: bold;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-  z-index: 1000;
-}
-
-.toast.show { opacity: 1; }
-
-@media (max-width: 600px) {
-  .status-grid,
-  .stat-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .big-score { font-size: 52px; }
-}
-</style>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#0b0b0b;
+      color:#f5f5f5;
+    }
+    .wrap{
+      width:min(100% - 24px,1000px);
+      margin:0 auto;
+      padding:24px 0 60px;
+    }
+    h1{margin:0 0 6px;font-size:30px}
+    h2{font-size:20px;margin:0 0 16px}
+    h3{margin:0 0 8px}
+    .sub{color:#999;margin-bottom:24px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    .card{
+      background:#151515;
+      border:1px solid #292929;
+      border-radius:16px;
+      padding:18px;
+      margin-bottom:14px;
+    }
+    .full{grid-column:1/-1}
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+    .stat{
+      background:#0e0e0e;
+      border-radius:12px;
+      padding:13px;
+    }
+    .label{font-size:12px;color:#888}
+    .value{font-size:18px;font-weight:700;margin-top:4px}
+    button{
+      border:0;
+      border-radius:10px;
+      padding:12px 16px;
+      margin:4px;
+      background:#fff;
+      color:#000;
+      font-weight:700;
+      cursor:pointer;
+    }
+    button:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+    }
+    button.secondary{
+      background:#292929;
+      color:#fff;
+    }
+    button.danger{
+      background:#5a2020;
+      color:#fff;
+    }
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+    }
+    #graph{
+      width:100%;
+      height:260px;
+      background:#090909;
+      border-radius:12px;
+      display:block;
+    }
+    .score{
+      font-size:64px;
+      font-weight:800;
+      line-height:1;
+    }
+    .scorebar{
+      height:12px;
+      background:#292929;
+      border-radius:99px;
+      overflow:hidden;
+      margin-top:15px;
+    }
+    #scoreFill{
+      height:100%;
+      width:0%;
+      background:#fff;
+      transition:.4s;
+    }
+    .achievement{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 0;
+      border-bottom:1px solid #292929;
+    }
+    .achievement:last-child{border-bottom:0}
+    .unlocked{color:#fff}
+    .locked{color:#555}
+    .history-item{
+      padding:13px 0;
+      border-bottom:1px solid #292929;
+    }
+    .history-item:last-child{border-bottom:0}
+    .history-score{
+      float:right;
+      font-size:20px;
+      font-weight:800;
+    }
+    .progress{
+      height:8px;
+      background:#292929;
+      border-radius:99px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+    .progress>div{
+      height:100%;
+      background:#fff;
+    }
+    .status-ok{color:#8cff8c}
+    .status-ng{color:#ff8080}
+    .status-warn{color:#ffd36a}
+    .notice{
+      background:#101010;
+      border-left:3px solid #fff;
+      padding:12px;
+      color:#bbb;
+      font-size:13px;
+      line-height:1.6;
+    }
+    input,textarea{
+      width:100%;
+      background:#0b0b0b;
+      border:1px solid #333;
+      border-radius:10px;
+      padding:11px;
+      color:#fff;
+    }
+    @media(max-width:700px){
+      .grid{grid-template-columns:1fr}
+      .full{grid-column:auto}
+      h1{font-size:25px}
+      .score{font-size:52px}
+    }
+  </style>
 </head>
 
 <body>
+<div class="wrap">
 
-<div class="container">
+  <header>
+    <h1>No Sleep No Life</h1>
+    <div class="sub">睡眠を測って、記録して、改善する。</div>
+  </header>
 
-  <h1>No Sleep No Life v16</h1>
-  <p class="subtitle">睡眠測定＋スコア＋実績＋ストリーク</p>
+  <div class="grid">
 
-  <div class="card">
-    <h2>センサー状態</h2>
+    <section class="card full">
+      <h2>センサー状態</h2>
 
-    <div class="status-grid">
-      <div class="status">
-        <span>状態</span>
-        <div id="status" class="value">待機中</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">状態</div>
+          <div class="value" id="sensorStatus">待機中</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">マイク</div>
+          <div class="value" id="micStatus">未接続</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">加速度</div>
+          <div class="value" id="motionStatus">未接続</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">画面消灯防止</div>
+          <div class="value" id="wakeStatus">未使用</div>
+        </div>
       </div>
 
-      <div class="status">
-        <span>マイク</span>
-        <div id="micStatus" class="value">未接続</div>
+      <div class="buttons" style="margin-top:15px">
+        <button id="startBtn">睡眠測定開始</button>
+        <button id="stopBtn" class="secondary" disabled>測定終了</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>リアルタイム</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="label">経過時間</div>
+          <div class="value" id="elapsed">00:00:00</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">睡眠状態</div>
+          <div class="value" id="sleepState">待機中</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">動き</div>
+          <div class="value" id="movement">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">音量</div>
+          <div class="value" id="volume">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>睡眠グラフ</h2>
+      <canvas id="graph"></canvas>
+    </section>
+
+    <section class="card full">
+      <h2>今回の結果</h2>
+
+      <div class="score" id="score">--</div>
+      <div id="evaluation">まだ測定されていません</div>
+
+      <div class="scorebar">
+        <div id="scoreFill"></div>
       </div>
 
-      <div class="status">
-        <span>加速度</span>
-        <div id="accStatus" class="value">未接続</div>
+      <div class="stats" style="margin-top:16px">
+        <div class="stat">
+          <div class="label">睡眠時間</div>
+          <div class="value" id="resultDuration">--</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">静止時間</div>
+          <div class="value" id="resultStill">--</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">小さな動き</div>
+          <div class="value" id="resultSmall">--</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">大きな動き</div>
+          <div class="value" id="resultLarge">--</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">音イベント</div>
+          <div class="value" id="resultSound">--</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>レベル・ストリーク</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="label">レベル</div>
+          <div class="value" id="level">Lv.1</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">XP</div>
+          <div class="value" id="xp">0 XP</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">現在のストリーク</div>
+          <div class="value" id="streak">0日</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">最高ストリーク</div>
+          <div class="value" id="bestStreak">0日</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">測定日数</div>
+          <div class="value" id="totalDays">0日</div>
+        </div>
+
+        <div class="stat">
+          <div class="label">最高スコア</div>
+          <div class="value" id="bestScore">--</div>
+        </div>
       </div>
 
-      <div class="status">
-        <span>画面消灯防止</span>
-        <div id="wakeStatus" class="value">OFF</div>
+      <div style="margin-top:15px">
+        <div class="label" id="levelText">次のレベルまで 100 XP</div>
+        <div class="progress">
+          <div id="levelProgress" style="width:0%"></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <button id="startBtn">センサーを使用する</button>
-    <button id="stopBtn" class="stop" disabled>測定停止</button>
+    <section class="card">
+      <h2>実績</h2>
+      <div id="achievements"></div>
+    </section>
+
+    <section class="card full">
+      <h2>測定履歴</h2>
+      <div id="history">まだ履歴がありません。</div>
+
+      <div class="buttons" style="margin-top:14px">
+        <button id="csvBtn" class="secondary">CSV出力</button>
+        <button id="resetCurrentBtn" class="secondary">今回のデータをリセット</button>
+        <button id="resetAllBtn" class="danger">全データ削除</button>
+      </div>
+    </section>
+
+    <section class="card full">
+      <h2>Googleアカウント</h2>
+
+      <div class="notice" id="accountStatus">
+        認証状態を確認しています……
+      </div>
+
+      <div class="buttons" style="margin-top:12px">
+        <button id="googleBtn">Googleと連携</button>
+        <button id="googleSignOutBtn" class="secondary" style="display:none">
+          Googleからログアウト
+        </button>
+      </div>
+    </section>
+
+    <section class="card full">
+      <h2>探究用メモ</h2>
+      <div class="notice">
+        このアプリはスマートフォンの加速度センサーとマイクを利用して、
+        睡眠中の動きや音を記録します。睡眠状態を医学的に診断するものではありません。
+      </div>
+    </section>
+
   </div>
-
-  <div class="card">
-    <h2>リアルタイム測定</h2>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="stat-label">経過時間</div>
-        <div id="elapsed" class="stat-value">00:00:00</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">現在の状態</div>
-        <div id="sleepState" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">動き</div>
-        <div id="movement" class="stat-value">0.000</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">音量</div>
-        <div id="volume" class="stat-value">0</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>測定グラフ</h2>
-    <canvas id="graph"></canvas>
-  </div>
-
-  <div id="resultCard" class="card hidden">
-    <h2>今回の睡眠結果</h2>
-
-    <div id="score" class="big-score">0</div>
-    <div id="evaluation" class="evaluation">---</div>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="stat-label">測定時間</div>
-        <div id="resultDuration" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">推定睡眠時間</div>
-        <div id="resultSleep" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">静止時間</div>
-        <div id="resultStill" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">小さな動き</div>
-        <div id="resultSmall" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">大きな動き</div>
-        <div id="resultLarge" class="stat-value">---</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">音イベント</div>
-        <div id="resultSound" class="stat-value">---</div>
-      </div>
-    </div>
-
-    <h3>スコア詳細</h3>
-
-    <div>
-      睡眠時間
-      <div class="progress">
-        <div id="durationProgress" class="progress-inner"></div>
-      </div>
-    </div>
-
-    <br>
-
-    <div>
-      動き
-      <div class="progress">
-        <div id="movementProgress" class="progress-inner"></div>
-      </div>
-    </div>
-
-    <br>
-
-    <div>
-      音
-      <div class="progress">
-        <div id="soundProgress" class="progress-inner"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>現在の実績</h2>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="stat-label">レベル</div>
-        <div id="level" class="level">Lv.1</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">XP</div>
-        <div id="xp" class="stat-value">0 XP</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">現在の連続日数</div>
-        <div id="currentStreak" class="stat-value">0日</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">最長連続日数</div>
-        <div id="bestStreak" class="stat-value">0日</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">測定した日数</div>
-        <div id="totalDays" class="stat-value">0日</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">最高スコア</div>
-        <div id="bestScore" class="stat-value">0</div>
-      </div>
-    </div>
-
-    <h3>次のレベルまで</h3>
-
-    <div id="levelProgressText">0 / 100 XP</div>
-
-    <div class="progress">
-      <div id="levelProgress" class="progress-inner"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>実績一覧</h2>
-    <div id="achievementList"></div>
-  </div>
-
-  <div class="card">
-    <h2>測定履歴</h2>
-    <div id="historyList">
-      <div class="notice">まだ測定履歴がありません。</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Google連携</h2>
-    <button id="googleSignInBtn" class="google">Googleアカウントで連携</button>
-    <button id="googleSignOutBtn" class="stop hidden">Google連携を解除</button>
-    <div id="accountStatus" class="account-status">未連携。現在のデータはこの端末に保存されます。</div>
-  </div>
-
-  <div class="card">
-    <h2>データ保存</h2>
-
-    <button id="rawCsvBtn">生データCSV保存</button>
-    <button id="summaryCsvBtn">10秒集計CSV保存</button>
-
-    <button id="resetBtn" class="danger">
-      測定データをリセット
-    </button>
-
-    <button id="achievementResetBtn" class="danger">
-      実績・履歴をリセット
-    </button>
-  </div>
-
-  <div class="card">
-    <h2>この実験について</h2>
-
-    <div class="notice">
-      このアプリはスマートフォンの加速度センサーとマイクから得られたデータを利用して、
-      睡眠中の動きや音を実験的に分析するものです。
-      実際の睡眠段階（REM・ノンレム睡眠など）を医学的に判定するものではありません。
-      「推定睡眠時間」や「睡眠スコア」は、このアプリ独自の実験的な指標です。
-    </div>
-  </div>
-
 </div>
 
-<div id="toast" class="toast"></div>
-
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithRedirect,
-  linkWithRedirect,
   getRedirectResult,
   signInAnonymously,
   onAuthStateChanged,
-  signOut
+  signOut,
+  linkWithRedirect
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
 import {
   getFirestore,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
+
 /* =========================
-   Firebase / Google
+   Firebase
 ========================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBhfOVk4K5Ybjji16b1ZKRqXd1UJGypH9Y",
+  apiKey: "AIzaSyBhfOV4K5Ybjji16b1ZKRqXd1UJGypH9Y",
   authDomain: "sleep-sensor-af01f.firebaseapp.com",
   projectId: "sleep-sensor-af01f",
   storageBucket: "sleep-sensor-af01f.firebasestorage.app",
@@ -500,1576 +393,1958 @@ const firebaseConfig = {
   appId: "1:86707291255:web:01e2e67fa63c3513503272"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
-const googleProvider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-let firebaseUser = null;
-let firebaseReady = false;
-let googleSyncTimer = null;
 
 /* =========================
-   基本設定
-========================= */
-
-let measuring = false;
-let startTime = null;
-let elapsedTimer = null;
-let summaryTimer = null;
-let wakeLock = null;
-
-let audioContext = null;
-let analyser = null;
-let microphoneStream = null;
-
-let latestMovement = 0;
-let latestVolume = 0;
-
-let previousX = null;
-let previousY = null;
-let previousZ = null;
-let movementHistory = [];
-
-let rawData = [];
-let summaryData = [];
-let currentInterval = [];
-
-let stillCount = 0;
-let smallCount = 0;
-let largeCount = 0;
-let soundEvents = 0;
-let lastSoundTime = 0;
-let soundAboveSince = 0;
-let soundPeakSince = 0;
-let lastSoundVolume = 0;
-
-/* =========================
-   DOM
-========================= */
-
-const statusEl = document.getElementById("status");
-const micStatusEl = document.getElementById("micStatus");
-const accStatusEl = document.getElementById("accStatus");
-const wakeStatusEl = document.getElementById("wakeStatus");
-
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
-
-const elapsedEl = document.getElementById("elapsed");
-const sleepStateEl = document.getElementById("sleepState");
-const movementEl = document.getElementById("movement");
-const volumeEl = document.getElementById("volume");
-
-const canvas = document.getElementById("graph");
-const ctx = canvas.getContext("2d");
-
-const toastEl = document.getElementById("toast");
-
-const googleSignInBtn = document.getElementById("googleSignInBtn");
-const googleSignOutBtn = document.getElementById("googleSignOutBtn");
-const accountStatusEl = document.getElementById("accountStatus");
-
-/* =========================
-   LocalStorage
+   Local Data
 ========================= */
 
 const STORAGE_KEY = "sleepSensorV7";
 
-let saveData = JSON.parse(
-  localStorage.getItem(STORAGE_KEY) ||
-  '{"xp":0,"history":[],"achievements":[]}'
+let data = {
+  xp: 0,
+  history: [],
+  achievements: []
+};
+
+function loadLocal(){
+
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(saved){
+      const parsed = JSON.parse(saved);
+
+      data = {
+        xp: Number(parsed.xp) || 0,
+        history: Array.isArray(parsed.history) ? parsed.history : [],
+        achievements: Array.isArray(parsed.achievements)
+          ? parsed.achievements
+          : []
+      };
+    }
+
+  }catch(e){
+    console.error(e);
+  }
+
+  updateAllUI();
+}
+
+
+function saveLocal(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+  updateAllUI();
+}
+
+
+/* =========================
+   Firebase Auth
+========================= */
+
+let firebaseUser = null;
+let firebaseReady = false;
+let startupFinished = false;
+
+async function ensureAnonymousUser(){
+
+  if(auth.currentUser){
+    return auth.currentUser;
+  }
+
+  const result = await signInAnonymously(auth);
+
+  return result.user;
+}
+
+
+async function initializeAuth(){
+
+  try{
+
+    let redirectResult = null;
+
+    try{
+      redirectResult = await getRedirectResult(auth);
+    }catch(error){
+      console.error("Google redirect error:", error);
+      showAuthError(error);
+    }
+
+    if(redirectResult?.user){
+
+      firebaseUser = redirectResult.user;
+
+    }else if(auth.currentUser){
+
+      firebaseUser = auth.currentUser;
+
+    }else{
+
+      firebaseUser = await ensureAnonymousUser();
+
+    }
+
+    firebaseReady = true;
+
+    updateAccountUI();
+
+    if(firebaseUser && !firebaseUser.isAnonymous){
+      await loadFromFirestore();
+    }
+
+  }catch(error){
+
+    console.error("Firebase認証エラー:", error);
+
+    document.getElementById("accountStatus").textContent =
+      "Firebase認証に失敗しました。";
+
+  }finally{
+
+    startupFinished = true;
+    updateAccountUI();
+
+  }
+}
+
+
+onAuthStateChanged(auth, async user => {
+
+  firebaseUser = user;
+
+  if(!user){
+    updateAccountUI();
+    return;
+  }
+
+  updateAccountUI();
+
+  if(startupFinished && !user.isAnonymous){
+    await loadFromFirestore();
+  }
+
+});
+
+
+function showAuthError(error){
+
+  const el = document.getElementById("accountStatus");
+
+  if(error?.code === "auth/unauthorized-domain"){
+
+    el.textContent =
+      "このGitHub PagesのドメインがFirebaseの承認済みドメインに登録されていません。";
+
+  }else if(error?.code === "auth/operation-not-allowed"){
+
+    el.textContent =
+      "Firebase AuthenticationでGoogleログインを有効にしてください。";
+
+  }else{
+
+    el.textContent =
+      "Googleログインエラー：" +
+      (error?.message || "不明なエラー");
+
+  }
+
+}
+
+
+function updateAccountUI(){
+
+  const status = document.getElementById("accountStatus");
+  const googleBtn = document.getElementById("googleBtn");
+  const signOutBtn = document.getElementById("googleSignOutBtn");
+
+  if(!firebaseUser){
+
+    status.textContent = "認証状態を確認しています……";
+
+    googleBtn.style.display = "";
+    signOutBtn.style.display = "none";
+
+    return;
+  }
+
+  if(firebaseUser.isAnonymous){
+
+    status.textContent =
+      "匿名ユーザーで保存中（この端末のローカルデータを保持）";
+
+    googleBtn.style.display = "";
+    signOutBtn.style.display = "none";
+
+  }else{
+
+    const name =
+      firebaseUser.displayName ||
+      firebaseUser.email ||
+      "Googleユーザー";
+
+    status.textContent =
+      "Google連携済み：" + name;
+
+    googleBtn.style.display = "none";
+    signOutBtn.style.display = "";
+  }
+}
+
+
+/* =========================
+   Google Login
+========================= */
+
+document.getElementById("googleBtn").addEventListener(
+  "click",
+  async () => {
+
+    try{
+
+      const current = auth.currentUser;
+
+      if(current?.isAnonymous){
+
+        await linkWithRedirect(
+          current,
+          provider
+        );
+
+      }else{
+
+        await signInWithRedirect(
+          auth,
+          provider
+        );
+
+      }
+
+    }catch(error){
+
+      console.error(error);
+      showAuthError(error);
+
+    }
+
+  }
 );
 
-if (!Array.isArray(saveData.history)) saveData.history = [];
-if (!Array.isArray(saveData.achievements)) saveData.achievements = [];
-if (typeof saveData.xp !== "number") saveData.xp = 0;
 
-/* =========================
-   実績
-========================= */
+document.getElementById("googleSignOutBtn").addEventListener(
+  "click",
+  async () => {
 
-const ACHIEVEMENTS = [
-  {
-    id: "first",
-    icon: "★",
-    title: "はじめの一歩",
-    desc: "初めて睡眠測定を完了する",
-    xp: 50,
-    check: r => r.duration >= 60
-  },
-  {
-    id: "30min",
-    icon: "◷",
-    title: "30分測定",
-    desc: "30分以上測定する",
-    xp: 50,
-    check: r => r.duration >= 1800
-  },
-  {
-    id: "1hour",
-    icon: "◴",
-    title: "1時間測定",
-    desc: "1時間以上測定する",
-    xp: 100,
-    check: r => r.duration >= 3600
-  },
-  {
-    id: "8hour",
-    icon: "8",
-    title: "8時間チャレンジ",
-    desc: "8時間以上測定する",
-    xp: 200,
-    check: r => r.duration >= 28800
-  },
-  {
-    id: "sleep8",
-    icon: "S",
-    title: "しっかり睡眠",
-    desc: "推定睡眠時間が8時間以上",
-    xp: 150,
-    check: r => r.sleepSeconds >= 28800
-  },
-  {
-    id: "quiet",
-    icon: "♪",
-    title: "静かな夜",
-    desc: "1時間以上測定して音イベントを少なく抑える",
-    xp: 100,
-    check: r =>
-      r.duration >= 3600 &&
-      r.soundEvents <= Math.max(3, r.duration / 3600 * 8)
-  },
-  {
-    id: "stable",
-    icon: "≋",
-    title: "安定した夜",
-    desc: "大きな動きの割合を低くする",
-    xp: 100,
-    check: r =>
-      r.duration >= 3600 &&
-      r.largeRatio < 0.15
-  },
-  {
-    id: "score90",
-    icon: "★",
-    title: "ハイスコア",
-    desc: "睡眠スコア90点以上",
-    xp: 200,
-    check: r =>
-      r.duration >= 3600 &&
-      r.score >= 90
-  },
-  {
-    id: "streak3",
-    icon: "3",
-    title: "3日連続",
-    desc: "3日連続で測定する",
-    xp: 100,
-    check: r => getCurrentStreak() >= 3
-  },
-  {
-    id: "streak7",
-    icon: "7",
-    title: "1週間継続",
-    desc: "7日連続で測定する",
-    xp: 300,
-    check: r => getCurrentStreak() >= 7
-  },
-  {
-    id: "streak14",
-    icon: "14",
-    title: "2週間継続",
-    desc: "14日連続で測定する",
-    xp: 500,
-    check: r => getCurrentStreak() >= 14
-  },
-  {
-    id: "streak30",
-    icon: "30",
-    title: "1か月継続",
-    desc: "30日連続で測定する",
-    xp: 1000,
-    check: r => getCurrentStreak() >= 30
+    try{
+
+      await signOut(auth);
+
+      firebaseUser =
+        await ensureAnonymousUser();
+
+      updateAccountUI();
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
   }
-];
+);
+
 
 /* =========================
-   保存
+   Firestore
 ========================= */
 
-function saveAll() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-}
+let firestoreTimer = null;
 
-/* =========================
-   Firebase保存
-========================= */
+async function saveToFirestore(){
 
-async function saveToFirestore() {
-  if (!firebaseReady || !firebaseUser || firebaseUser.isAnonymous) return;
+  if(!firebaseUser) return;
 
-  try {
+  if(firebaseUser.isAnonymous) return;
+
+  try{
+
     await setDoc(
-      doc(db, "users", firebaseUser.uid),
+      doc(
+        db,
+        "users",
+        firebaseUser.uid
+      ),
       {
-        xp: saveData.xp,
-        history: saveData.history,
-        achievements: saveData.achievements,
-        updatedAt: new Date().toISOString()
+        xp: data.xp,
+        history: data.history,
+        achievements: data.achievements,
+        updatedAt: serverTimestamp()
       },
-      { merge: true }
+      {
+        merge: true
+      }
     );
-  } catch (error) {
-    console.error("Firestore保存エラー:", error);
+
+  }catch(error){
+
+    console.error(
+      "Firestore保存エラー:",
+      error
+    );
+
   }
 }
 
-async function loadFromFirestore() {
-  if (!firebaseReady || !firebaseUser || firebaseUser.isAnonymous) return;
 
-  try {
-    const snap = await getDoc(doc(db, "users", firebaseUser.uid));
+function queueFirestoreSave(){
 
-    if (!snap.exists()) {
-      // Googleアカウント側にまだデータがない場合は、端末のデータをそのまま保存
+  clearTimeout(firestoreTimer);
+
+  firestoreTimer = setTimeout(
+    saveToFirestore,
+    1200
+  );
+}
+
+
+async function loadFromFirestore(){
+
+  if(!firebaseUser || firebaseUser.isAnonymous){
+    return;
+  }
+
+  try{
+
+    const snapshot = await getDoc(
+      doc(
+        db,
+        "users",
+        firebaseUser.uid
+      )
+    );
+
+    if(!snapshot.exists()){
       await saveToFirestore();
       return;
     }
 
-    const remote = snap.data();
+    const remote = snapshot.data();
 
-    // 端末側とクラウド側を日付で統合。新しい記録を優先する。
-    const historyMap = new Map();
+    const localHistory = Array.isArray(data.history)
+      ? data.history
+      : [];
 
-    for (const item of (Array.isArray(remote.history) ? remote.history : [])) {
-      if (item && item.date) historyMap.set(item.date, item);
-    }
+    const remoteHistory =
+      Array.isArray(remote.history)
+        ? remote.history
+        : [];
 
-    for (const item of (Array.isArray(saveData.history) ? saveData.history : [])) {
-      if (!item || !item.date) continue;
-      const old = historyMap.get(item.date);
-      if (!old || new Date(item.timestamp || 0) >= new Date(old.timestamp || 0)) {
-        historyMap.set(item.date, item);
-      }
-    }
+    const map = new Map();
 
-    saveData.history = Array.from(historyMap.values())
-      .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    [...localHistory, ...remoteHistory]
+      .forEach(item => {
 
-    // 実績は両方を統合
-    const achievementIds = new Set();
-    const mergedAchievements = [];
+        const key =
+          String(item.timestamp || "") +
+          "_" +
+          String(item.date || "");
 
-    for (const item of (Array.isArray(remote.achievements) ? remote.achievements : [])) {
-      const id = typeof item === "string" ? item : item?.id;
-      if (id && !achievementIds.has(id)) {
-        achievementIds.add(id);
-        mergedAchievements.push(item);
-      }
-    }
+        map.set(key,item);
 
-    for (const item of (Array.isArray(saveData.achievements) ? saveData.achievements : [])) {
-      const id = typeof item === "string" ? item : item?.id;
-      if (id && !achievementIds.has(id)) {
-        achievementIds.add(id);
-        mergedAchievements.push(item);
-      }
-    }
-
-    saveData.achievements = mergedAchievements;
-
-    // XPは二重加算を避けるため大きい方を採用
-    if (typeof remote.xp === "number") {
-      saveData.xp = Math.max(saveData.xp, remote.xp);
-    }
-
-    saveAll();
-    await saveToFirestore();
-    renderDashboard();
-  } catch (error) {
-    console.error("Firestore読み込みエラー:", error);
-  }
-}
-function queueFirestoreSave() {
-  if (!firebaseUser || firebaseUser.isAnonymous) return;
-
-  clearTimeout(googleSyncTimer);
-
-  googleSyncTimer = setTimeout(() => {
-    saveToFirestore();
-  }, 500);
-}
-
-/* =========================
-   Google連携
-========================= */
-
-googleSignInBtn.addEventListener("click", async () => {
-  try {
-    googleSignInBtn.disabled = true;
-    localStorage.setItem("sleepSensorGooglePending", "1");
-
-    // スマホでポップアップがすぐ閉じる問題を避けるため、リダイレクト方式を使用。
-    if (auth.currentUser && auth.currentUser.isAnonymous) {
-      await linkWithRedirect(auth.currentUser, googleProvider);
-    } else {
-      await signInWithRedirect(auth, googleProvider);
-    }
-  } catch (error) {
-    localStorage.removeItem("sleepSensorGooglePending");
-    console.error("Googleログインエラー:", error);
-
-    if (error.code === "auth/provider-already-linked") {
-      showToast("すでにGoogleと連携されています");
-    } else if (error.code === "auth/unauthorized-domain") {
-      showToast("Firebaseでこのサイトのドメイン許可が必要です");
-    } else if (error.code === "auth/operation-not-allowed") {
-      showToast("FirebaseでGoogleログインを有効にしてください");
-    } else {
-      showToast("Google連携を開始できませんでした");
-    }
-
-    googleSignInBtn.disabled = false;
-  }
-});
-
-// Googleリダイレクトから戻ってきたときの結果を処理
-(async () => {
-  try {
-    const result = await getRedirectResult(auth);
-
-    if (result?.user) {
-      firebaseUser = result.user;
-      firebaseReady = true;
-      await loadFromFirestore();
-      showToast("Googleと同期しました");
-    }
-  } catch (error) {
-    console.error("Googleリダイレクト認証エラー:", error);
-
-    if (error.code === "auth/credential-already-in-use") {
-      // 既存のGoogleアカウントだった場合は、そのアカウントでログインして端末データと統合
-      try {
-        await signInWithRedirect(auth, googleProvider);
-        return;
-      } catch (retryError) {
-        console.error("Google再認証エラー:", retryError);
-      }
-    }
-
-    if (error.code === "auth/unauthorized-domain") {
-      showToast("FirebaseでGitHub Pagesのドメイン許可が必要です");
-    } else if (error.code === "auth/operation-not-allowed") {
-      showToast("FirebaseでGoogleログインを有効にしてください");
-    } else {
-      showToast("Google連携に失敗しました");
-    }
-  } finally {
-    localStorage.removeItem("sleepSensorGooglePending");
-    googleSignInBtn.disabled = false;
-  }
-})();
-
-googleSignOutBtn.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    showToast("Google連携を解除しました");
-  } catch (error) {
-    console.error(error);
-    showToast("連携解除に失敗しました");
-  }
-});
-
-onAuthStateChanged(auth, async user => {
-  firebaseUser = user;
-
-  if (!user) {
-    firebaseReady = false;
-    googleSignInBtn.classList.remove("hidden");
-    googleSignOutBtn.classList.add("hidden");
-    accountStatusEl.textContent =
-      "未連携。現在のデータはこの端末に保存されます。";
-    return;
-  }
-
-  firebaseReady = true;
-
-  if (user.isAnonymous) {
-    accountStatusEl.textContent =
-      "Firebase接続済み。Google連携すると別端末でも履歴を同期できます。";
-    googleSignInBtn.classList.remove("hidden");
-    googleSignOutBtn.classList.add("hidden");
-    return;
-  }
-
-  googleSignInBtn.classList.add("hidden");
-  googleSignOutBtn.classList.remove("hidden");
-
-  accountStatusEl.textContent =
-    `Google連携済み：${user.displayName || user.email || "Googleアカウント"}`;
-
-  await loadFromFirestore();
-});
-
-/* 匿名認証を使ってFirebase接続だけ確立 */
-(async () => {
-  try {
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
-  } catch (error) {
-    console.error("Firebase匿名認証エラー:", error);
-    accountStatusEl.textContent =
-      "Firebaseに接続できません。端末内保存は利用できます。";
-  }
-})();
-
-/* =========================
-   日付
-========================= */
-
-function getLocalDateKey(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-/* =========================
-   時間表示
-========================= */
-
-function formatTime(seconds) {
-  seconds = Math.max(0, Math.floor(seconds));
-
-  const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-  const s = String(seconds % 60).padStart(2, "0");
-
-  return `${h}:${m}:${s}`;
-}
-
-/* =========================
-   トースト
-========================= */
-
-function showToast(text) {
-  toastEl.textContent = text;
-  toastEl.classList.add("show");
-
-  setTimeout(() => {
-    toastEl.classList.remove("show");
-  }, 2500);
-}
-
-/* =========================
-   加速度
-========================= */
-
-function handleMotion(event) {
-  if (!measuring) return;
-
-  const acc = event.accelerationIncludingGravity;
-  if (!acc) return;
-
-  const x = acc.x || 0;
-  const y = acc.y || 0;
-  const z = acc.z || 0;
-
-  accStatusEl.textContent = "入力あり";
-
-  if (previousX === null || previousY === null || previousZ === null) {
-    previousX = x;
-    previousY = y;
-    previousZ = z;
-    return;
-  }
-
-  const dx = x - previousX;
-  const dy = y - previousY;
-  const dz = z - previousZ;
-
-  let movement = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-  previousX = x;
-  previousY = y;
-  previousZ = z;
-
-  movementHistory.push(movement);
-
-  if (movementHistory.length > 3) {
-    movementHistory.shift();
-  }
-
-  movement =
-    movementHistory.reduce((a, b) => a + b, 0) /
-    movementHistory.length;
-
-  latestMovement = movement;
-  movementEl.textContent = movement.toFixed(3);
-
-  let state;
-
-  if (movement < 0.10) {
-    state = "静止";
-  } else if (movement < 0.60) {
-    state = "小さな動き";
-  } else {
-    state = "大きな動き";
-  }
-
-  sleepStateEl.textContent = state;
-}
-
-/* =========================
-   マイク
-========================= */
-
-async function setupMicrophone() {
-  try {
-    microphoneStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false
-        }
       });
 
-    audioContext = new AudioContext();
+    data.history = Array.from(
+      map.values()
+    ).sort(
+      (a,b) =>
+        Number(b.timestamp || 0) -
+        Number(a.timestamp || 0)
+    );
 
-    if (audioContext.state === "suspended") {
-      await audioContext.resume();
-    }
+    data.xp = Math.max(
+      Number(data.xp) || 0,
+      Number(remote.xp) || 0
+    );
 
-    const source =
-      audioContext.createMediaStreamSource(microphoneStream);
+    data.achievements =
+      Array.from(
+        new Set([
+          ...(data.achievements || []),
+          ...(remote.achievements || [])
+        ])
+      );
 
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 2048;
-    analyser.smoothingTimeConstant = 0;
+    saveLocal();
 
-    source.connect(analyser);
+  }catch(error){
 
-    micStatusEl.textContent = "入力あり";
-    measureMicrophone();
+    console.error(
+      "Firestore読み込みエラー:",
+      error
+    );
 
-  } catch (error) {
-    console.error(error);
-    micStatusEl.textContent = "使用不可";
   }
 }
 
-function measureMicrophone() {
-  if (!measuring || !analyser) return;
 
-  const data = new Float32Array(analyser.fftSize);
-  analyser.getFloatTimeDomainData(data);
+/* =========================
+   Sensor
+========================= */
+
+let measuring = false;
+let startTime = 0;
+let elapsedTimer = null;
+let sampleTimer = null;
+
+let audioContext = null;
+let analyser = null;
+let microphoneStream = null;
+let microphoneSource = null;
+
+let wakeLock = null;
+
+let lastMotion = null;
+let movementSamples = [];
+
+let currentStats = {
+  still: 0,
+  small: 0,
+  large: 0,
+  sound: 0,
+  samples: 0
+};
+
+let rawData = [];
+let summaryData = [];
+
+let soundActiveSince = 0;
+let soundCooldownUntil = 0;
+
+
+function requestMotionPermission(){
+
+  if(
+    typeof DeviceMotionEvent !== "undefined" &&
+    typeof DeviceMotionEvent.requestPermission === "function"
+  ){
+
+    return DeviceMotionEvent.requestPermission()
+      .then(permission => {
+
+        if(permission !== "granted"){
+          throw new Error(
+            "加速度センサーの使用が許可されませんでした。"
+          );
+        }
+
+      });
+
+  }
+
+  return Promise.resolve();
+}
+
+
+async function startMicrophone(){
+
+  microphoneStream =
+    await navigator.mediaDevices.getUserMedia({
+      audio:{
+        echoCancellation:false,
+        noiseSuppression:false,
+        autoGainControl:false
+      }
+    });
+
+  audioContext =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+  analyser =
+    audioContext.createAnalyser();
+
+  analyser.fftSize = 2048;
+
+  microphoneSource =
+    audioContext.createMediaStreamSource(
+      microphoneStream
+    );
+
+  microphoneSource.connect(
+    analyser
+  );
+
+  document.getElementById("micStatus").textContent =
+    "接続済み";
+
+}
+
+
+async function requestWakeLock(){
+
+  try{
+
+    if("wakeLock" in navigator){
+
+      wakeLock =
+        await navigator.wakeLock.request(
+          "screen"
+        );
+
+      document.getElementById("wakeStatus").textContent =
+        "有効";
+
+    }
+
+  }catch(error){
+
+    console.warn(error);
+
+  }
+
+}
+
+
+async function releaseWakeLock(){
+
+  if(wakeLock){
+
+    try{
+      await wakeLock.release();
+    }catch(e){}
+
+    wakeLock = null;
+  }
+
+  document.getElementById("wakeStatus").textContent =
+    "未使用";
+}
+
+
+/* =========================
+   Motion
+========================= */
+
+function handleMotion(event){
+
+  if(!measuring) return;
+
+  const a =
+    event.accelerationIncludingGravity;
+
+  if(!a) return;
+
+  const x = a.x || 0;
+  const y = a.y || 0;
+  const z = a.z || 0;
+
+  if(lastMotion){
+
+    const dx = x - lastMotion.x;
+    const dy = y - lastMotion.y;
+    const dz = z - lastMotion.z;
+
+    const delta =
+      Math.sqrt(
+        dx*dx +
+        dy*dy +
+        dz*dz
+      );
+
+    movementSamples.push(delta);
+
+    if(movementSamples.length > 3){
+      movementSamples.shift();
+    }
+
+    const average =
+      movementSamples.reduce(
+        (a,b) => a+b,
+        0
+      ) / movementSamples.length;
+
+    document.getElementById("movement").textContent =
+      average.toFixed(2);
+
+  }
+
+  lastMotion = {
+    x,
+    y,
+    z
+  };
+
+}
+
+
+/* =========================
+   Microphone
+========================= */
+
+function readVolume(){
+
+  if(!analyser) return 0;
+
+  const buffer =
+    new Float32Array(
+      analyser.fftSize
+    );
+
+  analyser.getFloatTimeDomainData(
+    buffer
+  );
 
   let sum = 0;
   let peak = 0;
 
-  for (let i = 0; i < data.length; i++) {
-    const v = data[i];
-    sum += v * v;
+  for(const value of buffer){
 
-    const abs = Math.abs(v);
-    if (abs > peak) peak = abs;
+    sum += value * value;
+
+    const abs = Math.abs(value);
+
+    if(abs > peak){
+      peak = abs;
+    }
+
   }
 
-  const rms = Math.sqrt(sum / data.length);
-
-  /* v7の表示方式を維持しつつ、マイクの反応を少し取りやすくする */
-  let volume = rms * 4500 + peak * 1600;
-
-  volume = Math.max(0, Math.min(100, volume));
-
-  latestVolume = volume;
-  volumeEl.textContent = volume.toFixed(1);
-
-  micStatusEl.textContent =
-    volume > 0.05 ? "入力あり" : "入力待機中";
-
-  const now = Date.now();
-
-  /*
-    一瞬のノイズを音イベントに数えない。
-    一定以上の音量が約0.8秒続いたときだけ1イベントとして記録し、
-    次のイベントまでは20秒あける。
-  */
-  const SOUND_THRESHOLD = 12;
-  const SOUND_HOLD_MS = 800;
-  const SOUND_COOLDOWN_MS = 20000;
-
-  if (volume >= SOUND_THRESHOLD) {
-    if (!soundAboveSince) soundAboveSince = now;
-    soundPeakSince = Math.max(soundPeakSince, volume);
-  } else {
-    soundAboveSince = 0;
-    soundPeakSince = 0;
-  }
-
-  if (
-    soundAboveSince &&
-    now - soundAboveSince >= SOUND_HOLD_MS &&
-    now - lastSoundTime >= SOUND_COOLDOWN_MS
-  ) {
-    soundEvents++;
-    lastSoundTime = now;
-    soundAboveSince = 0;
-    soundPeakSince = 0;
-  }
-
-  lastSoundVolume = volume;
-
-  setTimeout(measureMicrophone, 50);
-}
-
-/* =========================
-   10秒集計
-========================= */
-
-function summarize10Seconds() {
-  if (currentInterval.length === 0) return;
-
-  const movements = currentInterval.map(x => x.movement);
-  const volumes = currentInterval.map(x => x.volume);
-
-  const avgMovement =
-    movements.reduce((a, b) => a + b, 0) /
-    movements.length;
-
-  const maxMovement = Math.max(...movements);
-
-  const avgVolume =
-    volumes.reduce((a, b) => a + b, 0) /
-    volumes.length;
-
-  let state;
-
-  if (avgMovement < 0.10 && maxMovement < 0.50) {
-    state = "静止";
-    stillCount++;
-  } else if (avgMovement < 0.60 && maxMovement < 1.50) {
-    state = "小さな動き";
-    smallCount++;
-  } else {
-    state = "大きな動き";
-    largeCount++;
-  }
-
-  summaryData.push({
-    timestamp: new Date().toISOString(),
-    avgMovement,
-    maxMovement,
-    avgVolume,
-    state
-  });
-
-  currentInterval = [];
-}
-
-/* =========================
-   グラフ
-========================= */
-
-function drawGraph() {
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-
-  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-
-  const w = canvas.width;
-  const h = canvas.height;
-
-  ctx.clearRect(0, 0, w, h);
-
-  if (rawData.length < 2) return;
-
-  const display = rawData.slice(-250);
-
-  const padLeft = 42 * dpr;
-  const padRight = 12 * dpr;
-  const padTop = 18 * dpr;
-  const padBottom = 30 * dpr;
-
-  const graphW = w - padLeft - padRight;
-  const graphH = h - padTop - padBottom;
-
-  const maxMovement = Math.max(
-    1,
-    ...display.map(x => x.movement)
-  );
-
-  const maxVolume = 100;
-
-  /*
-    グラフを読みやすくするため、
-    背景・目盛り・ラベル・2本の線を明確に分離する。
-  */
-
-  ctx.font = `${12 * dpr}px sans-serif`;
-  ctx.lineWidth = 1 * dpr;
-
-  // 横方向の目盛り
-  ctx.strokeStyle = "#252730";
-  ctx.fillStyle = "#8e8e93";
-  ctx.textAlign = "right";
-  ctx.textBaseline = "middle";
-
-  for (let i = 0; i <= 4; i++) {
-    const y = padTop + graphH * (i / 4);
-
-    ctx.beginPath();
-    ctx.moveTo(padLeft, y);
-    ctx.lineTo(w - padRight, y);
-    ctx.stroke();
-
-    const volumeLabel = Math.round(100 - i * 25);
-    ctx.fillText(
-      String(volumeLabel),
-      padLeft - 7 * dpr,
-      y
+  const rms =
+    Math.sqrt(
+      sum / buffer.length
     );
+
+  const volume =
+    Math.min(
+      100,
+      rms * 4500 +
+      peak * 1600
+    );
+
+  document.getElementById("volume").textContent =
+    volume.toFixed(1);
+
+  if(volume >= 12){
+
+    if(soundActiveSince === 0){
+      soundActiveSince = Date.now();
+    }
+
+    if(
+      Date.now() - soundActiveSince >= 800 &&
+      Date.now() >= soundCooldownUntil
+    ){
+
+      currentStats.sound++;
+
+      soundCooldownUntil =
+        Date.now() + 20000;
+
+      soundActiveSince = 0;
+
+    }
+
+  }else{
+
+    soundActiveSince = 0;
+
   }
 
-  // X軸
-  ctx.strokeStyle = "#3a3c45";
-  ctx.beginPath();
-  ctx.moveTo(padLeft, padTop + graphH);
-  ctx.lineTo(w - padRight, padTop + graphH);
-  ctx.stroke();
-
-  // 時間ラベル
-  ctx.fillStyle = "#8e8e93";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "top";
-
-  const first = display[0];
-  const last = display[display.length - 1];
-
-  const firstSeconds = first?.elapsedSeconds || 0;
-  const lastSeconds = last?.elapsedSeconds || firstSeconds;
-
-  ctx.fillText(
-    formatTime(firstSeconds),
-    padLeft,
-    padTop + graphH + 8 * dpr
-  );
-
-  ctx.fillText(
-    formatTime(lastSeconds),
-    w - padRight,
-    padTop + graphH + 8 * dpr
-  );
-
-  // 音量ライン
-  ctx.lineWidth = 2.5 * dpr;
-  ctx.strokeStyle = "#f2f2f7";
-  ctx.beginPath();
-
-  display.forEach((item, i) => {
-    const x =
-      padLeft +
-      (i / (display.length - 1)) * graphW;
-
-    const y =
-      padTop +
-      graphH -
-      (item.volume / maxVolume) * graphH;
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.stroke();
-
-  // 動きライン
-  ctx.lineWidth = 2 * dpr;
-  ctx.strokeStyle = "#8e8e93";
-  ctx.beginPath();
-
-  display.forEach((item, i) => {
-    const x =
-      padLeft +
-      (i / (display.length - 1)) * graphW;
-
-    const normalized =
-      Math.min(1, item.movement / maxMovement);
-
-    const y =
-      padTop +
-      graphH -
-      normalized * graphH;
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.stroke();
-
-  // 左上の説明
-  ctx.font = `${11 * dpr}px sans-serif`;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "top";
-
-  ctx.fillStyle = "#f2f2f7";
-  ctx.fillText(
-    "音量",
-    padLeft + 5 * dpr,
-    4 * dpr
-  );
-
-  ctx.fillStyle = "#8e8e93";
-  ctx.fillText(
-    "動き",
-    padLeft + 48 * dpr,
-    4 * dpr
-  );
+  return volume;
 }
+
 
 /* =========================
-   Wake Lock
+   Sleep State
 ========================= */
 
-async function requestWakeLock() {
-  if (!("wakeLock" in navigator)) {
-    wakeStatusEl.textContent = "非対応";
-    return;
+function calculateSleepState(){
+
+  if(movementSamples.length === 0){
+    return "判定中";
   }
 
-  try {
-    wakeLock = await navigator.wakeLock.request("screen");
+  const average =
+    movementSamples.reduce(
+      (a,b)=>a+b,
+      0
+    ) / movementSamples.length;
 
-    wakeStatusEl.textContent = "ON";
-
-    wakeLock.addEventListener("release", () => {
-      wakeStatusEl.textContent = "OFF";
-    });
-  } catch {
-    wakeStatusEl.textContent = "OFF";
+  if(average < 0.10){
+    return "静か";
   }
+
+  if(average < 0.60){
+    return "小さな動き";
+  }
+
+  return "大きな動き";
 }
 
-async function releaseWakeLock() {
-  if (wakeLock) {
-    await wakeLock.release();
-    wakeLock = null;
+
+/* =========================
+   Sampling
+========================= */
+
+function summarize10Seconds(){
+
+  const motion =
+    movementSamples.length
+      ? movementSamples.reduce(
+          (a,b)=>a+b,
+          0
+        ) / movementSamples.length
+      : 0;
+
+  let type = "still";
+
+  if(motion < 0.10){
+    type = "still";
+    currentStats.still += 10;
+
+  }else if(motion < 0.60){
+    type = "small";
+    currentStats.small += 10;
+
+  }else{
+    type = "large";
+    currentStats.large += 10;
   }
 
-  wakeStatusEl.textContent = "OFF";
+  currentStats.samples++;
+
+  const volume =
+    readVolume();
+
+  const point = {
+    time: Date.now(),
+    motion,
+    volume,
+    type
+  };
+
+  rawData.push(point);
+  summaryData.push(point);
+
+  if(rawData.length > 2000){
+    rawData.shift();
+  }
+
+  if(summaryData.length > 250){
+    summaryData.shift();
+  }
+
+  drawGraph();
+
 }
 
-document.addEventListener("visibilitychange", async () => {
-  if (
-    measuring &&
-    document.visibilityState === "visible"
-  ) {
+
+/* =========================
+   Timer
+========================= */
+
+function formatDuration(ms){
+
+  const total =
+    Math.floor(ms / 1000);
+
+  const h =
+    Math.floor(total / 3600);
+
+  const m =
+    Math.floor(
+      (total % 3600) / 60
+    );
+
+  const s =
+    total % 60;
+
+  return [
+    String(h).padStart(2,"0"),
+    String(m).padStart(2,"0"),
+    String(s).padStart(2,"0")
+  ].join(":");
+
+}
+
+
+function updateElapsed(){
+
+  if(!measuring) return;
+
+  const elapsed =
+    Date.now() - startTime;
+
+  document.getElementById("elapsed").textContent =
+    formatDuration(elapsed);
+
+  document.getElementById("sleepState").textContent =
+    calculateSleepState();
+
+}
+
+
+/* =========================
+   Start
+========================= */
+
+async function startMeasurement(){
+
+  if(measuring) return;
+
+  try{
+
+    await requestMotionPermission();
+
+    await startMicrophone();
+
     await requestWakeLock();
-  }
-});
 
-/* =========================
-   測定開始
-========================= */
+    measuring = true;
 
-async function startMeasurement() {
-  if (measuring) return;
+    startTime = Date.now();
 
-  measuring = true;
-  startTime = Date.now();
+    lastMotion = null;
+    movementSamples = [];
 
-  rawData = [];
-  summaryData = [];
-  currentInterval = [];
-
-  stillCount = 0;
-  smallCount = 0;
-  largeCount = 0;
-  soundEvents = 0;
-
-  previousX = null;
-  previousY = null;
-  previousZ = null;
-  movementHistory = [];
-  lastSoundTime = 0;
-  soundAboveSince = 0;
-  soundPeakSince = 0;
-  lastSoundVolume = 0;
-
-  statusEl.textContent = "測定中";
-  startBtn.disabled = true;
-  stopBtn.disabled = false;
-
-  accStatusEl.textContent = "待機中";
-  micStatusEl.textContent = "接続中";
-  sleepStateEl.textContent = "---";
-
-  await requestWakeLock();
-
-  window.addEventListener("devicemotion", handleMotion);
-
-  if (
-    "mediaDevices" in navigator &&
-    navigator.mediaDevices.getUserMedia
-  ) {
-    await setupMicrophone();
-  } else {
-    micStatusEl.textContent = "非対応";
-  }
-
-  elapsedTimer = setInterval(updateElapsed, 1000);
-
-  summaryTimer = setInterval(() => {
-    const data = {
-      timestamp: new Date().toISOString(),
-      elapsedSeconds: (Date.now() - startTime) / 1000,
-      movement: latestMovement,
-      volume: latestVolume
+    currentStats = {
+      still:0,
+      small:0,
+      large:0,
+      sound:0,
+      samples:0
     };
 
-    rawData.push(data);
-    currentInterval.push(data);
+    rawData = [];
+    summaryData = [];
 
-    summarize10Seconds();
-    drawGraph();
-  }, 10000);
+    document.getElementById("sensorStatus").textContent =
+      "測定中";
 
-  showToast("睡眠測定を開始しました");
-}
+    document.getElementById("sensorStatus").className =
+      "value status-ok";
 
-/* =========================
-   タイマー
-========================= */
+    document.getElementById("motionStatus").textContent =
+      "接続済み";
 
-function updateElapsed() {
-  if (!measuring) return;
+    document.getElementById("startBtn").disabled =
+      true;
 
-  const seconds = (Date.now() - startTime) / 1000;
-  elapsedEl.textContent = formatTime(seconds);
-}
+    document.getElementById("stopBtn").disabled =
+      false;
 
-/* =========================
-   スコア
-========================= */
-
-function calculateScore(duration) {
-  const hours = duration / 3600;
-
-  let durationScore;
-
-  if (hours >= 8 && hours <= 10) {
-    durationScore = 100;
-  } else if (hours < 8) {
-    durationScore = Math.max(
-      0,
-      100 - (8 - hours) * 25
+    window.addEventListener(
+      "devicemotion",
+      handleMotion
     );
-  } else {
-    durationScore = Math.max(
-      70,
-      100 - (hours - 10) * 10
+
+    elapsedTimer =
+      setInterval(
+        updateElapsed,
+        1000
+      );
+
+    sampleTimer =
+      setInterval(
+        summarize10Seconds,
+        10000
+      );
+
+    document.getElementById("elapsed").textContent =
+      "00:00:00";
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "センサーを開始できませんでした。\n\n" +
+      error.message
     );
+
   }
 
-  const totalIntervals =
-    stillCount + smallCount + largeCount;
-
-  const stillRatio =
-    totalIntervals > 0
-      ? stillCount / totalIntervals
-      : 0;
-
-  const largeRatio =
-    totalIntervals > 0
-      ? largeCount / totalIntervals
-      : 0;
-
-  const stillScore =
-    Math.min(100, stillRatio * 130);
-
-  const movementScore =
-    Math.max(0, 100 - largeRatio * 150);
-
-  const movementFinal =
-    stillScore * 0.5 +
-    movementScore * 0.5;
-
-  const soundRatio =
-    duration > 0
-      ? soundEvents / (duration / 3600)
-      : 0;
-
-  // 音イベントは「回数が少ないほど良い」指標。以前より急激に0点になりにくくする。
-  const soundScore =
-    Math.max(0, 100 - soundRatio * 3);
-
-  const overall =
-    durationScore * 0.45 +
-    movementFinal * 0.35 +
-    soundScore * 0.20;
-
-  return {
-    durationScore: Math.round(durationScore),
-    movementScore: Math.round(movementFinal),
-    soundScore: Math.round(soundScore),
-    overall: Math.round(
-      Math.max(0, Math.min(100, overall))
-    ),
-    stillRatio,
-    largeRatio
-  };
 }
 
+
 /* =========================
-   測定停止
+   Stop
 ========================= */
 
-async function stopMeasurement() {
-  if (!measuring) return;
+async function stopMeasurement(){
+
+  if(!measuring) return;
 
   measuring = false;
 
   clearInterval(elapsedTimer);
-  clearInterval(summaryTimer);
+  clearInterval(sampleTimer);
 
-  window.removeEventListener("devicemotion", handleMotion);
+  window.removeEventListener(
+    "devicemotion",
+    handleMotion
+  );
 
-  if (currentInterval.length > 0) {
-    summarize10Seconds();
-  }
+  if(microphoneStream){
 
-  if (microphoneStream) {
     microphoneStream
       .getTracks()
-      .forEach(track => track.stop());
+      .forEach(track =>
+        track.stop()
+      );
 
     microphoneStream = null;
+
   }
 
-  if (audioContext) {
-    try {
+  if(audioContext){
+
+    try{
       await audioContext.close();
-    } catch {}
+    }catch(e){}
 
     audioContext = null;
-    analyser = null;
   }
+
+  analyser = null;
+  microphoneSource = null;
 
   await releaseWakeLock();
 
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
+  document.getElementById("startBtn").disabled =
+    false;
 
-  statusEl.textContent = "測定終了";
+  document.getElementById("stopBtn").disabled =
+    true;
 
-  const duration =
-    (Date.now() - startTime) / 1000;
+  document.getElementById("sensorStatus").textContent =
+    "測定終了";
 
-  /*
-    実験的な推定睡眠時間。
-    静止＋小さな動きを睡眠寄りの時間として扱う。
-  */
-  const estimatedSleepSeconds =
-    (stillCount + smallCount) * 10;
+  document.getElementById("micStatus").textContent =
+    "未接続";
 
-  const scores = calculateScore(duration);
+  document.getElementById("motionStatus").textContent =
+    "未接続";
+
+  calculateResult();
+
+}
+
+
+/* =========================
+   Score
+========================= */
+
+function calculateDurationScore(hours){
+
+  if(hours >= 8 && hours <= 10){
+    return 100;
+  }
+
+  if(hours < 8){
+    return Math.max(
+      0,
+      100 - (8 - hours) * 30
+    );
+  }
+
+  return Math.max(
+    0,
+    100 - (hours - 10) * 25
+  );
+
+}
+
+
+function calculateResult(){
+
+  const durationMs =
+    Date.now() - startTime;
+
+  const hours =
+    durationMs / 3600000;
+
+  const totalMovement =
+    currentStats.still +
+    currentStats.small +
+    currentStats.large;
+
+  const stillRatio =
+    totalMovement > 0
+      ? currentStats.still /
+        totalMovement
+      : 0;
+
+  const largeRatio =
+    totalMovement > 0
+      ? currentStats.large /
+        totalMovement
+      : 0;
+
+  const movementScore =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        stillRatio * 100 -
+        largeRatio * 60 +
+        20
+      )
+    );
+
+  const soundRatio =
+    hours > 0
+      ? currentStats.sound /
+        (hours * 60)
+      : 0;
+
+  const soundScore =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        100 - soundRatio * 3
+      )
+    );
+
+  const durationScore =
+    calculateDurationScore(hours);
+
+  const score = Math.round(
+    durationScore * 0.45 +
+    movementScore * 0.35 +
+    soundScore * 0.20
+  );
 
   let evaluation;
 
-  if (scores.overall >= 90) {
-    evaluation = "とても良い";
-  } else if (scores.overall >= 75) {
-    evaluation = "良い";
-  } else if (scores.overall >= 60) {
-    evaluation = "普通";
-  } else if (scores.overall >= 40) {
-    evaluation = "改善の余地あり";
-  } else {
-    evaluation = "要改善";
+  if(score >= 90){
+    evaluation = "かなり良い睡眠です。";
+  }else if(score >= 75){
+    evaluation = "良い睡眠です。";
+  }else if(score >= 60){
+    evaluation = "まずまずの睡眠です。";
+  }else if(score >= 40){
+    evaluation = "改善できるところがあります。";
+  }else{
+    evaluation = "睡眠習慣を見直してみましょう。";
   }
 
   const result = {
-    date: getLocalDateKey(),
-    timestamp: new Date().toISOString(),
-    duration,
-    sleepSeconds: estimatedSleepSeconds,
-    stillSeconds: stillCount * 10,
-    smallCount,
-    largeCount,
-    soundEvents,
-    score: scores.overall,
-    durationScore: scores.durationScore,
-    movementScore: scores.movementScore,
-    soundScore: scores.soundScore,
-    largeRatio: scores.largeRatio,
-    evaluation
+    timestamp: Date.now(),
+    date: new Date().toLocaleDateString("ja-JP"),
+    durationMs,
+    durationHours: hours,
+    score,
+    evaluation,
+    still: currentStats.still,
+    small: currentStats.small,
+    large: currentStats.large,
+    sound: currentStats.sound
   };
 
-  showResult(result);
-  addHistory(result);
-  addXP(10);
-  checkAchievements(result);
+  data.history.unshift(result);
 
-  saveAll();
-  queueFirestoreSave();
-
-  renderDashboard();
-
-  showToast("測定結果を保存しました");
-}
-
-/* =========================
-   結果表示
-========================= */
-
-function showResult(r) {
-  document.getElementById("resultCard")
-    .classList.remove("hidden");
-
-  document.getElementById("score")
-    .textContent = r.score;
-
-  document.getElementById("evaluation")
-    .textContent = r.evaluation;
-
-  document.getElementById("resultDuration")
-    .textContent = formatTime(r.duration);
-
-  document.getElementById("resultSleep")
-    .textContent = formatTime(r.sleepSeconds);
-
-  document.getElementById("resultStill")
-    .textContent = formatTime(r.stillSeconds);
-
-  document.getElementById("resultSmall")
-    .textContent = r.smallCount + "回";
-
-  document.getElementById("resultLarge")
-    .textContent = r.largeCount + "回";
-
-  document.getElementById("resultSound")
-    .textContent = r.soundEvents + "回";
-
-  document.getElementById("durationProgress")
-    .style.width = r.durationScore + "%";
-
-  document.getElementById("movementProgress")
-    .style.width = r.movementScore + "%";
-
-  document.getElementById("soundProgress")
-    .style.width = r.soundScore + "%";
-}
-
-/* =========================
-   履歴
-========================= */
-
-function addHistory(result) {
-  const index =
-    saveData.history.findIndex(
-      x => x.date === result.date
-    );
-
-  if (index >= 0) {
-    saveData.history[index] = result;
-  } else {
-    saveData.history.push(result);
+  if(data.history.length > 100){
+    data.history =
+      data.history.slice(0,100);
   }
 
-  saveData.history.sort(
-    (a, b) => b.date.localeCompare(a.date)
-  );
+  data.xp += 10;
+
+  checkAchievements(result);
+
+  saveLocal();
+  queueFirestoreSave();
+
+  showResult(result);
+  updateAllUI();
+
 }
 
+
 /* =========================
-   ストリーク
+   Result UI
 ========================= */
 
-function getCurrentStreak() {
-  if (saveData.history.length === 0) return 0;
+function showResult(result){
+
+  document.getElementById("score").textContent =
+    result.score;
+
+  document.getElementById("evaluation").textContent =
+    result.evaluation;
+
+  document.getElementById("scoreFill").style.width =
+    result.score + "%";
+
+  document.getElementById("resultDuration").textContent =
+    result.durationHours.toFixed(2) + "時間";
+
+  document.getElementById("resultStill").textContent =
+    Math.round(result.still / 60) + "分";
+
+  document.getElementById("resultSmall").textContent =
+    Math.round(result.small / 60) + "分";
+
+  document.getElementById("resultLarge").textContent =
+    Math.round(result.large / 60) + "分";
+
+  document.getElementById("resultSound").textContent =
+    result.sound + "回";
+
+}
+
+
+/* =========================
+   Achievements
+========================= */
+
+const ACHIEVEMENTS = {
+
+  first:{
+    name:"はじめの一歩",
+    description:"初めて睡眠を測定する"
+  },
+
+  min30:{
+    name:"30分突破",
+    description:"30分以上測定する"
+  },
+
+  hour1:{
+    name:"1時間測定",
+    description:"1時間以上測定する"
+  },
+
+  hour8:{
+    name:"ロングスリーパー",
+    description:"8時間以上測定する"
+  },
+
+  sleep8:{
+    name:"理想睡眠",
+    description:"8〜10時間の睡眠を記録する"
+  },
+
+  quiet:{
+    name:"静かな夜",
+    description:"音イベントを少なく抑える"
+  },
+
+  stable:{
+    name:"安定した睡眠",
+    description:"大きな動きを少なくする"
+  },
+
+  score90:{
+    name:"90点",
+    description:"睡眠スコア90点以上"
+  },
+
+  streak3:{
+    name:"3日継続",
+    description:"3日連続で測定する"
+  },
+
+  streak7:{
+    name:"1週間継続",
+    description:"7日連続で測定する"
+  },
+
+  streak14:{
+    name:"2週間継続",
+    description:"14日連続で測定する"
+  },
+
+  streak30:{
+    name:"1か月継続",
+    description:"30日連続で測定する"
+  }
+
+};
+
+
+function unlock(id){
+
+  if(!data.achievements.includes(id)){
+
+    data.achievements.push(id);
+
+  }
+
+}
+
+
+function checkAchievements(result){
+
+  unlock("first");
+
+  if(result.durationHours >= 0.5){
+    unlock("min30");
+  }
+
+  if(result.durationHours >= 1){
+    unlock("hour1");
+  }
+
+  if(result.durationHours >= 8){
+    unlock("hour8");
+  }
+
+  if(
+    result.durationHours >= 8 &&
+    result.durationHours <= 10
+  ){
+    unlock("sleep8");
+  }
+
+  if(result.sound <= 3){
+    unlock("quiet");
+  }
+
+  const total =
+    result.still +
+    result.small +
+    result.large;
+
+  if(
+    total > 0 &&
+    result.large / total < 0.15
+  ){
+    unlock("stable");
+  }
+
+  if(result.score >= 90){
+    unlock("score90");
+  }
+
+  const current =
+    calculateStreak();
+
+  if(current >= 3){
+    unlock("streak3");
+  }
+
+  if(current >= 7){
+    unlock("streak7");
+  }
+
+  if(current >= 14){
+    unlock("streak14");
+  }
+
+  if(current >= 30){
+    unlock("streak30");
+  }
+
+}
+
+
+/* =========================
+   Streak
+========================= */
+
+function dateKey(date){
+
+  return new Date(date)
+    .toLocaleDateString(
+      "sv-SE",
+      {
+        timeZone:"Asia/Tokyo"
+      }
+    );
+
+}
+
+
+function getMeasurementDates(){
+
+  return Array.from(
+    new Set(
+      data.history.map(
+        item =>
+          item.dateKey ||
+          dateKey(item.timestamp)
+      )
+    )
+  );
+
+}
+
+
+function calculateStreak(){
 
   const dates =
-    saveData.history
-      .map(x => x.date)
-      .sort()
-      .reverse();
+    getMeasurementDates();
 
-  let streak = 1;
+  if(!dates.length) return 0;
 
-  for (let i = 0; i < dates.length - 1; i++) {
-    const current =
-      new Date(dates[i] + "T00:00:00");
+  const set =
+    new Set(dates);
 
-    const previous =
-      new Date(dates[i + 1] + "T00:00:00");
+  let date =
+    new Date();
 
-    const diff =
-      Math.round(
-        (current - previous) / 86400000
-      );
+  let key =
+    dateKey(date);
 
-    if (diff === 1) streak++;
-    else break;
+  if(!set.has(key)){
+
+    date.setDate(
+      date.getDate() - 1
+    );
+
+    key = dateKey(date);
+
+    if(!set.has(key)){
+      return 0;
+    }
+
+  }
+
+  let streak = 0;
+
+  while(set.has(key)){
+
+    streak++;
+
+    date.setDate(
+      date.getDate() - 1
+    );
+
+    key = dateKey(date);
+
   }
 
   return streak;
+
 }
 
-function getBestStreak() {
-  if (saveData.history.length === 0) return 0;
+
+function calculateBestStreak(){
 
   const dates =
-    [...new Set(
-      saveData.history.map(x => x.date)
-    )].sort();
+    getMeasurementDates()
+      .sort();
 
-  let best = 1;
-  let current = 1;
+  if(!dates.length) return 0;
 
-  for (let i = 1; i < dates.length; i++) {
-    const a =
-      new Date(dates[i - 1] + "T00:00:00");
+  const set =
+    new Set(dates);
 
-    const b =
-      new Date(dates[i] + "T00:00:00");
+  let best = 0;
 
-    const diff =
-      Math.round((b - a) / 86400000);
+  for(const dateString of dates){
 
-    if (diff === 1) {
-      current++;
-      best = Math.max(best, current);
-    } else {
-      current = 1;
+    const d =
+      new Date(dateString + "T00:00:00");
+
+    const previous =
+      new Date(d);
+
+    previous.setDate(
+      previous.getDate() - 1
+    );
+
+    const previousKey =
+      dateKey(previous);
+
+    if(set.has(previousKey)){
+      continue;
     }
+
+    let current = 1;
+
+    const next =
+      new Date(d);
+
+    while(true){
+
+      next.setDate(
+        next.getDate() + 1
+      );
+
+      const key =
+        dateKey(next);
+
+      if(!set.has(key)) break;
+
+      current++;
+
+    }
+
+    best =
+      Math.max(
+        best,
+        current
+      );
+
   }
 
   return best;
+
 }
+
 
 /* =========================
-   XP・レベル
+   Level
 ========================= */
 
-function getLevel() {
-  return Math.floor(saveData.xp / 100) + 1;
+function updateLevel(){
+
+  const xp =
+    Number(data.xp) || 0;
+
+  const level =
+    Math.floor(xp / 100) + 1;
+
+  const currentXP =
+    xp % 100;
+
+  document.getElementById("level").textContent =
+    "Lv." + level;
+
+  document.getElementById("xp").textContent =
+    xp + " XP";
+
+  document.getElementById("levelText").textContent =
+    "次のレベルまで " +
+    (100 - currentXP) +
+    " XP";
+
+  document.getElementById("levelProgress").style.width =
+    currentXP + "%";
+
 }
 
-function getLevelXP() {
-  return saveData.xp % 100;
-}
-
-function addXP(amount) {
-  const oldLevel = getLevel();
-
-  saveData.xp += amount;
-
-  const newLevel = getLevel();
-
-  if (newLevel > oldLevel) {
-    showToast(`レベルアップ！ Lv.${newLevel}`);
-  }
-}
 
 /* =========================
-   実績判定
+   Achievement UI
 ========================= */
 
-function checkAchievements(result) {
-  ACHIEVEMENTS.forEach(a => {
-    if (saveData.achievements.includes(a.id)) return;
+function updateAchievements(){
 
-    let unlocked = false;
+  const container =
+    document.getElementById("achievements");
 
-    try {
-      unlocked = a.check(result);
-    } catch {
-      unlocked = false;
-    }
+  container.innerHTML = "";
 
-    if (unlocked) {
-      saveData.achievements.push(a.id);
-      addXP(a.xp);
+  Object.entries(
+    ACHIEVEMENTS
+  ).forEach(
+    ([id,achievement]) => {
 
-      showToast(
-        `実績解除：「${a.title}」 +${a.xp}XP`
-      );
-    }
-  });
-}
+      const unlocked =
+        data.achievements.includes(id);
 
-/* =========================
-   ダッシュボード
-========================= */
+      const div =
+        document.createElement("div");
 
-function renderDashboard() {
-  const level = getLevel();
-  const levelXP = getLevelXP();
+      div.className =
+        "achievement " +
+        (unlocked
+          ? "unlocked"
+          : "locked");
 
-  document.getElementById("level")
-    .textContent = `Lv.${level}`;
-
-  document.getElementById("xp")
-    .textContent = `${saveData.xp} XP`;
-
-  document.getElementById("levelProgressText")
-    .textContent = `${levelXP} / 100 XP`;
-
-  document.getElementById("levelProgress")
-    .style.width = levelXP + "%";
-
-  document.getElementById("currentStreak")
-    .textContent = getCurrentStreak() + "日";
-
-  document.getElementById("bestStreak")
-    .textContent = getBestStreak() + "日";
-
-  document.getElementById("totalDays")
-    .textContent = saveData.history.length + "日";
-
-  const bestScore =
-    saveData.history.length
-      ? Math.max(...saveData.history.map(x => x.score))
-      : 0;
-
-  document.getElementById("bestScore")
-    .textContent = bestScore;
-
-  renderAchievements();
-  renderHistory();
-}
-
-/* =========================
-   実績表示
-========================= */
-
-function renderAchievements() {
-  const list =
-    document.getElementById("achievementList");
-
-  list.innerHTML = "";
-
-  ACHIEVEMENTS.forEach(a => {
-    const unlocked =
-      saveData.achievements.includes(a.id);
-
-    const div = document.createElement("div");
-
-    div.className =
-      "achievement" +
-      (unlocked ? "" : " locked");
-
-    div.innerHTML = `
-      <div class="achievement-icon">
-        ${unlocked ? a.icon : "?"}
-      </div>
-
-      <div>
-        <div class="achievement-title">
-          ${unlocked ? a.title : "？？？"}
+      div.innerHTML = `
+        <div>
+          <strong>
+            ${unlocked ? "✓" : "○"}
+            ${achievement.name}
+          </strong>
+          <div class="label">
+            ${achievement.description}
+          </div>
         </div>
-
-        <div class="achievement-desc">
-          ${a.desc}
-          ${unlocked ? ` ・ +${a.xp}XP` : ""}
+        <div>
+          ${unlocked ? "達成" : "未達成"}
         </div>
-      </div>
-    `;
+      `;
 
-    list.appendChild(div);
-  });
+      container.appendChild(div);
+
+    }
+  );
+
 }
 
+
 /* =========================
-   履歴表示
+   History
 ========================= */
 
-function renderHistory() {
-  const list =
-    document.getElementById("historyList");
+function updateHistory(){
 
-  if (saveData.history.length === 0) {
-    list.innerHTML =
-      `<div class="notice">
-        まだ測定履歴がありません。
-      </div>`;
+  const container =
+    document.getElementById("history");
+
+  if(!data.history.length){
+
+    container.textContent =
+      "まだ履歴がありません。";
 
     return;
   }
 
-  list.innerHTML = "";
+  container.innerHTML = "";
 
-  saveData.history
-    .slice(0, 30)
-    .forEach(r => {
-      const div = document.createElement("div");
+  data.history.forEach(
+    item => {
 
-      div.className = "history-row";
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "history-item";
+
+      const date =
+        item.date ||
+        new Date(
+          item.timestamp
+        ).toLocaleDateString(
+          "ja-JP"
+        );
 
       div.innerHTML = `
-        <div class="history-top">
-          <span>${r.date}</span>
-          <span>${r.score}点</span>
+        <div>
+          <strong>${date}</strong>
+          <span class="history-score">
+            ${item.score}点
+          </span>
         </div>
 
-        <div class="history-detail">
-          推定睡眠 ${formatTime(r.sleepSeconds)}
-          ／ 測定 ${formatTime(r.duration)}
-          ／ ${r.evaluation}
+        <div class="label">
+          ${item.durationHours.toFixed(2)}時間
+          ・
+          ${item.sound}回の音イベント
         </div>
 
-        <div class="history-detail">
-          静止 ${formatTime(r.stillSeconds)}
-          ・大きな動き ${r.largeCount}回
-          ・音 ${r.soundEvents}回
+        <div class="label">
+          ${item.evaluation}
         </div>
       `;
 
-      list.appendChild(div);
-    });
+      container.appendChild(div);
+
+    }
+  );
+
 }
+
+
+/* =========================
+   Graph
+========================= */
+
+function drawGraph(){
+
+  const canvas =
+    document.getElementById("graph");
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+  const dpr =
+    window.devicePixelRatio || 1;
+
+  canvas.width =
+    rect.width * dpr;
+
+  canvas.height =
+    rect.height * dpr;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.scale(dpr,dpr);
+
+  const width =
+    rect.width;
+
+  const height =
+    rect.height;
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+  ctx.strokeStyle =
+    "#252525";
+
+  ctx.lineWidth = 1;
+
+  for(let i=1;i<5;i++){
+
+    const y =
+      height * i / 5;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      y
+    );
+
+    ctx.lineTo(
+      width,
+      y
+    );
+
+    ctx.stroke();
+
+  }
+
+  if(summaryData.length < 2){
+    return;
+  }
+
+  const points =
+    summaryData.slice(-250);
+
+  const max =
+    Math.max(
+      1,
+      ...points.map(
+        p =>
+          Math.max(
+            p.motion * 20,
+            p.volume
+          )
+      )
+    );
+
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+
+  points.forEach(
+    (point,index) => {
+
+      const x =
+        index /
+        (points.length - 1) *
+        width;
+
+      const value =
+        Math.min(
+          max,
+          Math.max(
+            point.motion * 20,
+            point.volume
+          )
+        );
+
+      const y =
+        height -
+        value / max *
+        (height - 20) -
+        10;
+
+      if(index === 0){
+        ctx.moveTo(x,y);
+      }else{
+        ctx.lineTo(x,y);
+      }
+
+    }
+  );
+
+  ctx.stroke();
+
+}
+
+
+/* =========================
+   All UI
+========================= */
+
+function updateAllUI(){
+
+  updateLevel();
+  updateAchievements();
+  updateHistory();
+
+  const streak =
+    calculateStreak();
+
+  const best =
+    calculateBestStreak();
+
+  document.getElementById("streak").textContent =
+    streak + "日";
+
+  document.getElementById("bestStreak").textContent =
+    best + "日";
+
+  document.getElementById("totalDays").textContent =
+    getMeasurementDates().length + "日";
+
+  if(data.history.length){
+
+    const bestScore =
+      Math.max(
+        ...data.history.map(
+          item => Number(item.score) || 0
+        )
+      );
+
+    document.getElementById("bestScore").textContent =
+      bestScore + "点";
+
+  }else{
+
+    document.getElementById("bestScore").textContent =
+      "--";
+
+  }
+
+}
+
 
 /* =========================
    CSV
 ========================= */
 
-function downloadCSV(filename, rows) {
-  if (!rows.length) {
-    showToast("保存できるデータがありません");
+function exportCSV(){
+
+  if(!data.history.length){
+
+    alert("履歴がありません。");
+
     return;
   }
 
-  const headers = Object.keys(rows[0]);
+  const header = [
+    "date",
+    "timestamp",
+    "duration_hours",
+    "score",
+    "evaluation",
+    "still_seconds",
+    "small_seconds",
+    "large_seconds",
+    "sound_events"
+  ];
 
-  const csv = [
-    headers.join(","),
-    ...rows.map(row =>
-      headers
-        .map(key => {
-          let value = row[key];
+  const rows =
+    data.history.map(
+      item => [
 
-          if (typeof value === "string") {
-            value = value.replace(/"/g, '""');
-            value = `"${value}"`;
-          }
+        item.date,
+        item.timestamp,
+        item.durationHours,
+        item.score,
+        item.evaluation,
+        item.still,
+        item.small,
+        item.large,
+        item.sound
 
-          return value;
-        })
-        .join(",")
-    )
-  ].join("\n");
+      ]
+    );
 
-  const blob = new Blob(
-    ["\uFEFF" + csv],
-    { type: "text/csv;charset=utf-8;" }
-  );
+  const csv =
+    [header,...rows]
+      .map(
+        row =>
+          row.map(
+            value =>
+              `"${String(value)
+                .replaceAll('"','""')}"`
+          ).join(",")
+      )
+      .join("\n");
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const blob =
+    new Blob(
+      ["\ufeff" + csv],
+      {
+        type:"text/csv;charset=utf-8"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
 
   a.href = url;
-  a.download = filename;
+
+  a.download =
+    "sleep_history.csv";
+
   a.click();
 
   URL.revokeObjectURL(url);
+
 }
 
-document.getElementById("rawCsvBtn")
-  .addEventListener("click", () => {
-    downloadCSV("sleep_raw.csv", rawData);
-  });
-
-document.getElementById("summaryCsvBtn")
-  .addEventListener("click", () => {
-    downloadCSV(
-      "sleep_10sec_summary.csv",
-      summaryData
-    );
-  });
 
 /* =========================
-   リセット
+   Reset
 ========================= */
 
-document.getElementById("resetBtn")
-  .addEventListener("click", () => {
-    rawData = [];
-    summaryData = [];
-    currentInterval = [];
+function resetCurrent(){
 
-    stillCount = 0;
-    smallCount = 0;
-    largeCount = 0;
-    soundEvents = 0;
-    soundAboveSince = 0;
-    soundPeakSince = 0;
-    lastSoundVolume = 0;
+  document.getElementById("score").textContent =
+    "--";
 
-    elapsedEl.textContent = "00:00:00";
-    movementEl.textContent = "0.000";
-    volumeEl.textContent = "0";
-    sleepStateEl.textContent = "---";
+  document.getElementById("evaluation").textContent =
+    "まだ測定されていません";
 
-    ctx.clearRect(
-      0,
-      0,
-      canvas.width,
-      canvas.height
+  document.getElementById("scoreFill").style.width =
+    "0%";
+
+  document.getElementById("resultDuration").textContent =
+    "--";
+
+  document.getElementById("resultStill").textContent =
+    "--";
+
+  document.getElementById("resultSmall").textContent =
+    "--";
+
+  document.getElementById("resultLarge").textContent =
+    "--";
+
+  document.getElementById("resultSound").textContent =
+    "--";
+
+  rawData = [];
+  summaryData = [];
+
+  drawGraph();
+
+}
+
+
+async function resetAll(){
+
+  const ok =
+    confirm(
+      "履歴・XP・実績をすべて削除します。\n本当に削除しますか？"
     );
 
-    document.getElementById("resultCard")
-      .classList.add("hidden");
+  if(!ok) return;
 
-    showToast(
-      "今回の測定データをリセットしました"
-    );
-  });
+  data = {
+    xp:0,
+    history:[],
+    achievements:[]
+  };
 
-document.getElementById("achievementResetBtn")
-  .addEventListener("click", async () => {
-    const ok = confirm(
-      "実績・XP・履歴をすべて削除します。よろしいですか？"
-    );
+  saveLocal();
 
-    if (!ok) return;
+  if(firebaseUser && !firebaseUser.isAnonymous){
 
-    saveData = {
-      xp: 0,
-      history: [],
-      achievements: []
-    };
+    try{
 
-    saveAll();
-    renderDashboard();
-    await saveToFirestore();
+      await saveToFirestore();
 
-    showToast(
-      "実績・履歴をリセットしました"
-    );
-  });
+    }catch(e){
+      console.error(e);
+    }
+
+  }
+
+  resetCurrent();
+
+}
+
 
 /* =========================
-   ボタン
+   Events
 ========================= */
 
-startBtn.addEventListener(
-  "click",
-  startMeasurement
+document
+  .getElementById("startBtn")
+  .addEventListener(
+    "click",
+    startMeasurement
+  );
+
+document
+  .getElementById("stopBtn")
+  .addEventListener(
+    "click",
+    stopMeasurement
+  );
+
+document
+  .getElementById("csvBtn")
+  .addEventListener(
+    "click",
+    exportCSV
+  );
+
+document
+  .getElementById("resetCurrentBtn")
+  .addEventListener(
+    "click",
+    resetCurrent
+  );
+
+document
+  .getElementById("resetAllBtn")
+  .addEventListener(
+    "click",
+    resetAll
+  );
+
+
+window.addEventListener(
+  "resize",
+  drawGraph
 );
 
-stopBtn.addEventListener(
-  "click",
-  stopMeasurement
-);
 
 /* =========================
-   画面初期化
+   Page Visibility
 ========================= */
 
-renderDashboard();
+document.addEventListener(
+  "visibilitychange",
+  async () => {
+
+    if(
+      document.visibilityState === "visible" &&
+      measuring &&
+      !wakeLock
+    ){
+
+      await requestWakeLock();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   Init
+========================= */
+
+loadLocal();
+drawGraph();
+initializeAuth();
+
 </script>
 
 </body>
