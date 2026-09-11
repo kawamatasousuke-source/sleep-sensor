@@ -475,6 +475,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   linkWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   setPersistence,
   browserLocalPersistence,
   signInAnonymously,
@@ -824,6 +826,21 @@ async function finishGoogleSync(user) {
   showToast("Googleと同期しました");
 }
 
+async function handleGoogleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result && result.user) {
+      await finishGoogleSync(result.user);
+    }
+  } catch (error) {
+    console.error("Googleリダイレクト認証エラー:", error);
+    const code = error?.code || "unknown";
+    showToast(`Google連携に失敗しました（${code}）`);
+    accountStatusEl.textContent = `Google連携エラー: ${code}`;
+  }
+}
+handleGoogleRedirectResult();
+
 googleSignInBtn.addEventListener("click", async () => {
   if (googleSignInBtn.disabled) return;
 
@@ -832,13 +849,18 @@ googleSignInBtn.addEventListener("click", async () => {
     accountStatusEl.textContent = "Googleログインを開いています…";
 
     const currentUser = auth.currentUser;
+
+    // スマホではポップアップが消える問題を避けるためリダイレクト方式を使用
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
     let result;
 
     if (currentUser && currentUser.isAnonymous) {
-      // 匿名ユーザーをそのままGoogleアカウントへリンクする。
       result = await linkWithPopup(currentUser, googleProvider);
     } else {
-      // すでにログイン状態なら通常のGoogleログイン。
       result = await signInWithPopup(auth, googleProvider);
     }
 
