@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>睡眠センサー v10</title>
+<title>睡眠センサー v7</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -246,7 +246,7 @@ canvas {
 
 <div class="container">
 
-  <h1>睡眠センサー v10</h1>
+  <h1>睡眠センサー v7</h1>
   <p class="subtitle">睡眠測定＋スコア＋実績＋ストリーク</p>
 
   <div class="card">
@@ -474,9 +474,9 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithRedirect,
-  linkWithRedirect,
-  getRedirectResult,
+  linkWithPopup,
+  setPersistence,
+  browserLocalPersistence,
   signInAnonymously,
   onAuthStateChanged,
   signOut
@@ -505,6 +505,14 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: "select_account"
+});
+
+// Google連携後もログイン状態をブラウザに保持する
+setPersistence(auth, browserLocalPersistence).catch(error => {
+  console.error("Firebase認証状態の保存設定エラー:", error);
+});
 
 let firebaseUser = null;
 let firebaseReady = false;
@@ -806,71 +814,82 @@ function queueFirestoreSave() {
    Google連携
 ========================= */
 
+async function finishGoogleSync(user) {
+  firebaseUser = user;
+  firebaseReady = true;
+
+  // 端末にある履歴とGoogle側の履歴を統合して保存
+  await loadFromFirestore();
+  renderDashboard();
+  showToast("Googleと同期しました");
+}
+
 googleSignInBtn.addEventListener("click", async () => {
+  if (googleSignInBtn.disabled) return;
+
   try {
     googleSignInBtn.disabled = true;
-    localStorage.setItem("sleepSensorGooglePending", "1");
+    accountStatusEl.textContent = "Googleログインを開いています…";
 
-    // スマホでポップアップがすぐ閉じる問題を避けるため、リダイレクト方式を使用。
-    if (auth.currentUser && auth.currentUser.isAnonymous) {
-      await linkWithRedirect(auth.currentUser, googleProvider);
+    const currentUser = auth.currentUser;
+    let result;
+
+    if (currentUser && currentUser.isAnonymous) {
+      // 匿名ユーザーをそのままGoogleアカウントへリンクする。
+      result = await linkWithPopup(currentUser, googleProvider);
     } else {
-      await signInWithRedirect(auth, googleProvider);
+      // すでにログイン状態なら通常のGoogleログイン。
+      result = await signInWithPopup(auth, googleProvider);
     }
+
+    await finishGoogleSync(result.user);
   } catch (error) {
-    localStorage.removeItem("sleepSensorGooglePending");
     console.error("Googleログインエラー:", error);
+    console.error("Firebase error code:", error?.code);
+    console.error("Firebase error message:", error?.message);
 
-    if (error.code === "auth/provider-already-linked") {
-      showToast("すでにGoogleと連携されています");
-    } else if (error.code === "auth/unauthorized-domain") {
-      showToast("Firebaseでこのサイトのドメイン許可が必要です");
-    } else if (error.code === "auth/operation-not-allowed") {
-      showToast("FirebaseでGoogleログインを有効にしてください");
-    } else {
-      showToast("Google連携を開始できませんでした");
-    }
-
-    googleSignInBtn.disabled = false;
-  }
-});
-
-// Googleリダイレクトから戻ってきたときの結果を処理
-(async () => {
-  try {
-    const result = await getRedirectResult(auth);
-
-    if (result?.user) {
-      firebaseUser = result.user;
-      firebaseReady = true;
-      await loadFromFirestore();
-      showToast("Googleと同期しました");
-    }
-  } catch (error) {
-    console.error("Googleリダイレクト認証エラー:", error);
-
-    if (error.code === "auth/credential-already-in-use") {
-      // 既存のGoogleアカウントだった場合は、そのアカウントでログインして端末データと統合
+    if (error?.code === "auth/credential-already-in-use") {
+      // そのGoogleアカウントが別のFirebaseユーザーに紐付いている場合。
+      // Googleアカウントへログインし、現在端末のデータを後から統合する。
       try {
-        await signInWithRedirect(auth, googleProvider);
+        const result = await signInWithPopup(auth, googleProvider);
+        await finishGoogleSync(result.user);
         return;
       } catch (retryError) {
-        console.error("Google再認証エラー:", retryError);
+        console.error("Google再ログインエラー:", retryError);
+        error = retryError;
       }
     }
 
-    if (error.code === "auth/unauthorized-domain") {
-      showToast("FirebaseでGitHub Pagesのドメイン許可が必要です");
-    } else if (error.code === "auth/operation-not-allowed") {
-      showToast("FirebaseでGoogleログインを有効にしてください");
+    const code = error?.code || "unknown";
+
+    if (code === "auth/unauthorized-domain") {
+      showToast("このサイトがFirebaseの許可ドメインに登録されていません");
+      accountStatusEl.textContent =
+        "Firebase Authenticationの「Authorized domains」に kawamatasousuke-source.github.io を追加してください。";
+    } else if (code === "auth/operation-not-allowed") {
+      showToast("FirebaseでGoogleログインが有効になっていません");
+      accountStatusEl.textContent =
+        "Firebase Authentication → Sign-in method → Google を有効にしてください。";
+    } else if (code === "auth/popup-blocked") {
+      showToast("Googleログインのポップアップがブロックされました");
+      accountStatusEl.textContent =
+        "ブラウザのポップアップブロックを解除して、もう一度試してください。";
+    } else if (code === "auth/popup-closed-by-user") {
+      showToast("Googleログイン画面が閉じられました");
+      accountStatusEl.textContent =
+        "Googleログイン画面でアカウントを選択して、完了するまで閉じないでください。";
+    } else if (code === "auth/cancelled-popup-request") {
+      showToast("Googleログインがキャンセルされました");
     } else {
-      showToast("Google連携に失敗しました");
+      showToast(`Google連携に失敗しました（${code}）`);
+      accountStatusEl.textContent =
+        `Google連携エラー: ${code}`;
     }
   } finally {
-    localStorage.removeItem("sleepSensorGooglePending");
     googleSignInBtn.disabled = false;
   }
-})();
+});
 
 googleSignOutBtn.addEventListener("click", async () => {
   try {
