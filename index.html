@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>睡眠センサー v7</title>
+<title>No Sleep No Life v13</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -246,7 +246,7 @@ canvas {
 
 <div class="container">
 
-  <h1>睡眠センサー v7</h1>
+  <h1>No Sleep No Life v13</h1>
   <p class="subtitle">睡眠測定＋スコア＋実績＋ストリーク</p>
 
   <div class="card">
@@ -475,8 +475,6 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   linkWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   setPersistence,
   browserLocalPersistence,
   signInAnonymously,
@@ -552,6 +550,10 @@ let largeCount = 0;
 let soundEvents = 0;
 let lastSoundTime = 0;
 let soundAboveSince = 0;
+const SOUND_THRESHOLD = 12;
+const SOUND_HOLD_MS = 800;
+const SOUND_COOLDOWN_MS = 20000;
+let soundAboveSince = 0;
 let soundPeakSince = 0;
 let lastSoundVolume = 0;
 
@@ -585,7 +587,12 @@ const accountStatusEl = document.getElementById("accountStatus");
    LocalStorage
 ========================= */
 
-const STORAGE_KEY = "sleepSensorV7";
+const STORAGE_KEY = "sleepSensorV13";
+
+const legacyData = localStorage.getItem("sleepSensorV7");
+if (legacyData && !localStorage.getItem(STORAGE_KEY)) {
+  localStorage.setItem(STORAGE_KEY, legacyData);
+}
 
 let saveData = JSON.parse(
   localStorage.getItem(STORAGE_KEY) ||
@@ -826,21 +833,6 @@ async function finishGoogleSync(user) {
   showToast("Googleと同期しました");
 }
 
-async function handleGoogleRedirectResult() {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result && result.user) {
-      await finishGoogleSync(result.user);
-    }
-  } catch (error) {
-    console.error("Googleリダイレクト認証エラー:", error);
-    const code = error?.code || "unknown";
-    showToast(`Google連携に失敗しました（${code}）`);
-    accountStatusEl.textContent = `Google連携エラー: ${code}`;
-  }
-}
-handleGoogleRedirectResult();
-
 googleSignInBtn.addEventListener("click", async () => {
   if (googleSignInBtn.disabled) return;
 
@@ -849,18 +841,13 @@ googleSignInBtn.addEventListener("click", async () => {
     accountStatusEl.textContent = "Googleログインを開いています…";
 
     const currentUser = auth.currentUser;
-
-    // スマホではポップアップが消える問題を避けるためリダイレクト方式を使用
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      await signInWithRedirect(auth, googleProvider);
-      return;
-    }
-
     let result;
 
     if (currentUser && currentUser.isAnonymous) {
+      // 匿名ユーザーをそのままGoogleアカウントへリンクする。
       result = await linkWithPopup(currentUser, googleProvider);
     } else {
+      // すでにログイン状態なら通常のGoogleログイン。
       result = await signInWithPopup(auth, googleProvider);
     }
 
