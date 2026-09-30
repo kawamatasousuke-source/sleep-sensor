@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111111">
-  <title>No Sleep No Life v20</title>
+  <title>No Sleep No Life v21</title>
 
   <style>
     * {
@@ -265,7 +265,7 @@
   <header>
     <h1>
       No Sleep No Life
-      <span class="version">v20</span>
+      <span class="version">v21</span>
     </h1>
 
     <div class="sub">
@@ -657,7 +657,7 @@
         class="notice"
         id="accountStatus"
       >
-        認証状態を確認しています……
+        Firebase認証を開始しています……
       </div>
 
       <div
@@ -713,7 +713,7 @@
 <script type="module">
 
 /* =====================================================
-   No Sleep No Life v20
+   No Sleep No Life v21
    Firebase + センサー + 睡眠記録
 ===================================================== */
 
@@ -913,6 +913,14 @@ let firebaseUser = null;
 
 let firestoreSaveTimer = null;
 
+/*
+  FirebaseのAPIキーが無効な場合は、匿名ログインを
+  何度も再試行しない。これが v20 で
+  「認証状態を確認しています……」から進みにくくなる
+  原因の一つだった。
+*/
+let authInitializationFailed = false;
+
 
 /* =====================================================
    匿名ログイン
@@ -934,6 +942,28 @@ async function ensureAnonymousUser() {
 
 
   return result.user;
+
+}
+
+
+/* =====================================================
+   Firebaseエラー判定
+===================================================== */
+
+function isFatalApiKeyError(error) {
+
+  const code =
+    String(error?.code || "").toLowerCase();
+
+  const message =
+    String(error?.message || "").toLowerCase();
+
+  return (
+    code.includes("api-key-not-valid") ||
+    code.includes("invalid-api-key") ||
+    message.includes("api key not valid") ||
+    message.includes("api_key_invalid")
+  );
 
 }
 
@@ -967,15 +997,12 @@ function showAuthError(error) {
     error?.code || "";
 
 
-  if (
-    code ===
-      "auth/api-key-not-valid" ||
-    code ===
-      "auth/invalid-api-key"
-  ) {
+  if (isFatalApiKeyError(error)) {
+
+    authInitializationFailed = true;
 
     el.textContent =
-      "Firebase APIキーが無効です。Firebase Consoleの設定と一致しているか確認してください。";
+      "Firebase APIキーがGoogle側で無効と判定されています。認証処理を停止しました。Firebase ConsoleのWebアプリ設定から最新のfirebaseConfigを取得して確認してください。";
 
     return;
 
@@ -1077,10 +1104,26 @@ function updateAccountUI() {
   }
 
 
+  if (authInitializationFailed) {
+
+    status.textContent =
+      "Firebase認証エラー：APIキーが無効です";
+
+    googleBtn.style.display =
+      "";
+
+    signOutBtn.style.display =
+      "none";
+
+    return;
+
+  }
+
+
   if (!firebaseUser) {
 
     status.textContent =
-      "認証状態を確認しています……";
+      "Firebase認証を開始しています……";
 
     googleBtn.style.display =
       "";
@@ -1163,6 +1206,18 @@ async function initializeAuth() {
 
       showAuthError(error);
 
+      /*
+        APIキーエラーは匿名ログインでも解決しないので、
+        ここで初期化を終了する。
+      */
+      if (isFatalApiKeyError(error)) {
+
+        updateAccountUI();
+
+        return;
+
+      }
+
     }
 
 
@@ -1187,8 +1242,31 @@ async function initializeAuth() {
 
     if (!firebaseUser) {
 
-      firebaseUser =
-        await ensureAnonymousUser();
+      try {
+
+        firebaseUser =
+          await ensureAnonymousUser();
+
+      } catch (error) {
+
+        showAuthError(error);
+
+        /*
+          APIキーエラーをここでも再試行しない。
+        */
+        if (isFatalApiKeyError(error)) {
+
+          updateAccountUI();
+
+          return;
+
+        }
+
+        updateAccountUI();
+
+        return;
+
+      }
 
     }
 
@@ -1209,6 +1287,8 @@ async function initializeAuth() {
 
     showAuthError(error);
 
+    updateAccountUI();
+
   }
 
 }
@@ -1221,6 +1301,13 @@ async function initializeAuth() {
 onAuthStateChanged(
   auth,
   async user => {
+
+    if (authInitializationFailed) {
+
+      return;
+
+    }
+
 
     firebaseUser =
       user;
@@ -1251,6 +1338,18 @@ document
   .addEventListener(
     "click",
     async () => {
+
+      if (authInitializationFailed) {
+
+        showAuthError({
+          code: "auth/api-key-not-valid",
+          message: "API key not valid"
+        });
+
+        return;
+
+      }
+
 
       try {
 
@@ -4639,6 +4738,61 @@ window.addEventListener(
         );
 
     }
+
+  }
+);
+
+
+/* =====================================================
+   Firebase / JavaScriptエラー表示
+===================================================== */
+
+window.addEventListener(
+  "error",
+  event => {
+
+    console.error(
+      "ページJavaScriptエラー:",
+      event.error || event.message
+    );
+
+    /*
+      認証エラーがすでに表示されている場合は
+      上書きしない。
+    */
+    if (
+      !authInitializationFailed
+    ) {
+
+      const status =
+        document.getElementById(
+          "accountStatus"
+        );
+
+      if (
+        status &&
+        !firebaseUser
+      ) {
+
+        status.textContent =
+          "ページのJavaScriptでエラーが発生しました。ブラウザのコンソールを確認してください。";
+
+      }
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "unhandledrejection",
+  event => {
+
+    console.error(
+      "未処理のPromiseエラー:",
+      event.reason
+    );
 
   }
 );
