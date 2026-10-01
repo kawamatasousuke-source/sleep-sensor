@@ -275,9 +275,7 @@
 
   <div class="grid">
 
-    <!-- センサー状態 -->
     <section class="card full">
-
       <h2>センサー状態</h2>
 
       <div class="stats">
@@ -312,10 +310,7 @@
 
       </div>
 
-      <div
-        class="buttons"
-        style="margin-top:15px"
-      >
+      <div class="buttons" style="margin-top:15px">
 
         <button id="startBtn">
           睡眠測定開始
@@ -334,7 +329,6 @@
     </section>
 
 
-    <!-- リアルタイム -->
     <section class="card">
 
       <h2>リアルタイム</h2>
@@ -383,7 +377,6 @@
     </section>
 
 
-    <!-- グラフ -->
     <section class="card">
 
       <h2>睡眠グラフ</h2>
@@ -393,7 +386,6 @@
     </section>
 
 
-    <!-- 結果 -->
     <section class="card full">
 
       <h2>今回の結果</h2>
@@ -488,7 +480,6 @@
     </section>
 
 
-    <!-- レベル -->
     <section class="card">
 
       <h2>レベル・ストリーク</h2>
@@ -598,7 +589,6 @@
     </section>
 
 
-    <!-- 実績 -->
     <section class="card">
 
       <h2>実績</h2>
@@ -608,7 +598,6 @@
     </section>
 
 
-    <!-- 履歴 -->
     <section class="card full">
 
       <h2>測定履歴</h2>
@@ -648,7 +637,6 @@
     </section>
 
 
-    <!-- Google -->
     <section class="card full">
 
       <h2>Googleアカウント</h2>
@@ -682,7 +670,6 @@
     </section>
 
 
-    <!-- 説明 -->
     <section class="card full">
 
       <h2>探究用メモ</h2>
@@ -748,7 +735,6 @@ import {
 
 /* =====================================================
    Firebase設定
-   ★ v20修正版
 ===================================================== */
 
 const firebaseConfig = {
@@ -887,12 +873,6 @@ let firebaseUser = null;
 
 let firestoreSaveTimer = null;
 
-/*
-  FirebaseのAPIキーが無効な場合は、匿名ログインを
-  何度も再試行しない。これが v20 で
-  「認証状態を確認しています……」から進みにくくなる
-  原因の一つだった。
-*/
 let authInitializationFailed = false;
 
 
@@ -927,23 +907,41 @@ async function ensureAnonymousUser() {
 function isFatalApiKeyError(error) {
 
   const code =
-    String(error?.code || "").toLowerCase();
+    String(
+      error?.code || ""
+    ).toLowerCase();
 
   const message =
-    String(error?.message || "").toLowerCase();
+    String(
+      error?.message || ""
+    ).toLowerCase();
+
 
   return (
-    code.includes("api-key-not-valid") ||
-    code.includes("invalid-api-key") ||
-    message.includes("api key not valid") ||
-    message.includes("api_key_invalid")
+
+    code.includes(
+      "api-key-not-valid"
+    ) ||
+
+    code.includes(
+      "invalid-api-key"
+    ) ||
+
+    message.includes(
+      "api key not valid"
+    ) ||
+
+    message.includes(
+      "api_key_invalid"
+    )
+
   );
 
 }
 
 
 /* =====================================================
-   Firebaseエラー処理
+   Firebaseエラー表示
 ===================================================== */
 
 function showAuthError(error) {
@@ -968,15 +966,17 @@ function showAuthError(error) {
 
 
   const code =
-    error?.code || "";
+    String(
+      error?.code || ""
+    );
 
 
-  if (isFatalApiKeyError(error)) {
-
-    authInitializationFailed = true;
+  if (
+    isFatalApiKeyError(error)
+  ) {
 
     el.textContent =
-      "Firebase APIキーがGoogle側で無効と判定されています。認証処理を停止しました。Firebase ConsoleのWebアプリ設定から最新のfirebaseConfigを取得して確認してください。";
+      "Firebase APIキーが無効です。Firebase ConsoleのWebアプリ設定とGoogle CloudのAPIキー設定を確認してください。";
 
     return;
 
@@ -1002,7 +1002,7 @@ function showAuthError(error) {
   ) {
 
     el.textContent =
-      "Firebase Authenticationで必要なログイン方法が有効になっていません。";
+      "Firebase Authenticationで匿名ログインが有効になっていません。";
 
     return;
 
@@ -1028,7 +1028,33 @@ function showAuthError(error) {
   ) {
 
     el.textContent =
-      "このGoogleアカウントは別のユーザーにすでに連携されています。";
+      "このGoogleアカウントは別のFirebaseユーザーにすでに連携されています。";
+
+    return;
+
+  }
+
+
+  if (
+    code ===
+    "auth/popup-blocked"
+  ) {
+
+    el.textContent =
+      "Googleログインのポップアップがブラウザによってブロックされました。";
+
+    return;
+
+  }
+
+
+  if (
+    code ===
+    "auth/popup-closed-by-user"
+  ) {
+
+    el.textContent =
+      "Googleログイン画面が閉じられました。";
 
     return;
 
@@ -1036,8 +1062,9 @@ function showAuthError(error) {
 
 
   el.textContent =
-    "Googleログインエラー：" +
+    "Firebase認証エラー：" +
     (
+      error?.code ||
       error?.message ||
       "不明なエラー"
     );
@@ -1078,10 +1105,16 @@ function updateAccountUI() {
   }
 
 
-  if (authInitializationFailed) {
+  /*
+    認証初期化に失敗した場合。
 
-    status.textContent =
-      "Firebase認証エラー：APIキーが無効です";
+    ここで「認証を開始しています……」に
+    戻さないのが今回の重要な修正。
+  */
+
+  if (
+    authInitializationFailed
+  ) {
 
     googleBtn.style.display =
       "";
@@ -1155,73 +1188,108 @@ async function initializeAuth() {
 
   try {
 
+    console.log(
+      "Firebase認証初期化開始"
+    );
+
+
     /*
-      すでにユーザーがいる場合
+      すでにログイン済みなら
+      そのユーザーを使用
     */
 
     if (
-      !firebaseUser &&
       auth.currentUser
     ) {
 
       firebaseUser =
         auth.currentUser;
 
+
+      console.log(
+        "既存Firebaseユーザー:",
+        firebaseUser.uid,
+        "anonymous:",
+        firebaseUser.isAnonymous
+      );
+
+
+      updateAccountUI();
+
+
+      if (
+        firebaseUser &&
+        !firebaseUser.isAnonymous
+      ) {
+
+        await loadFromFirestore();
+
+      }
+
+
+      return;
+
     }
 
 
     /*
-      いなければ匿名ログイン
+      ユーザーが存在しない場合だけ
+      匿名ログインを行う
     */
 
-    if (!firebaseUser) {
+    console.log(
+      "匿名Firebase認証開始"
+    );
 
-      try {
 
-        firebaseUser =
-          await ensureAnonymousUser();
+    const result =
+      await signInAnonymously(
+        auth
+      );
 
-      } catch (error) {
 
-        showAuthError(error);
+    firebaseUser =
+      result.user;
 
-        /*
-          APIキーエラーをここでも再試行しない。
-        */
-        if (isFatalApiKeyError(error)) {
 
-          updateAccountUI();
-
-          return;
-
-        }
-
-        updateAccountUI();
-
-        return;
-
-      }
-
-    }
+    console.log(
+      "匿名Firebase認証成功:",
+      firebaseUser.uid
+    );
 
 
     updateAccountUI();
 
-
-    if (
-      firebaseUser &&
-      !firebaseUser.isAnonymous
-    ) {
-
-      await loadFromFirestore();
-
-    }
 
   } catch (error) {
 
-    showAuthError(error);
+    console.error(
+      "Firebase初期化エラー:",
+      error
+    );
 
-    updateAccountUI();
+
+    /*
+      ここをtrueにすることで、
+      updateAccountUI()によって
+      「認証を開始しています……」に
+      上書きされない。
+    */
+
+    authInitializationFailed =
+      true;
+
+
+    showAuthError(
+      error
+    );
+
+
+    /*
+      updateAccountUI()は呼ばない。
+      showAuthError()のメッセージを
+      そのまま画面に残す。
+    */
 
   }
 
@@ -1236,7 +1304,14 @@ onAuthStateChanged(
   auth,
   async user => {
 
-    if (authInitializationFailed) {
+    /*
+      初期化に失敗した場合は
+      エラーメッセージを維持。
+    */
+
+    if (
+      authInitializationFailed
+    ) {
 
       return;
 
@@ -1264,7 +1339,7 @@ onAuthStateChanged(
 
 
 /* =====================================================
-   Google連携
+   Googleログイン
 ===================================================== */
 
 document
@@ -1273,38 +1348,69 @@ document
     "click",
     async () => {
 
-      if (authInitializationFailed) {
-
-        showAuthError({
-          code: "auth/api-key-not-valid",
-          message: "API key not valid"
-        });
-
-        return;
-
-      }
-
+      /*
+        匿名認証の初期化が失敗している場合でも、
+        Googleログインを試せるようにする。
+      */
 
       try {
 
-        const current =
-          auth.currentUser;
+        console.log(
+          "Googleログイン開始"
+        );
 
 
-const result = await signInWithPopup(auth, provider);
+        const result =
+          await signInWithPopup(
+            auth,
+            provider
+          );
 
-firebaseUser = result.user;
 
-console.log("Googleログイン成功:", firebaseUser.uid);
+        firebaseUser =
+          result.user;
 
-await loadFromFirestore();
-updateAccountUI();
 
-        }
+        /*
+          Googleログイン成功
+        */
+
+        console.log(
+          "Googleログイン成功:",
+          firebaseUser.uid
+        );
+
+
+        /*
+          既存Googleアカウントの
+          Firestoreデータを読み込む
+        */
+
+        await loadFromFirestore();
+
+
+        /*
+          認証失敗状態を解除
+        */
+
+        authInitializationFailed =
+          false;
+
+
+        updateAccountUI();
+
 
       } catch (error) {
 
-        showAuthError(error);
+        console.error(
+          "Googleログインエラー:",
+          error
+        );
+
+
+        showAuthError(
+          error
+        );
 
       }
 
@@ -1317,18 +1423,30 @@ updateAccountUI();
 ===================================================== */
 
 document
-  .getElementById("googleSignOutBtn")
+  .getElementById(
+    "googleSignOutBtn"
+  )
   .addEventListener(
     "click",
     async () => {
 
       try {
 
-        await signOut(auth);
+        await signOut(
+          auth
+        );
 
+
+        /*
+          ログアウト後は匿名ユーザーに戻す
+        */
 
         firebaseUser =
           await ensureAnonymousUser();
+
+
+        authInitializationFailed =
+          false;
 
 
         updateAccountUI();
@@ -1337,6 +1455,11 @@ document
 
         console.error(
           "ログアウトエラー:",
+          error
+        );
+
+
+        showAuthError(
           error
         );
 
@@ -2113,11 +2236,6 @@ function readVolume() {
     "%";
 
 
-  /*
-    35以上の音が0.8秒以上続いた場合、
-    音イベントとして記録。
-  */
-
   if (
     volume >= 35
   ) {
@@ -2410,11 +2528,6 @@ async function startMeasurement() {
 
   try {
 
-    /*
-      iPhone等では
-      ボタン操作から許可を取る必要がある。
-    */
-
     await requestMotionPermission();
 
     await startMicrophone();
@@ -2567,7 +2680,7 @@ async function startMeasurement() {
 
 
 /* =====================================================
-   測定後のセンサー終了処理
+   センサー終了処理
 ===================================================== */
 
 async function cleanupMeasurement() {
@@ -2671,17 +2784,9 @@ async function stopMeasurement() {
   }
 
 
-  /*
-    先に測定状態を停止
-  */
-
   measuring =
     false;
 
-
-  /*
-    最後の10秒分を可能なら保存
-  */
 
   const elapsed =
     Date.now() -
@@ -2777,16 +2882,6 @@ async function stopMeasurement() {
 function calculateDurationScore(
   hours
 ) {
-
-  /*
-    8〜10時間を100点。
-
-    8時間未満：
-    足りないほど減点。
-
-    10時間超：
-    超えた分だけ少し減点。
-  */
 
   if (
     hours >= 8 &&
@@ -2999,10 +3094,6 @@ function calculateResult() {
   );
 
 
-  /*
-    最大100件
-  */
-
   if (
     data.history.length >
     100
@@ -3016,10 +3107,6 @@ function calculateResult() {
 
   }
 
-
-  /*
-    測定1回につき10XP
-  */
 
   data.xp +=
     10;
@@ -3140,123 +3227,87 @@ function showResult(
 const ACHIEVEMENTS = {
 
   first: {
-
     name:
       "はじめの一歩",
-
     description:
       "初めて睡眠を測定する"
-
   },
 
   min30: {
-
     name:
       "30分突破",
-
     description:
       "30分以上測定する"
-
   },
 
   hour1: {
-
     name:
       "1時間測定",
-
     description:
       "1時間以上測定する"
-
   },
 
   hour8: {
-
     name:
       "ロングスリーパー",
-
     description:
       "8時間以上測定する"
-
   },
 
   sleep8: {
-
     name:
       "理想睡眠",
-
     description:
       "8〜10時間の睡眠を記録する"
-
   },
 
   quiet: {
-
     name:
       "静かな夜",
-
     description:
       "音イベントを少なく抑える"
-
   },
 
   stable: {
-
     name:
       "安定した睡眠",
-
     description:
       "大きな動きを少なくする"
-
   },
 
   score90: {
-
     name:
       "90点",
-
     description:
       "睡眠スコア90点以上"
-
   },
 
   streak3: {
-
     name:
       "3日継続",
-
     description:
       "3日連続で測定する"
-
   },
 
   streak7: {
-
     name:
       "1週間継続",
-
     description:
       "7日連続で測定する"
-
   },
 
   streak14: {
-
     name:
       "2週間継続",
-
     description:
       "14日連続で測定する"
-
   },
 
   streak30: {
-
     name:
       "1か月継続",
-
     description:
       "30日連続で測定する"
-
   }
 
 };
@@ -3531,11 +3582,6 @@ function calculateStreak() {
       today
     );
 
-
-  /*
-    今日測定していなければ
-    昨日から確認
-  */
 
   if (
     !set.has(key)
@@ -4048,10 +4094,6 @@ function drawGraph() {
   );
 
 
-  /*
-    グリッド
-  */
-
   ctx.strokeStyle =
     "#252525";
 
@@ -4404,9 +4446,11 @@ function exportCSV() {
 
   setTimeout(
     () => {
+
       URL.revokeObjectURL(
         url
       );
+
     },
     100
   );
@@ -4661,7 +4705,7 @@ window.addEventListener(
 
 
 /* =====================================================
-   Firebase / JavaScriptエラー表示
+   JavaScriptエラー表示
 ===================================================== */
 
 window.addEventListener(
@@ -4670,13 +4714,16 @@ window.addEventListener(
 
     console.error(
       "ページJavaScriptエラー:",
-      event.error || event.message
+      event.error ||
+      event.message
     );
 
+
     /*
-      認証エラーがすでに表示されている場合は
+      Firebase認証エラーがすでに表示されている場合は
       上書きしない。
     */
+
     if (
       !authInitializationFailed
     ) {
@@ -4685,6 +4732,7 @@ window.addEventListener(
         document.getElementById(
           "accountStatus"
         );
+
 
       if (
         status &&
