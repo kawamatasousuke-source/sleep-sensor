@@ -733,10 +733,8 @@ import {
   signInWithPopup,
   signInAnonymously,
   onAuthStateChanged,
-  signOut,
-  linkWithPopup
-} from
-"https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 import {
   getFirestore,
@@ -1293,31 +1291,14 @@ document
           auth.currentUser;
 
 
-        if (
-          current &&
-          current.isAnonymous
-        ) {
+const result = await signInWithPopup(auth, provider);
 
-          /*
-            匿名アカウントを
-            Googleアカウントへリンク
-          */
+firebaseUser = result.user;
 
-          await linkWithPopup(
-            current,
-            provider
-          );
+console.log("Googleログイン成功:", firebaseUser.uid);
 
-        } else {
-
-          /*
-            通常のGoogleログイン
-          */
-
-          await signInWithPopup(
-            auth,
-            provider
-          );
+await loadFromFirestore();
+updateAccountUI();
 
         }
 
