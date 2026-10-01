@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111111">
-  <title>No Sleep No Life v21β</title>
+  <title>No Sleep No Life v22</title>
 
   <style>
     * {
@@ -265,7 +265,7 @@
   <header>
     <h1>
       No Sleep No Life
-      <span class="version">v21β</span>
+      <span class="version">v22</span>
     </h1>
 
     <div class="sub">
@@ -713,7 +713,7 @@
 <script type="module">
 
 /* =====================================================
-   No Sleep No Life v21
+   No Sleep No Life v22
    Firebase + センサー + 睡眠記録
 ===================================================== */
 
@@ -730,12 +730,11 @@ import {
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   signInAnonymously,
   onAuthStateChanged,
   signOut,
-  linkWithRedirect
+  linkWithPopup
 } from
 "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
@@ -1159,46 +1158,6 @@ async function initializeAuth() {
   try {
 
     /*
-      Googleリダイレクトから戻ってきた場合
-    */
-
-    try {
-
-      const redirectResult =
-        await getRedirectResult(
-          auth
-        );
-
-
-      if (
-        redirectResult?.user
-      ) {
-
-        firebaseUser =
-          redirectResult.user;
-
-      }
-
-    } catch (error) {
-
-      showAuthError(error);
-
-      /*
-        APIキーエラーは匿名ログインでも解決しないので、
-        ここで初期化を終了する。
-      */
-      if (isFatalApiKeyError(error)) {
-
-        updateAccountUI();
-
-        return;
-
-      }
-
-    }
-
-
-    /*
       すでにユーザーがいる場合
     */
 
@@ -1344,7 +1303,7 @@ document
             Googleアカウントへリンク
           */
 
-          await linkWithRedirect(
+          await linkWithPopup(
             current,
             provider
           );
@@ -1355,7 +1314,7 @@ document
             通常のGoogleログイン
           */
 
-          await signInWithRedirect(
+          await signInWithPopup(
             auth,
             provider
           );
