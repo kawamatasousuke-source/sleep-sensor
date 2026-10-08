@@ -4,326 +4,164 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#111">
-<title>No Sleep No Life - 管理者</title>
+<title>No Sleep No Life 管理者ページ</title>
 <style>
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:#111;color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
+body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-.wrap{max-width:1200px;margin:0 auto;padding:20px}
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:15px;flex-wrap:wrap;margin-bottom:20px
-}
-h1{margin:0;font-size:26px}
-.sub{color:#888;font-size:13px;margin-top:5px}
-.card{
-  background:#181818;border:1px solid #292929;border-radius:16px;
-  padding:18px;margin-bottom:16px
-}
-.grid{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
-}
-.stat{
-  background:#202020;border:1px solid #2c2c2c;border-radius:14px;padding:15px
-}
-.stat .label{color:#888;font-size:12px}
-.stat .value{font-size:25px;font-weight:900;margin-top:6px}
-.btn{
-  border:0;border-radius:10px;padding:10px 14px;
-  background:#fff;color:#111;font-weight:800
-}
-.btn.secondary{background:#292929;color:#fff}
-.btn.danger{background:#b91c1c;color:#fff}
-.btn.success{background:#166534;color:#fff}
-.btn.small{padding:7px 10px;font-size:12px}
-.input,.textarea{
-  width:100%;background:#111;color:#fff;border:1px solid #383838;
-  border-radius:10px;padding:11px 12px;outline:none
-}
-.input:focus,.textarea:focus{border-color:#777}
-.textarea{min-height:130px;resize:vertical}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-grid .full{grid-column:1/-1}
-.checks{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
-.check{
-  display:flex;align-items:center;gap:8px;background:#202020;
-  border:1px solid #303030;border-radius:10px;padding:10px 12px
-}
-.check input{width:18px;height:18px}
-.notice{
-  padding:12px 14px;border-radius:10px;background:#222;color:#bbb;
-  line-height:1.6
-}
-.notice.error{background:#3a1515;color:#ffb4b4;border:1px solid #702020}
-.loading{color:#888;padding:20px;text-align:center}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:760px}
-th,td{padding:11px 9px;border-bottom:1px solid #292929;text-align:left;font-size:13px}
-th{color:#888;font-weight:700}
-.badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 7px;border-radius:999px;font-size:11px;font-weight:900;
-  margin-right:4px
-}
-.badge.red{background:#4b1515;color:#ff7070}
-.badge.pin{background:#3b3011;color:#ffd86a}
-.badge.new{background:#143c5b;color:#74c7ff}
-.badge.gray{background:#292929;color:#aaa}
-.announcement{
-  border:1px solid #2d2d2d;background:#151515;border-radius:12px;
-  padding:14px;margin-top:10px
-}
-.announcement.important{border-color:#7d2525;background:#211414}
-.announcement.pinned{box-shadow:inset 3px 0 0 #d7a928}
-.announcement-title{font-weight:900;font-size:16px;margin:7px 0}
-.announcement-body{color:#bbb;white-space:pre-wrap;line-height:1.65}
-.announcement-meta{color:#777;font-size:11px}
-.row{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;flex-wrap:wrap
-}
+header{position:sticky;top:0;z-index:10;background:#181818;border-bottom:1px solid #333;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:18px;margin:0}
+.container{max-width:1100px;margin:auto;padding:18px}
+.card{background:#1b1b1b;border:1px solid #333;border-radius:14px;padding:18px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 14px}
+h3{font-size:15px;margin:16px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.stat{background:#111;border:1px solid #333;border-radius:12px;padding:15px}
+.stat .label{color:#aaa;font-size:12px}.stat .value{font-size:25px;font-weight:700;margin-top:5px}
+input,textarea,select{width:100%;background:#111;color:#fff;border:1px solid #444;border-radius:9px;padding:10px}
+textarea{min-height:100px;resize:vertical}
+label{display:block;color:#ccc;font-size:13px;margin:10px 0 5px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:9px;padding:10px 14px;background:#fff;color:#111;font-weight:700}
+.btn.secondary{background:#333;color:#fff}.btn.danger{background:#8d2222;color:#fff}.btn.small{padding:7px 10px;font-size:12px}
+.notice{padding:10px 12px;border-radius:9px;background:#222;border:1px solid #444;margin-bottom:12px}
+.error{background:#351818;border-color:#7b2b2b;color:#ffb4b4}
+.success{background:#18351f;border-color:#2d7040;color:#b9f2c6}
+.badge{display:inline-block;padding:3px 7px;border-radius:99px;background:#333;color:#ddd;font-size:11px;margin-right:4px}
+.badge.important{color:#ff7777;border:1px solid #8d3333}
+.badge.pinned{color:#ffd76a;border:1px solid #806522}
+.item{background:#111;border:1px solid #333;border-radius:11px;padding:13px;margin:8px 0}
+.item strong{display:block;margin-bottom:5px}
+.muted{color:#999;font-size:12px}
 .hidden{display:none!important}
-#loginView,#appView{display:none}
-.user-detail{
-  background:#111;border:1px solid #292929;border-radius:12px;
-  padding:14px;margin-top:12px
-}
-.kv{display:grid;grid-template-columns:180px 1fr;gap:8px;border-bottom:1px solid #242424;padding:7px 0}
-.kv:last-child{border-bottom:0}
-.k{color:#888}
-@media(max-width:800px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .form-grid{grid-template-columns:1fr}
-  .form-grid .full{grid-column:auto}
-}
-@media(max-width:500px){
-  .wrap{padding:12px}
-  .grid{grid-template-columns:1fr 1fr}
-  h1{font-size:22px}
-}
-
-.title-parts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
-.title-part-box{border:1px solid #2b2b2b;border-radius:14px;padding:14px;background:#151515}
-.title-part-box h3{margin:0 0 10px}
-.title-part-row{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #252525}
-.title-part-row:last-child{border-bottom:0}
-.title-part-name{flex:1;font-size:15px}
-.title-part-meta{font-size:12px;color:#aaa}
-.badge.common{background:#333;color:#ddd}.badge.rare{background:#17406b;color:#bfe1ff}
-.badge.epic{background:#4a245f;color:#efc8ff}.badge.legendary{background:#6b4b13;color:#ffe4a3}
-@media(max-width:700px){.title-parts{grid-template-columns:1fr}}
-
+#login{max-width:520px;margin:80px auto;padding:20px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px;border-bottom:1px solid #333;text-align:left;vertical-align:top}
+.scroll{overflow:auto}
+.check{display:flex;gap:8px;align-items:center;margin:10px 0}.check input{width:auto}
+.title-preview{font-size:20px;font-weight:700;margin-top:8px}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <div id="loginView">
-    <div class="card" style="max-width:520px;margin:80px auto">
-      <h1>No Sleep No Life 管理者ページ</h1>
-      <div class="sub">管理者アカウントでログインしてください。</div>
-      <div style="margin-top:20px">
-        <button class="btn" id="loginBtn">Googleで管理者ログイン</button>
-      </div>
-      <div id="loginError" class="notice error hidden" style="margin-top:12px"></div>
-    </div>
+<header>
+  <h1>No Sleep No Life 管理者ページ</h1>
+  <div class="row">
+    <span id="adminEmail" class="muted"></span>
+    <button id="logoutBtn" class="btn secondary small hidden">ログアウト</button>
   </div>
+</header>
 
-  <div id="appView">
-    <div class="header">
-      <div>
-        <h1>No Sleep No Life 管理者ページ</h1>
-        <div class="sub" id="adminEmail"></div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn secondary" id="refreshBtn">全体更新</button>
-        <button class="btn secondary" id="logoutBtn">ログアウト</button>
-      </div>
-    </div>
+<section id="login" class="card">
+  <h2>管理者ログイン</h2>
+  <p class="muted">登録された管理者Googleアカウントでログインしてください。</p>
+  <button id="loginBtn" class="btn">Googleでログイン</button>
+  <div id="loginMsg" class="notice hidden"></div>
+</section>
 
-    <div id="globalError" class="notice error hidden" style="margin-bottom:16px"></div>
+<main id="app" class="container hidden">
+  <div id="message" class="notice hidden"></div>
 
+  <section class="card">
+    <h2>ダッシュボード</h2>
     <div class="grid">
-      <div class="stat"><div class="label">ユーザー数</div><div class="value" id="userCount">-</div></div>
-      <div class="stat"><div class="label">総測定数</div><div class="value" id="measurementCount">-</div></div>
-      <div class="stat"><div class="label">今日の測定</div><div class="value" id="todayMeasurements">-</div></div>
-      <div class="stat"><div class="label">平均睡眠スコア</div><div class="value" id="avgScore">-</div></div>
-      <div class="stat"><div class="label">平均改善率</div><div class="value" id="avgImprovement">-</div></div>
-      <div class="stat"><div class="label">ランキング登録者</div><div class="value" id="rankingCount">-</div></div>
-      <div class="stat"><div class="label">保留中の申請</div><div class="value" id="pendingRequests">-</div></div>
-      <div class="stat"><div class="label">お知らせ数</div><div class="value" id="announcementCount">-</div></div>
+      <div class="stat"><div class="label">ユーザー数</div><div id="userCount" class="value">-</div></div>
+      <div class="stat"><div class="label">測定数</div><div id="measurementCount" class="value">-</div></div>
+      <div class="stat"><div class="label">今日の測定</div><div id="todayCount" class="value">-</div></div>
+      <div class="stat"><div class="label">平均スコア</div><div id="avgScore" class="value">-</div></div>
+      <div class="stat"><div class="label">平均改善率</div><div id="avgImprovement" class="value">-</div></div>
+      <div class="stat"><div class="label">ランキング登録</div><div id="rankingCount" class="value">-</div></div>
+      <div class="stat"><div class="label">保留中の友達申請</div><div id="pendingCount" class="value">-</div></div>
+      <div class="stat"><div class="label">公開お知らせ</div><div id="announcementCount" class="value">-</div></div>
     </div>
+    <div class="row" style="margin-top:12px"><button id="reloadDashboard" class="btn secondary">再読み込み</button></div>
+  </section>
 
-    <div class="card">
-      <div class="row">
-        <h2 style="margin:0">お知らせ管理</h2>
-        <button class="btn secondary" id="reloadAnnouncementsBtn">再読み込み</button>
+  <section class="card">
+    <h2>二つ名管理</h2>
+    <p class="muted">前半と後半を別々に登録できます。利用者は獲得済みの前半・後半を自由に組み合わせられます。</p>
+    <input type="hidden" id="titleEditId">
+    <div class="grid">
+      <div>
+        <label>種類</label>
+        <select id="titleType"><option value="front">前半</option><option value="back">後半</option></select>
       </div>
-      <div class="sub">重要・固定・NEWに対応。公開をオフにすると利用者側には表示されません。</div>
-
-      <div class="form-grid" style="margin-top:14px">
-        <div>
-          <label>タイトル</label>
-          <input class="input" id="announcementTitle" placeholder="例：メンテナンスのお知らせ">
-        </div>
-        <div>
-          <label>公開状態</label>
-          <select class="input" id="announcementActive">
-            <option value="true">公開</option>
-            <option value="false">非公開</option>
-          </select>
-        </div>
-        <div class="full">
-          <label>本文</label>
-          <textarea class="textarea" id="announcementMessage" placeholder="お知らせ本文を入力"></textarea>
-        </div>
+      <div>
+        <label>二つ名</label>
+        <input id="titleName" placeholder="例：不屈の">
       </div>
-
-      <div class="checks">
-        <label class="check">
-          <input type="checkbox" id="announcementImportant">
-          <span>重要なお知らせ</span>
-        </label>
-        <label class="check">
-          <input type="checkbox" id="announcementPinned">
-          <span>上部に固定</span>
-        </label>
+      <div>
+        <label>レア度</label>
+        <select id="titleRarity">
+          <option value="normal">通常</option>
+          <option value="rare">レア</option>
+          <option value="epic">エピック</option>
+          <option value="legendary">伝説</option>
+        </select>
       </div>
-
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="btn" id="announcementSaveBtn">お知らせを投稿</button>
-        <button class="btn secondary hidden" id="announcementCancelEditBtn">編集をキャンセル</button>
-      </div>
-
-      <div id="announcementFormStatus" style="margin-top:10px"></div>
-      <div id="announcementList" style="margin-top:14px"></div>
-    </div>
-
-    <div class="card" id="titlePartsCard">
-      <div class="row">
-        <h2 style="margin:0">二つ名管理</h2>
-        <button class="btn secondary" id="reloadTitlePartsBtn">再読み込み</button>
-      </div>
-      <div class="sub">前半と後半を別々に登録し、利用者側で自由に組み合わせられるようにします。実績報酬との紐付けは後から追加できます。</div>
-
-      <div class="form-grid" style="margin-top:14px">
-        <div>
-          <label>二つ名パーツ</label>
-          <input class="input" id="titlePartName" placeholder="例：不屈の / 達人">
-        </div>
-        <div>
-          <label>種類</label>
-          <select class="input" id="titlePartType">
-            <option value="prefix">前半</option>
-            <option value="suffix">後半</option>
-          </select>
-        </div>
-        <div>
-          <label>レア度</label>
-          <select class="input" id="titlePartRarity">
-            <option value="common">通常</option>
-            <option value="rare">レア</option>
-            <option value="epic">エピック</option>
-            <option value="legendary">伝説</option>
-          </select>
-        </div>
-        <div>
-          <label>公開状態</label>
-          <select class="input" id="titlePartActive">
-            <option value="true">公開</option>
-            <option value="false">非公開</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="btn" id="titlePartSaveBtn">二つ名を追加</button>
-        <button class="btn secondary hidden" id="titlePartCancelBtn">編集をキャンセル</button>
-      </div>
-      <div id="titlePartFormStatus" style="margin-top:10px"></div>
-
-      <div class="title-parts">
-        <div class="title-part-box">
-          <h3>前半</h3>
-          <div id="prefixTitleParts"></div>
-        </div>
-        <div class="title-part-box">
-          <h3>後半</h3>
-          <div id="suffixTitleParts"></div>
-        </div>
+      <div>
+        <label>解放条件の実績ID</label>
+        <input id="unlockAchievementId" placeholder="例：streak_7">
       </div>
     </div>
-
-
-    <div class="card">
-      <div class="row">
-        <h2 style="margin:0">ユーザー検索</h2>
-        <button class="btn secondary" id="reloadUsersBtn">再読み込み</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <input class="input" id="userSearch" placeholder="フレンドID・表示名で検索">
-        <button class="btn" id="userSearchBtn">検索</button>
-      </div>
-      <div id="userList" style="margin-top:14px"></div>
-      <div id="userDetail"></div>
+    <label>公開状態</label>
+    <div class="check"><input type="checkbox" id="titleActive" checked><span>利用者側で使用可能</span></div>
+    <div class="row">
+      <button id="saveTitleBtn" class="btn">二つ名を保存</button>
+      <button id="cancelTitleBtn" class="btn secondary hidden">編集をキャンセル</button>
     </div>
+    <h3>登録済み二つ名</h3>
+    <div id="titleList"></div>
+  </section>
 
-    <div class="card">
-      <div class="row">
-        <h2 style="margin:0">改善率ランキング</h2>
-        <button class="btn secondary" id="reloadRankingBtn">更新</button>
-      </div>
-      <div id="rankingList" style="margin-top:12px"></div>
+  <section class="card">
+    <h2>お知らせ管理</h2>
+    <input type="hidden" id="announcementEditId">
+    <label>タイトル</label><input id="announcementTitle" placeholder="お知らせタイトル">
+    <label>内容</label><textarea id="announcementMessage" placeholder="お知らせ内容"></textarea>
+    <div class="row">
+      <div class="check"><input type="checkbox" id="announcementImportant"><span>重要</span></div>
+      <div class="check"><input type="checkbox" id="announcementPinned"><span>固定</span></div>
+      <div class="check"><input type="checkbox" id="announcementActive" checked><span>公開</span></div>
     </div>
+    <div class="row">
+      <button id="saveAnnouncementBtn" class="btn">お知らせを保存</button>
+      <button id="cancelAnnouncementBtn" class="btn secondary hidden">編集をキャンセル</button>
+    </div>
+    <h3>登録済みお知らせ</h3>
+    <div id="announcementList"></div>
+  </section>
 
-    <div class="card">
-      <div class="row">
-        <h2 style="margin:0">フレンド申請監視</h2>
-        <button class="btn secondary" id="reloadRequestsBtn">更新</button>
-      </div>
-      <div id="requestList" style="margin-top:12px"></div>
+  <section class="card">
+    <h2>ユーザー検索</h2>
+    <div class="row">
+      <input id="userSearch" placeholder="メールアドレス、UID、フレンドID、表示名">
+      <button id="searchUserBtn" class="btn">検索</button>
     </div>
-  </div>
-</div>
+    <div id="userResults"></div>
+  </section>
+
+  <section class="card">
+    <h2>ランキング</h2>
+    <div id="rankingList"></div>
+  </section>
+
+  <section class="card">
+    <h2>友達申請監視</h2>
+    <div id="friendRequestList"></div>
+  </section>
+</main>
 
 <script type="module">
-import {initializeApp}
-from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged,
-  signOut
-}
-from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-import {
-  getFirestore,
-  collection,
-  collectionGroup,
-  getDocs,
-  getDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  orderBy,
-  limit,
-  serverTimestamp
-}
-from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+  getFirestore,collection,getDocs,getDoc,doc,setDoc,addDoc,updateDoc,deleteDoc,
+  query,where,orderBy,limit
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
-  apiKey:"AIzaSyAOLvxQqUQ1MWL6dNcGYblcbVW6Q50NZVI",
+  apiKey:"AIzaSyAOLvxQqU1MWL6dNcGLYblcbVW6Q50NZVI",
   authDomain:"sleep-sensor-af01f.firebaseapp.com",
   projectId:"sleep-sensor-af01f",
   storageBucket:"sleep-sensor-af01f.firebasestorage.app",
@@ -331,862 +169,199 @@ const firebaseConfig={
   appId:"1:86707291255:web:01e2e67fa63c3513503272"
 };
 
+const ADMIN_EMAILS=["kawamata.sousuke@ryugasaki1-h.ibk.ed.jp"];
+
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const provider=new GoogleAuthProvider();
 
-/*
- * ここを管理者のGoogleログインメールアドレスに変更。
- * 複数人いる場合はカンマ区切りで追加。
- */
-const ADMIN_EMAILS=[
-  "kawamata.sousuke@ryugasaki1-h.ibk.ed.jp"
-];
-
-let currentUser=null;
-let usersCache=[];
-let announcementsCache=[];
-let titlePartsCache=[];
-let editingTitlePartId=null;
-let editingAnnouncementId=null;
-
 const $=id=>document.getElementById(id);
+function msg(text,type=""){const el=$("message");el.textContent=text;el.className="notice"+(type?" "+type:"");el.classList.remove("hidden");}
+function clearMsg(){$("message").classList.add("hidden")}
+function isAdmin(user){return !!user && ADMIN_EMAILS.includes((user.email||"").toLowerCase())}
 
-function isAdmin(user){
-  if(!user?.email)return false;
-  return ADMIN_EMAILS
-    .map(v=>String(v).trim().toLowerCase())
-    .includes(user.email.trim().toLowerCase());
-}
+$("loginBtn").onclick=async()=>{
+  try{await signInWithPopup(auth,provider)}
+  catch(e){$("loginMsg").textContent="ログインに失敗しました："+e.message;$("loginMsg").classList.remove("hidden")}
+};
+$("logoutBtn").onclick=()=>signOut(auth);
 
-function escapeHTML(value){
-  return String(value??"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function timeOf(item){
-  if(item?.createdAt?.toMillis)return item.createdAt.toMillis();
-  if(item?.createdAt?.seconds)return item.createdAt.seconds*1000;
-  if(typeof item?.createdAt==="string"){
-    const n=new Date(item.createdAt).getTime();
-    if(!Number.isNaN(n))return n;
+onAuthStateChanged(auth,async user=>{
+  if(!user){
+    $("login").classList.remove("hidden");$("app").classList.add("hidden");$("logoutBtn").classList.add("hidden");return;
   }
-  return 0;
-}
-
-function formatDate(item){
-  const t=timeOf(item);
-  if(!t)return "日時不明";
-  return new Date(t).toLocaleString("ja-JP",{
-    year:"numeric",month:"2-digit",day:"2-digit",
-    hour:"2-digit",minute:"2-digit"
-  });
-}
-
-function setGlobalError(message){
-  const el=$("globalError");
-  if(!el)return;
-  if(message){
-    el.textContent=message;
-    el.classList.remove("hidden");
-  }else{
-    el.textContent="";
-    el.classList.add("hidden");
+  if(!isAdmin(user)){
+    $("login").classList.remove("hidden");$("app").classList.add("hidden");$("logoutBtn").classList.remove("hidden");
+    $("loginMsg").textContent="このGoogleアカウントには管理者権限がありません。";
+    $("loginMsg").classList.remove("hidden");
+    return;
   }
-}
-
-async function login(){
-  $("loginError").classList.add("hidden");
-  try{
-    await signInWithPopup(auth,provider);
-  }catch(e){
-    console.error(e);
-    $("loginError").textContent=
-      e.message||"ログインに失敗しました。";
-    $("loginError").classList.remove("hidden");
-  }
-}
-
-$("loginBtn").addEventListener("click",login);
-
-$("logoutBtn").addEventListener("click",async()=>{
-  await signOut(auth);
+  $("login").classList.add("hidden");$("app").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");
+  $("adminEmail").textContent=user.email||"";
+  await loadAll();
 });
 
-async function loadDashboard(){
-  setGlobalError("");
+async function loadAll(){
+  clearMsg();
+  await Promise.allSettled([loadDashboard(),loadTitles(),loadAnnouncements(),loadRanking(),loadFriendRequests()]);
+}
 
+$("reloadDashboard").onclick=loadAll;
+
+async function loadDashboard(){
   try{
-    const [
-      usersSnap,
-      measurementsSnap,
-      rankingSnap,
-      requestsSnap,
-      announcementsSnap
-    ]=await Promise.all([
-      getDocs(collection(db,"users")),
-      getDocs(collectionGroup(db,"measurements")),
+    const usersSnap=await getDocs(collection(db,"users"));
+    let total=0,today=0,scores=[],imps=[];
+    const start=new Date();start.setHours(0,0,0,0);
+    for(const u of usersSnap.docs){
+      const ms=await getDocs(collection(db,"users",u.id,"measurements"));
+      total+=ms.size;
+      ms.forEach(m=>{
+        const d=m.data();
+        const t=d.createdAt?.toDate?.() || (d.timestamp?.toDate?.()) || null;
+        if(t&&t>=start)today++;
+        if(typeof d.score==="number")scores.push(d.score);
+        if(typeof d.improvementRate==="number")imps.push(d.improvementRate);
+      });
+    }
+    $("userCount").textContent=usersSnap.size;
+    $("measurementCount").textContent=total;
+    $("todayCount").textContent=today;
+    $("avgScore").textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"-";
+    $("avgImprovement").textContent=imps.length?((imps.reduce((a,b)=>a+b,0)/imps.length).toFixed(1)+"%"):"-";
+
+    const [r,f,a]=await Promise.all([
       getDocs(collection(db,"ranking")),
-      getDocs(collection(db,"friendRequests")),
+      getDocs(query(collection(db,"friendRequests"),where("status","==","pending"))),
       getDocs(collection(db,"announcements"))
     ]);
-
-    const users=usersSnap.docs.map(d=>({id:d.id,...d.data()}));
-    const measurements=measurementsSnap.docs.map(d=>({id:d.id,...d.data()}));
-
-    $("userCount").textContent=users.length;
-    $("measurementCount").textContent=measurements.length;
-    $("rankingCount").textContent=rankingSnap.size;
-    $("pendingRequests").textContent=
-      requestsSnap.docs.filter(d=>d.data().status==="pending").length;
-    $("announcementCount").textContent=announcementsSnap.size;
-
-    const today=new Date();
-    const y=today.getFullYear();
-    const m=today.getMonth();
-    const day=today.getDate();
-
-    const todayMeasurements=measurements.filter(x=>{
-      const t=timeOf(x);
-      if(!t)return false;
-      const d=new Date(t);
-      return d.getFullYear()===y&&d.getMonth()===m&&d.getDate()===day;
-    });
-
-    $("todayMeasurements").textContent=todayMeasurements.length;
-
-    const scores=measurements
-      .map(x=>Number(x.score??x.sleepScore))
-      .filter(x=>Number.isFinite(x));
-
-    $("avgScore").textContent=
-      scores.length
-      ?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1)
-      :"—";
-
-    const improvements=users
-      .map(x=>Number(x.improvement?.improvementRate??x.improvementRate))
-      .filter(x=>Number.isFinite(x));
-
-    $("avgImprovement").textContent=
-      improvements.length
-      ?((improvements.reduce((a,b)=>a+b,0)/improvements.length).toFixed(1)+"%")
-      :"—";
-
-    usersCache=users;
-    await renderUsers(users);
-    await loadAnnouncements();
-      loadTitleParts();
-    await loadRanking();
-    await loadRequests();
-
-  }catch(e){
-    console.error(e);
-    setGlobalError(
-      "データの読み込みに失敗しました。\n"+
-      (e.message||"Firestoreエラー")
-    );
-  }
+    $("rankingCount").textContent=r.size;
+    $("pendingCount").textContent=f.size;
+    $("announcementCount").textContent=a.docs.filter(x=>x.data().active!==false).length;
+  }catch(e){msg("ダッシュボードの一部取得に失敗しました："+e.message,"error")}
 }
+
+async function loadTitles(){
+  try{
+    const snap=await getDocs(collection(db,"titleParts"));
+    const arr=snap.docs.map(d=>({id:d.id,...d.data()}));
+    arr.sort((a,b)=>(a.type||"").localeCompare(b.type||"")||(a.name||"").localeCompare(b.name||""));
+    $("titleList").innerHTML=arr.length?arr.map(t=>{
+      const type=t.type==="back"?"後半":"前半";
+      const active=t.active!==false;
+      return `<div class="item">
+        <strong>${esc(t.name||"名称未設定")}</strong>
+        <span class="badge">${type}</span>
+        <span class="badge">${esc(rarityName(t.rarity))}</span>
+        ${active?'<span class="badge">公開</span>':'<span class="badge">非公開</span>'}
+        ${t.unlockAchievementId?`<span class="badge">実績: ${esc(t.unlockAchievementId)}</span>`:""}
+        <div class="row" style="margin-top:9px">
+          <button class="btn small" data-edit-title="${t.id}">編集</button>
+          <button class="btn secondary small" data-toggle-title="${t.id}" data-active="${active}">${active?"非公開にする":"公開する"}</button>
+          <button class="btn danger small" data-delete-title="${t.id}">削除</button>
+        </div>
+      </div>`;
+    }).join(""):"<div class='muted'>二つ名はまだ登録されていません。</div>";
+    document.querySelectorAll("[data-edit-title]").forEach(b=>b.onclick=()=>editTitle(b.dataset.editTitle));
+    document.querySelectorAll("[data-toggle-title]").forEach(b=>b.onclick=()=>toggleTitle(b.dataset.toggleTitle,b.dataset.active!=="true"));
+    document.querySelectorAll("[data-delete-title]").forEach(b=>b.onclick=()=>deleteTitle(b.dataset.deleteTitle));
+  }catch(e){msg("二つ名の取得に失敗しました："+e.message,"error")}
+}
+function rarityName(r){return({normal:"通常",rare:"レア",epic:"エピック",legendary:"伝説"})[r]||"通常"}
+async function editTitle(id){
+  const d=await getDoc(doc(db,"titleParts",id));if(!d.exists())return;
+  const t=d.data();$("titleEditId").value=id;$("titleType").value=t.type||"front";$("titleName").value=t.name||"";
+  $("titleRarity").value=t.rarity||"normal";$("unlockAchievementId").value=t.unlockAchievementId||"";
+  $("titleActive").checked=t.active!==false;$("cancelTitleBtn").classList.remove("hidden");window.scrollTo({top:document.querySelector(".card").offsetTop,behavior:"smooth"});
+}
+$("cancelTitleBtn").onclick=clearTitleForm;
+function clearTitleForm(){$("titleEditId").value="";$("titleName").value="";$("unlockAchievementId").value="";$("titleType").value="front";$("titleRarity").value="normal";$("titleActive").checked=true;$("cancelTitleBtn").classList.add("hidden")}
+$("saveTitleBtn").onclick=async()=>{
+  const user=auth.currentUser;if(!isAdmin(user))return;
+  const name=$("titleName").value.trim();if(!name){msg("二つ名を入力してください","error");return}
+  const payload={type:$("titleType").value,name,rarity:$("titleRarity").value,unlockAchievementId:$("unlockAchievementId").value.trim(),active:$("titleActive").checked,updatedAt:new Date()};
+  try{
+    const id=$("titleEditId").value;
+    if(id)await updateDoc(doc(db,"titleParts",id),payload);
+    else await addDoc(collection(db,"titleParts"),{...payload,createdAt:new Date(),createdBy:user.uid});
+    clearTitleForm();await loadTitles();msg("二つ名を保存しました","success");
+  }catch(e){msg("二つ名の保存に失敗しました："+e.message,"error")}
+};
+async function toggleTitle(id,active){try{await updateDoc(doc(db,"titleParts",id),{active,updatedAt:new Date()});await loadTitles()}catch(e){msg("公開状態の変更に失敗しました："+e.message,"error")}}
+async function deleteTitle(id){if(!confirm("この二つ名を削除しますか？"))return;try{await deleteDoc(doc(db,"titleParts",id));await loadTitles();msg("削除しました","success")}catch(e){msg("削除に失敗しました："+e.message,"error")}}
 
 async function loadAnnouncements(){
   try{
     const snap=await getDocs(collection(db,"announcements"));
-
-    announcementsCache=snap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>timeOf(b)-timeOf(a));
-
-    renderAnnouncements();
-  }catch(e){
-    console.error(e);
-    $("announcementList").innerHTML=
-      `<div class="notice error">${escapeHTML(e.message||"お知らせの読み込みに失敗しました。")}</div>`;
-  }
+    const arr=snap.docs.map(d=>({id:d.id,...d.data()}));
+    arr.sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+    $("announcementList").innerHTML=arr.length?arr.map(a=>`<div class="item">
+      <strong>${esc(a.title||"無題")}</strong>
+      ${a.important?'<span class="badge important">重要</span>':""}
+      ${a.pinned?'<span class="badge pinned">固定</span>':""}
+      ${a.active!==false?'<span class="badge">公開</span>':'<span class="badge">非公開</span>'}
+      <p>${esc(a.message||"").replace(/\n/g,"<br>")}</p>
+      <div class="row"><button class="btn small" data-edit-ann="${a.id}">編集</button><button class="btn secondary small" data-toggle-ann="${a.id}" data-active="${a.active!==false}">${a.active!==false?"非公開":"公開"}</button><button class="btn danger small" data-delete-ann="${a.id}">削除</button></div>
+    </div>`).join(""):"<div class='muted'>お知らせはありません。</div>";
+    document.querySelectorAll("[data-edit-ann]").forEach(b=>b.onclick=()=>editAnnouncement(b.dataset.editAnn));
+    document.querySelectorAll("[data-toggle-ann]").forEach(b=>b.onclick=()=>toggleAnnouncement(b.dataset.toggleAnn,b.dataset.active!=="true"));
+    document.querySelectorAll("[data-delete-ann]").forEach(b=>b.onclick=()=>deleteAnnouncement(b.dataset.deleteAnn));
+  }catch(e){msg("お知らせの取得に失敗しました："+e.message,"error")}
 }
-
-function renderAnnouncements(){
-  const area=$("announcementList");
-
-  if(!announcementsCache.length){
-    area.innerHTML=
-      `<div class="notice">お知らせはまだありません。</div>`;
-    return;
-  }
-
-  const now=Date.now();
-
-  area.innerHTML=announcementsCache.map(a=>{
-    const title=a.title||"お知らせ";
-    const body=
-      a.message||
-      a.content||
-      a.body||
-      a.text||
-      "";
-
-    const important=a.important===true;
-    const pinned=a.pinned===true;
-    const active=a.active!==false;
-    const isNew=timeOf(a)>0&&(now-timeOf(a)<=7*24*60*60*1000);
-
-    return `
-      <div class="announcement ${important?"important":""} ${pinned?"pinned":""}">
-        <div>
-          ${important?`<span class="badge red">重要</span>`:""}
-          ${pinned?`<span class="badge pin">固定</span>`:""}
-          ${isNew?`<span class="badge new">NEW</span>`:""}
-          ${active?`<span class="badge gray">公開中</span>`:`<span class="badge gray">非公開</span>`}
-        </div>
-        <div class="announcement-title">${escapeHTML(title)}</div>
-        <div class="announcement-body">${escapeHTML(body)}</div>
-        <div class="announcement-meta" style="margin-top:9px">
-          投稿日：${escapeHTML(formatDate(a))}
-        </div>
-        <div style="display:flex;gap:7px;margin-top:11px">
-          <button class="btn small" data-edit-ann="${escapeHTML(a.id)}">編集</button>
-          <button class="btn small secondary" data-toggle-ann="${escapeHTML(a.id)}">
-            ${active?"非公開にする":"公開する"}
-          </button>
-          <button class="btn small danger" data-delete-ann="${escapeHTML(a.id)}">削除</button>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  area.querySelectorAll("[data-edit-ann]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      startAnnouncementEdit(btn.dataset.editAnn);
-    });
-  });
-
-  area.querySelectorAll("[data-toggle-ann]").forEach(btn=>{
-    btn.addEventListener("click",async()=>{
-      await toggleAnnouncement(btn.dataset.toggleAnn);
-    });
-  });
-
-  area.querySelectorAll("[data-delete-ann]").forEach(btn=>{
-    btn.addEventListener("click",async()=>{
-      await deleteAnnouncement(btn.dataset.deleteAnn);
-    });
-  });
+async function editAnnouncement(id){
+  const d=await getDoc(doc(db,"announcements",id));if(!d.exists())return;const a=d.data();
+  $("announcementEditId").value=id;$("announcementTitle").value=a.title||"";$("announcementMessage").value=a.message||"";
+  $("announcementImportant").checked=!!a.important;$("announcementPinned").checked=!!a.pinned;$("announcementActive").checked=a.active!==false;
+  $("cancelAnnouncementBtn").classList.remove("hidden");
 }
-
-function startAnnouncementEdit(id){
-  const a=announcementsCache.find(x=>x.id===id);
-  if(!a)return;
-
-  editingAnnouncementId=id;
-
-  $("announcementTitle").value=a.title||"";
-  $("announcementMessage").value=
-    a.message||a.content||a.body||a.text||"";
-  $("announcementImportant").checked=a.important===true;
-  $("announcementPinned").checked=a.pinned===true;
-  $("announcementActive").value=a.active===false?"false":"true";
-
-  $("announcementSaveBtn").textContent="お知らせを更新";
-  $("announcementCancelEditBtn").classList.remove("hidden");
-  $("announcementFormStatus").innerHTML=
-    `<div class="notice">「${escapeHTML(a.title||"お知らせ")}」を編集中です。</div>`;
-
-  window.scrollTo({
-    top:$("announcementTitle").getBoundingClientRect().top+
-        window.scrollY-100,
-    behavior:"smooth"
-  });
-}
-
-function cancelAnnouncementEdit(){
-  editingAnnouncementId=null;
-  $("announcementTitle").value="";
-  $("announcementMessage").value="";
-  $("announcementImportant").checked=false;
-  $("announcementPinned").checked=false;
-  $("announcementActive").value="true";
-  $("announcementSaveBtn").textContent="お知らせを投稿";
-  $("announcementCancelEditBtn").classList.add("hidden");
-  $("announcementFormStatus").innerHTML="";
-}
-
-$("announcementCancelEditBtn")
-  .addEventListener("click",cancelAnnouncementEdit);
-
-async function saveAnnouncement(){
-  const title=$("announcementTitle").value.trim();
-  const message=$("announcementMessage").value.trim();
-  const important=$("announcementImportant").checked;
-  const pinned=$("announcementPinned").checked;
-  const active=$("announcementActive").value==="true";
-
-  if(!title){
-    $("announcementFormStatus").innerHTML=
-      `<div class="notice error">タイトルを入力してください。</div>`;
-    return;
-  }
-
-  if(!message){
-    $("announcementFormStatus").innerHTML=
-      `<div class="notice error">本文を入力してください。</div>`;
-    return;
-  }
-
-  const btn=$("announcementSaveBtn");
-  btn.disabled=true;
-
+$("cancelAnnouncementBtn").onclick=clearAnnouncementForm;
+function clearAnnouncementForm(){$("announcementEditId").value="";$("announcementTitle").value="";$("announcementMessage").value="";$("announcementImportant").checked=false;$("announcementPinned").checked=false;$("announcementActive").checked=true;$("cancelAnnouncementBtn").classList.add("hidden")}
+$("saveAnnouncementBtn").onclick=async()=>{
+  const user=auth.currentUser;const title=$("announcementTitle").value.trim(),message=$("announcementMessage").value.trim();
+  if(!title||!message){msg("タイトルと内容を入力してください","error");return}
+  const payload={title,message,important:$("announcementImportant").checked,pinned:$("announcementPinned").checked,active:$("announcementActive").checked,updatedAt:new Date(),updatedBy:user.uid};
   try{
-    if(editingAnnouncementId){
-      await updateDoc(
-        doc(db,"announcements",editingAnnouncementId),
-        {
-          title,
-          message,
-          important,
-          pinned,
-          active,
-          updatedAt:serverTimestamp(),
-          updatedBy:currentUser.uid
-        }
-      );
+    const id=$("announcementEditId").value;
+    if(id)await updateDoc(doc(db,"announcements",id),payload);
+    else await addDoc(collection(db,"announcements"),{...payload,createdAt:new Date(),createdBy:user.uid});
+    clearAnnouncementForm();await loadAnnouncements();await loadDashboard();msg("お知らせを保存しました","success");
+  }catch(e){msg("お知らせの保存に失敗しました："+e.message,"error")}
+};
+async function toggleAnnouncement(id,active){try{await updateDoc(doc(db,"announcements",id),{active,updatedAt:new Date(),updatedBy:auth.currentUser.uid});await loadAnnouncements();await loadDashboard()}catch(e){msg("変更に失敗しました："+e.message,"error")}}
+async function deleteAnnouncement(id){if(!confirm("このお知らせを削除しますか？"))return;try{await deleteDoc(doc(db,"announcements",id));await loadAnnouncements();await loadDashboard()}catch(e){msg("削除に失敗しました："+e.message,"error")}}
 
-      $("announcementFormStatus").innerHTML=
-        `<div class="notice">お知らせを更新しました。</div>`;
-    }else{
-      const newRef=doc(collection(db,"announcements"));
-
-      await setDoc(newRef,{
-        title,
-        message,
-        important,
-        pinned,
-        active,
-        createdAt:serverTimestamp(),
-        createdBy:currentUser.uid,
-        updatedAt:serverTimestamp(),
-        updatedBy:currentUser.uid
-      });
-
-      $("announcementFormStatus").innerHTML=
-        `<div class="notice">お知らせを投稿しました。</div>`;
+$("searchUserBtn").onclick=async()=>{
+  const term=$("userSearch").value.trim().toLowerCase();if(!term){msg("検索文字を入力してください","error");return}
+  try{
+    const snap=await getDocs(collection(db,"users"));const rows=[];
+    for(const d of snap.docs){
+      const u=d.data();const pub=(await getDoc(doc(db,"publicProfiles",d.id))).data()||{};
+      const hay=[d.id,u.email,u.rankingName,u.friendId,pub.rankingName,pub.friendId].join(" ").toLowerCase();
+      if(hay.includes(term))rows.push({id:d.id,u,pub});
     }
-
-    cancelAnnouncementEdit();
-    await loadAnnouncements();
-    $("announcementFormStatus").innerHTML=
-      `<div class="notice">保存しました。</div>`;
-
-  }catch(e){
-    console.error(e);
-    $("announcementFormStatus").innerHTML=
-      `<div class="notice error">${escapeHTML(e.message||"保存に失敗しました。")}</div>`;
-  }finally{
-    btn.disabled=false;
-  }
-}
-
-$("announcementSaveBtn").addEventListener("click",saveAnnouncement);
-$("reloadAnnouncementsBtn").addEventListener("click",loadAnnouncements);
-
-async function toggleAnnouncement(id){
-  const a=announcementsCache.find(x=>x.id===id);
-  if(!a)return;
-
-  try{
-    await updateDoc(
-      doc(db,"announcements",id),
-      {
-        active:a.active===false,
-        updatedAt:serverTimestamp(),
-        updatedBy:currentUser.uid
-      }
-    );
-
-    await loadAnnouncements();
-
-  }catch(e){
-    alert(e.message||"公開状態の変更に失敗しました。");
-  }
-}
-
-async function deleteAnnouncement(id){
-  const a=announcementsCache.find(x=>x.id===id);
-  if(!a)return;
-
-  if(!confirm(
-    `「${a.title||"お知らせ"}」を削除しますか？\nこの操作は元に戻せません。`
-  ))return;
-
-  try{
-    await deleteDoc(doc(db,"announcements",id));
-    await loadAnnouncements();
-    await loadDashboard();
-  }catch(e){
-    alert(e.message||"削除に失敗しました。");
-  }
-}
-
-async function renderUsers(users){
-  const area=$("userList");
-
-  if(!users.length){
-    area.innerHTML=
-      `<div class="notice">ユーザーが見つかりません。</div>`;
-    return;
-  }
-
-  area.innerHTML=`
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>表示名</th>
-            <th>フレンドID</th>
-            <th>XP</th>
-            <th>改善率</th>
-            <th>状態</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${users.map(u=>{
-            const disabled=u.disabled===true;
-            const rate=Number(
-              u.improvement?.improvementRate??
-              u.improvementRate
-            );
-
-            return `
-              <tr>
-                <td>${escapeHTML(u.rankingName||u.displayName||u.email||"ユーザー")}</td>
-                <td>${escapeHTML(u.friendId||"—")}</td>
-                <td>${Number(u.xp||0)}</td>
-                <td>${Number.isFinite(rate)?rate.toFixed(1)+"%":"—"}</td>
-                <td>${disabled?"停止中":"有効"}</td>
-                <td>
-                  <button class="btn small" data-user="${escapeHTML(u.id)}">詳細</button>
-                </td>
-              </tr>
-            `;
-          }).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  area.querySelectorAll("[data-user]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      showUserDetail(btn.dataset.user);
-    });
-  });
-}
-
-function filterUsers(){
-  const q=$("userSearch").value.trim().toLowerCase();
-
-  if(!q){
-    renderUsers(usersCache);
-    return;
-  }
-
-  const result=usersCache.filter(u=>{
-    return [
-      u.friendId,
-      u.rankingName,
-      u.displayName,
-      u.email,
-      u.id
-    ].some(v=>String(v||"").toLowerCase().includes(q));
-  });
-
-  renderUsers(result);
-}
-
-$("userSearchBtn").addEventListener("click",filterUsers);
-$("userSearch").addEventListener("keydown",e=>{
-  if(e.key==="Enter")filterUsers();
-});
-$("reloadUsersBtn").addEventListener("click",loadDashboard);
-
-async function showUserDetail(uid){
-  const u=usersCache.find(x=>x.id===uid);
-  if(!u)return;
-
-  const area=$("userDetail");
-  area.innerHTML=`<div class="user-detail"><div class="loading">詳細を読み込んでいます...</div></div>`;
-
-  try{
-    const profileSnap=await getDoc(doc(db,"publicProfiles",uid));
-    const profile=profileSnap.exists()?profileSnap.data():{};
-
-    const measSnap=await getDocs(
-      collection(db,"users",uid,"measurements")
-    );
-
-    const measurements=measSnap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>timeOf(b)-timeOf(a));
-
-    const disabled=u.disabled===true;
-
-    area.innerHTML=`
-      <div class="user-detail">
-        <div class="row">
-          <h3 style="margin:0">${escapeHTML(
-            u.rankingName||
-            profile.rankingName||
-            u.displayName||
-            "ユーザー"
-          )}</h3>
-          <div style="display:flex;gap:7px">
-            <button class="btn small ${disabled?"success":"danger"}"
-              id="toggleUserDisabledBtn">
-              ${disabled?"利用停止を解除":"利用停止"}
-            </button>
-            <button class="btn small secondary" id="closeUserDetailBtn">閉じる</button>
-          </div>
-        </div>
-
-        <div style="margin-top:12px">
-          <div class="kv"><div class="k">UID</div><div>${escapeHTML(uid)}</div></div>
-          <div class="kv"><div class="k">メール</div><div>${escapeHTML(u.email||profile.email||"—")}</div></div>
-          <div class="kv"><div class="k">フレンドID</div><div>${escapeHTML(u.friendId||profile.friendId||"—")}</div></div>
-          <div class="kv"><div class="k">XP</div><div>${Number(u.xp||profile.xp||0)}</div></div>
-          <div class="kv"><div class="k">改善率</div><div>${
-            Number.isFinite(Number(u.improvement?.improvementRate??profile.improvementRate))
-            ?Number(u.improvement?.improvementRate??profile.improvementRate).toFixed(1)+"%"
-            :"—"
-          }</div></div>
-          <div class="kv"><div class="k">測定回数</div><div>${measurements.length}</div></div>
-          <div class="kv"><div class="k">プロフィール文</div><div>${escapeHTML(profile.profileBio||u.profileBio||"—")}</div></div>
-        </div>
-
-        <h4>最近の測定</h4>
-        ${
-          measurements.length
-          ?`
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>日時</th><th>スコア</th><th>その他</th></tr></thead>
-                <tbody>
-                  ${measurements.slice(0,20).map(m=>`
-                    <tr>
-                      <td>${escapeHTML(formatDate(m))}</td>
-                      <td>${escapeHTML(m.score??m.sleepScore??"—")}</td>
-                      <td>${escapeHTML(m.status??"")}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
-            </div>
-          `
-          :`<div class="notice">測定データはありません。</div>`
-        }
-      </div>
-    `;
-
-    $("toggleUserDisabledBtn").addEventListener("click",()=>{
-      toggleUserDisabled(uid,!disabled);
-    });
-
-    $("closeUserDetailBtn").addEventListener("click",()=>{
-      area.innerHTML="";
-    });
-
-  }catch(e){
-    console.error(e);
-    area.innerHTML=
-      `<div class="user-detail"><div class="notice error">${escapeHTML(e.message||"詳細取得に失敗しました。")}</div></div>`;
-  }
-}
-
+    $("userResults").innerHTML=rows.length?rows.map(x=>`<div class="item"><strong>${esc(x.u.rankingName||x.pub.rankingName||"ユーザー")}</strong><div class="muted">UID: ${esc(x.id)}</div><div class="muted">メール: ${esc(x.u.email||"-")}</div><div class="muted">フレンドID: ${esc(x.u.friendId||x.pub.friendId||"-")}</div><div class="row" style="margin-top:8px"><button class="btn secondary small" data-disable-user="${x.id}" data-disabled="${x.u.disabled===true}">${x.u.disabled===true?"利用停止を解除":"利用停止"}</button></div></div>`).join(""):"<div class='muted'>該当ユーザーなし</div>";
+    document.querySelectorAll("[data-disable-user]").forEach(b=>b.onclick=()=>toggleUserDisabled(b.dataset.disableUser,b.dataset.disabled!=="true"));
+  }catch(e){msg("ユーザー検索に失敗しました："+e.message,"error")}
+};
 async function toggleUserDisabled(uid,disabled){
-  if(!confirm(
-    disabled
-      ?"このユーザーを利用停止にしますか？"
-      :"このユーザーの利用停止を解除しますか？"
-  ))return;
-
-  try{
-    await setDoc(
-      doc(db,"users",uid),
-      {disabled},
-      {merge:true}
-    );
-
-    await setDoc(
-      doc(db,"publicProfiles",uid),
-      {disabled},
-      {merge:true}
-    );
-
-    alert(disabled?"利用停止にしました。":"利用停止を解除しました。");
-    await loadDashboard();
-    showUserDetail(uid);
-
-  }catch(e){
-    alert(e.message||"状態変更に失敗しました。");
-  }
+  try{await setDoc(doc(db,"users",uid),{disabled},{merge:true});await setDoc(doc(db,"publicProfiles",uid),{disabled},{merge:true});$("searchUserBtn").click();msg(disabled?"利用停止にしました":"利用停止を解除しました","success")}catch(e){msg("変更に失敗しました："+e.message,"error")}
 }
 
 async function loadRanking(){
-  const area=$("rankingList");
-
   try{
-    const snap=await getDocs(
-      query(
-        collection(db,"ranking"),
-        orderBy("improvementRate","desc"),
-        limit(100)
-      )
-    );
-
-    if(!snap.size){
-      area.innerHTML=`<div class="notice">ランキングデータはありません。</div>`;
-      return;
-    }
-
-    area.innerHTML=`
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>順位</th><th>名前</th><th>フレンドID</th><th>改善率</th><th>XP</th></tr>
-          </thead>
-          <tbody>
-            ${snap.docs.map((d,i)=>{
-              const r=d.data();
-              return `
-                <tr>
-                  <td>${i+1}</td>
-                  <td>${escapeHTML(r.rankingName||r.name||"ユーザー")}</td>
-                  <td>${escapeHTML(r.friendId||"—")}</td>
-                  <td>${Number(r.improvementRate||0).toFixed(1)}%</td>
-                  <td>${Number(r.xp||0)}</td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }catch(e){
-    console.error(e);
-    area.innerHTML=
-      `<div class="notice error">${escapeHTML(e.message||"ランキング取得に失敗しました。")}</div>`;
-  }
+    const snap=await getDocs(collection(db,"ranking"));const arr=snap.docs.map(d=>({id:d.id,...d.data()}));
+    arr.sort((a,b)=>(Number(b.improvementRate)||0)-(Number(a.improvementRate)||0));
+    $("rankingList").innerHTML=arr.slice(0,100).map((r,i)=>`<div class="item"><strong>${i+1}位 ${esc(r.rankingName||"ユーザー")}</strong><div class="muted">改善率: ${typeof r.improvementRate==="number"?r.improvementRate.toFixed(1)+"%":"-"}</div><div class="muted">UID: ${esc(r.id)}</div></div>`).join("")||"<div class='muted'>ランキングデータなし</div>";
+  }catch(e){$("rankingList").innerHTML="<div class='muted'>ランキングを取得できませんでした。</div>"}
 }
-
-async function loadRequests(){
-  const area=$("requestList");
-
+async function loadFriendRequests(){
   try{
-    const snap=await getDocs(
-      collection(db,"friendRequests")
-    );
-
-    const requests=snap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .filter(r=>r.status==="pending")
-      .sort((a,b)=>timeOf(b)-timeOf(a));
-
-    if(!requests.length){
-      area.innerHTML=
-        `<div class="notice">保留中のフレンド申請はありません。</div>`;
-      return;
-    }
-
-    area.innerHTML=`
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>送信者</th><th>送信先</th><th>状態</th><th>日時</th></tr>
-          </thead>
-          <tbody>
-            ${requests.map(r=>`
-              <tr>
-                <td>${escapeHTML(r.fromName||r.fromUid||"—")}</td>
-                <td>${escapeHTML(r.toUid||"—")}</td>
-                <td>pending</td>
-                <td>${escapeHTML(formatDate(r))}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }catch(e){
-    console.error(e);
-    area.innerHTML=
-      `<div class="notice error">${escapeHTML(e.message||"申請取得に失敗しました。")}</div>`;
-  }
+    const snap=await getDocs(query(collection(db,"friendRequests"),where("status","==","pending")));
+    $("friendRequestList").innerHTML=snap.docs.map(d=>{const x=d.data();return `<div class="item"><strong>保留中</strong><div class="muted">送信者: ${esc(x.fromUid||"-")}</div><div class="muted">受信者: ${esc(x.toUid||"-")}</div><div class="muted">申請ID: ${esc(d.id)}</div></div>`}).join("")||"<div class='muted'>保留中の申請はありません。</div>";
+  }catch(e){$("friendRequestList").innerHTML="<div class='muted'>友達申請を取得できませんでした。</div>"}
 }
-
-$("reloadRankingBtn").addEventListener("click",loadRanking);
-$("reloadRequestsBtn").addEventListener("click",loadRequests);
-$("refreshBtn").addEventListener("click",loadDashboard);
-
-onAuthStateChanged(auth,async user=>{
-  currentUser=user;
-
-  if(!user){
-    $("loginView").style.display="block";
-    $("appView").style.display="none";
-    return;
-  }
-
-  if(!isAdmin(user)){
-    $("loginView").style.display="block";
-    $("appView").style.display="none";
-    $("loginError").textContent=
-      `このアカウントには管理者権限がありません。\n${user.email||""}`;
-    $("loginError").classList.remove("hidden");
-    return;
-  }
-
-  $("loginView").style.display="none";
-  $("appView").style.display="block";
-  $("adminEmail").textContent=`ログイン中：${user.email}`;
-
-  await loadDashboard();
-});
-
-function titlePartDateValue(v){
-  if(!v)return 0;
-  if(typeof v.toMillis==="function")return v.toMillis();
-  if(typeof v.seconds==="number")return v.seconds*1000;
-  const n=Date.parse(v);
-  return Number.isFinite(n)?n:0;
-}
-
-function rarityLabel(r){
-  return ({
-    common:"通常",
-    rare:"レア",
-    epic:"エピック",
-    legendary:"伝説"
-  })[r] || "通常";
-}
-
-function renderTitleParts(){
-  const prefix=document.getElementById("prefixTitleParts");
-  const suffix=document.getElementById("suffixTitleParts");
-  if(!prefix || !suffix)return;
-
-  const make=(items)=>{
-    if(!items.length)return '<div class="sub">登録されていません。</div>';
-    return items.map(p=>`
-      <div class="title-part-row">
-        <div class="title-part-name">${escapeHtml(p.name||"")}</div>
-        <span class="badge ${escapeHtml(p.rarity||"common")}">${rarityLabel(p.rarity)}</span>
-        <span class="title-part-meta">${p.active===false?"非公開":"公開"}</span>
-        <button class="btn secondary small" onclick="editTitlePart('${p.id}')">編集</button>
-        <button class="btn danger small" onclick="deleteTitlePart('${p.id}')">削除</button>
-      </div>
-    `).join("");
-  };
-
-  const sorted=[...titlePartsCache].sort((a,b)=>titlePartDateValue(b.updatedAt||b.createdAt)-titlePartDateValue(a.updatedAt||a.createdAt));
-  prefix.innerHTML=make(sorted.filter(x=>x.type==="prefix"));
-  suffix.innerHTML=make(sorted.filter(x=>x.type==="suffix"));
-}
-
-async function loadTitleParts(){
-  const status=document.getElementById("titlePartFormStatus");
-  try{
-    const snap=await getDocs(collection(db,"titleParts"));
-    titlePartsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderTitleParts();
-    if(status)status.textContent=`${titlePartsCache.length}件読み込みました。`;
-  }catch(e){
-    console.error("二つ名読み込み失敗:",e);
-    if(status)status.textContent="二つ名の読み込みに失敗しました: "+e.message;
-  }
-}
-
-function resetTitlePartForm(){
-  editingTitlePartId=null;
-  document.getElementById("titlePartName").value="";
-  document.getElementById("titlePartType").value="prefix";
-  document.getElementById("titlePartRarity").value="common";
-  document.getElementById("titlePartActive").value="true";
-  document.getElementById("titlePartSaveBtn").textContent="二つ名を追加";
-  document.getElementById("titlePartCancelBtn").classList.add("hidden");
-}
-
-window.editTitlePart=function(id){
-  const p=titlePartsCache.find(x=>x.id===id);
-  if(!p)return;
-  editingTitlePartId=id;
-  document.getElementById("titlePartName").value=p.name||"";
-  document.getElementById("titlePartType").value=p.type||"prefix";
-  document.getElementById("titlePartRarity").value=p.rarity||"common";
-  document.getElementById("titlePartActive").value=p.active===false?"false":"true";
-  document.getElementById("titlePartSaveBtn").textContent="二つ名を更新";
-  document.getElementById("titlePartCancelBtn").classList.remove("hidden");
-  document.getElementById("titlePartsCard").scrollIntoView({behavior:"smooth",block:"start"});
-};
-
-window.deleteTitlePart=async function(id){
-  const p=titlePartsCache.find(x=>x.id===id);
-  if(!p)return;
-  if(!confirm(`「${p.name}」を削除しますか？`))return;
-  try{
-    await deleteDoc(doc(db,"titleParts",id));
-    await loadTitleParts();
-  }catch(e){
-    console.error("二つ名削除失敗:",e);
-    alert("削除に失敗しました。\n"+e.message);
-  }
-};
-
-async function saveTitlePart(){
-  const name=document.getElementById("titlePartName").value.trim();
-  const type=document.getElementById("titlePartType").value;
-  const rarity=document.getElementById("titlePartRarity").value;
-  const active=document.getElementById("titlePartActive").value==="true";
-  const status=document.getElementById("titlePartFormStatus");
-
-  if(!name){
-    status.textContent="二つ名を入力してください。";
-    return;
-  }
-  if(name.length>30){
-    status.textContent="二つ名は30文字以内にしてください。";
-    return;
-  }
-
-  try{
-    const payload={
-      name,type,rarity,active,
-      updatedAt:serverTimestamp(),
-      updatedBy:currentUser.uid
-    };
-
-    if(editingTitlePartId){
-      await updateDoc(doc(db,"titleParts",editingTitlePartId),payload);
-      status.textContent="二つ名を更新しました。";
-    }else{
-      await setDoc(doc(collection(db,"titleParts")),{
-        ...payload,
-        createdAt:serverTimestamp(),
-        createdBy:currentUser.uid
-      });
-      status.textContent="二つ名を追加しました。";
-    }
-
-    resetTitlePartForm();
-    await loadTitleParts();
-  }catch(e){
-    console.error("二つ名保存失敗:",e);
-    status.textContent="保存に失敗しました: "+e.message;
-  }
-}
-
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 </script>
 </body>
 </html>
