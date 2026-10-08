@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#111">
-<title>No Sleep No Life v30</title>
+<title>No Sleep No Life v29</title>
 
 <style>
 *{box-sizing:border-box}
@@ -7672,300 +7672,284 @@ document.addEventListener(
 
 async function loadAnnouncements(){
 
-  const area =
-    document.getElementById("announcementArea");
+  const area=document.getElementById("announcementArea");
 
   if(!area)return;
 
   if(!currentUser){
 
-    area.innerHTML = `
-      <div class="notice">
-        お知らせを見るにはGoogleログインしてください。
-      </div>
-    `;
+    area.innerHTML=`<div class="notice">
+      お知らせを見るにはGoogleログインしてください。
+    </div>`;
 
     return;
 
   }
 
-  area.innerHTML = `
-    <div class="rank-loading">
-      お知らせを読み込んでいます...
-    </div>
-  `;
+  area.innerHTML=`<div class="rank-loading">
+    お知らせを読み込んでいます...
+  </div>`;
 
   try{
 
-    const snap =
-      await getDocs(
-        collection(db,"announcements")
-      );
-
-    console.log(
-      "お知らせ取得件数:",
-      snap.size
+    const snap=await getDocs(
+      collection(db,"announcements")
     );
 
-    const announcements =
-      snap.docs
-        .map(docSnap => {
+    const announcements=snap.docs
+      .map(docSnap=>({
+        id:docSnap.id,
+        ...docSnap.data()
+      }))
+      .filter(item=>item.active!==false)
+      .map(item=>{
 
-          const item = docSnap.data();
+        const rawTitle = String(item.title||"");
 
-          console.log(
-            "お知らせデータ:",
-            docSnap.id,
-            item
-          );
+        const important =
+          item.important===true ||
+          item.isImportant===true ||
+          item.priority==="important" ||
+          /^【重要】/.test(rawTitle) ||
+          /^\[重要\]/.test(rawTitle);
 
-          return {
-            id:docSnap.id,
-            ...item
-          };
+        const pinned =
+          item.pinned===true ||
+          item.isPinned===true ||
+          /^【固定】/.test(rawTitle) ||
+          /^\[固定\]/.test(rawTitle);
 
-        })
-        .filter(item => {
+        let time=0;
 
-          // active が false のものだけ非表示
-          return item.active !== false;
+        if(item.createdAt?.toMillis){
+          time=item.createdAt.toMillis();
+        }else if(item.createdAt?.seconds){
+          time=item.createdAt.seconds*1000;
+        }else if(typeof item.createdAt==="string"){
+          const parsed=new Date(item.createdAt).getTime();
+          if(!Number.isNaN(parsed))time=parsed;
+        }
 
-        })
-        .sort((a,b)=>{
+        return {
+          ...item,
+          important,
+          pinned,
+          _time:time
+        };
 
-          const getTime = item => {
+      })
+      .sort((a,b)=>{
 
-            if(
-              item.createdAt &&
-              typeof item.createdAt.toMillis === "function"
-            ){
+        // 重要なお知らせ・固定されたお知らせを上へ
+        if(a.important!==b.important){
+          return a.important ? -1 : 1;
+        }
 
-              return item.createdAt.toMillis();
+        if(a.pinned!==b.pinned){
+          return a.pinned ? -1 : 1;
+        }
 
-            }
+        return b._time-a._time;
 
-            if(
-              item.createdAt &&
-              typeof item.createdAt.seconds === "number"
-            ){
+      })
+      .slice(0,10);
 
-              return item.createdAt.seconds * 1000;
+    if(announcements.length===0){
 
-            }
-
-            if(
-              typeof item.createdAt === "string"
-            ){
-
-              const time =
-                new Date(item.createdAt).getTime();
-
-              return Number.isNaN(time)
-                ?0
-                :time;
-
-            }
-
-            if(
-              item.date &&
-              typeof item.date === "string"
-            ){
-
-              const time =
-                new Date(item.date).getTime();
-
-              return Number.isNaN(time)
-                ?0
-                :time;
-
-            }
-
-            return 0;
-
-          };
-
-          return getTime(b) - getTime(a);
-
-        })
-        .slice(0,10);
-
-
-    if(announcements.length === 0){
-
-      area.innerHTML = `
-        <div class="notice">
-          現在、お知らせはありません。
-        </div>
-      `;
+      area.innerHTML=`<div class="notice">
+        現在、お知らせはありません。
+      </div>`;
 
       return;
 
     }
 
+    const now=Date.now();
 
-    area.innerHTML =
-      announcements
-        .map(announcement => {
+    area.innerHTML=announcements.map(announcement=>{
 
-          /*
-           * 本文のフィールド名が
-           * message / content / body
-           * のどれでも表示できるようにする
-           */
+      let dateText="";
 
-          const title =
-            announcement.title ||
-            announcement.name ||
-            "お知らせ";
+      if(announcement.createdAt?.toDate){
 
+        const date=announcement.createdAt.toDate();
 
-          const message =
-            announcement.message ||
-            announcement.content ||
-            announcement.body ||
-            announcement.text ||
-            "";
+        dateText=date.toLocaleString("ja-JP",{
+          year:"numeric",
+          month:"2-digit",
+          day:"2-digit",
+          hour:"2-digit",
+          minute:"2-digit"
+        });
 
+      }else if(announcement._time){
 
-          let dateText = "";
+        const date=new Date(announcement._time);
 
+        dateText=date.toLocaleString("ja-JP",{
+          year:"numeric",
+          month:"2-digit",
+          day:"2-digit",
+          hour:"2-digit",
+          minute:"2-digit"
+        });
 
-          if(
-            announcement.createdAt &&
-            typeof announcement.createdAt.toDate === "function"
-          ){
+      }
 
-            const date =
-              announcement.createdAt.toDate();
+      const cleanTitle=String(
+        announcement.title||"お知らせ"
+      )
+        .replace(/^【重要】\s*/,"")
+        .replace(/^\[重要\]\s*/,"")
+        .replace(/^【固定】\s*/,"")
+        .replace(/^\[固定\]\s*/,"");
 
-            dateText =
-              date.toLocaleString(
-                "ja-JP",
-                {
-                  year:"numeric",
-                  month:"2-digit",
-                  day:"2-digit",
-                  hour:"2-digit",
-                  minute:"2-digit"
-                }
-              );
+      const title=escapeHTML(cleanTitle||"お知らせ");
 
-          }
-          else if(
-            announcement.createdAt
-          ){
+      const message=escapeHTML(
+        announcement.message||
+        announcement.content||
+        announcement.body||
+        announcement.text||
+        ""
+      );
 
-            const date =
-              new Date(
-                announcement.createdAt
-              );
+      // 投稿から7日以内ならNEW表示
+      const isNew =
+        announcement._time>0 &&
+        now-announcement._time <= 7*24*60*60*1000;
 
-            if(!Number.isNaN(date.getTime())){
+      const badgeHtml = `
+        ${announcement.important?`
+          <span style="
+            display:inline-flex;
+            align-items:center;
+            padding:3px 7px;
+            margin-right:6px;
+            border-radius:6px;
+            background:#ff3b30;
+            color:#fff;
+            font-size:10px;
+            font-weight:900;
+            letter-spacing:.04em;
+          ">重要</span>
+        `:""}
+        ${announcement.pinned?`
+          <span style="
+            display:inline-flex;
+            align-items:center;
+            padding:3px 7px;
+            margin-right:6px;
+            border-radius:6px;
+            background:#333;
+            color:#fff;
+            font-size:10px;
+            font-weight:900;
+          ">固定</span>
+        `:""}
+        ${isNew?`
+          <span style="
+            display:inline-flex;
+            align-items:center;
+            padding:3px 7px;
+            border-radius:6px;
+            background:#fff;
+            color:#111;
+            font-size:10px;
+            font-weight:900;
+          ">NEW</span>
+        `:""}
+      `;
 
-              dateText =
-                date.toLocaleString(
-                  "ja-JP",
-                  {
-                    year:"numeric",
-                    month:"2-digit",
-                    day:"2-digit",
-                    hour:"2-digit",
-                    minute:"2-digit"
-                  }
-                );
+      const titleColor=announcement.important
+        ?"#ff4d4f"
+        :"#fff";
 
-            }
+      const cardBackground=announcement.important
+        ?"rgba(255,59,48,.08)"
+        :"transparent";
 
-          }
+      const cardBorder=announcement.important
+        ?"1px solid rgba(255,59,48,.35)"
+        :"1px solid #292929";
 
+      return `
+        <div style="
+          padding:14px;
+          margin-bottom:10px;
+          border:${cardBorder};
+          border-radius:12px;
+          background:${cardBackground};
+        ">
 
-          return `
-            <div
-              style="
-                padding:16px 0;
-                border-bottom:1px solid #292929;
-              "
-            >
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:10px;
+          ">
 
-              <div
-                style="
-                  display:flex;
-                  justify-content:space-between;
-                  align-items:flex-start;
-                  gap:10px;
-                "
-              >
+            <div style="min-width:0;flex:1">
 
-                <div
-                  style="
-                    font-weight:900;
-                    font-size:16px;
-                    color:#fff;
-                  "
-                >
-                  ${escapeHTML(title)}
-                </div>
-
-                ${
-                  dateText
-                  ?`
-                    <div
-                      style="
-                        color:#777;
-                        font-size:11px;
-                        white-space:nowrap;
-                      "
-                    >
-                      ${escapeHTML(dateText)}
-                    </div>
-                  `
-                  :""
-                }
-
+              <div style="
+                display:flex;
+                align-items:center;
+                flex-wrap:wrap;
+                gap:5px;
+                margin-bottom:7px;
+              ">
+                ${badgeHtml}
               </div>
 
-
-              <div
-                style="
-                  margin-top:8px;
-                  color:#bbb;
-                  white-space:pre-wrap;
-                  line-height:1.7;
-                "
-              >
-                ${escapeHTML(message)}
+              <div style="
+                font-weight:900;
+                font-size:16px;
+                line-height:1.5;
+                color:${titleColor};
+              ">
+                ${title}
               </div>
 
             </div>
-          `;
 
-        })
-        .join("");
+            ${dateText?`
+              <div style="
+                color:#777;
+                font-size:11px;
+                white-space:nowrap;
+                flex-shrink:0;
+              ">
+                ${dateText}
+              </div>
+            `:""}
 
+          </div>
+
+          <div style="
+            margin-top:7px;
+            color:${announcement.important?"#ddd":"#bbb"};
+            white-space:pre-wrap;
+            line-height:1.7;
+          ">
+            ${message}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
 
   }catch(e){
 
-    console.error(
-      "Announcements load error:",
-      e
-    );
+    console.error("Announcements load error:",e);
 
-    area.innerHTML = `
-      <div class="notice">
-
-        お知らせを読み込めませんでした。
-
-        <br>
-
-        <small>
-          ${escapeHTML(
-            e.message ||
-            "Firestoreエラー"
-          )}
-        </small>
-
-      </div>
-    `;
+    area.innerHTML=`<div class="notice">
+      お知らせを読み込めませんでした。
+      <br>
+      <small>
+        ${escapeHTML(e.message||"Firestoreエラー")}
+      </small>
+    </div>`;
 
   }
 
