@@ -538,9 +538,70 @@ select{
   justify-content:center
 }
 
-.avatar-option.selected{
+ .avatar-option.selected{
   border-color:#fff;
   background:#292929
+}
+
+.title-display{
+  margin-top:10px;
+  font-size:18px;
+  font-weight:800;
+  color:#fff
+}
+
+.title-parts-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:10px
+}
+
+.title-part-list{
+  background:#171717;
+  border:1px solid #292929;
+  border-radius:12px;
+  padding:10px
+}
+
+.title-part-list h3{
+  margin:0 0 8px;
+  font-size:13px
+}
+
+.title-part-button{
+  width:100%;
+  text-align:left;
+  margin:4px 0;
+  background:#202020;
+  border:1px solid #333;
+  color:#fff;
+  border-radius:9px;
+  padding:9px 10px;
+  font-size:13px
+}
+
+.title-part-button.selected{
+  border-color:#fff;
+  background:#2b2b2b
+}
+
+.title-part-button.locked{
+  opacity:.45;
+  cursor:not-allowed
+}
+
+.title-rarity{
+  display:inline-block;
+  margin-left:6px;
+  color:#888;
+  font-size:10px
+}
+
+.title-sub{
+  color:#888;
+  font-size:12px;
+  margin-top:4px
 }
 
 .home-welcome{
@@ -1558,6 +1619,9 @@ select{
       自己紹介はまだ設定されていません。
     </div>
 
+    <div class="profile-sub">現在の二つ名</div>
+    <div id="profileTitle" class="title-display">二つ名未設定</div>
+
     <button id="editProfileBtn">
       プロフィールを編集
     </button>
@@ -1637,6 +1701,23 @@ select{
         🐶
       </button>
 
+    </div>
+
+    <label
+      style="display:block;margin-top:15px">
+      二つ名
+    </label>
+
+    <div id="titlePreview" class="title-display">二つ名未設定</div>
+    <div class="title-parts-grid">
+      <div class="title-part-list">
+        <h3>前半</h3>
+        <div id="titlePrefixOptions">読み込み中...</div>
+      </div>
+      <div class="title-part-list">
+        <h3>後半</h3>
+        <div id="titleSuffixOptions">読み込み中...</div>
+      </div>
     </div>
 
     <label
@@ -2026,6 +2107,9 @@ select{
       自己紹介はありません。
     </div>
 
+    <div class="profile-sub">二つ名</div>
+    <div id="publicTitle" class="title-display">二つ名未設定</div>
+
     <div class="grid">
 
       <div class="stat">
@@ -2155,6 +2239,14 @@ let data={
   profileAvatar:"🌙",
 
   profileBio:"",
+
+  unlockedTitlePrefixes:[],
+
+  unlockedTitleSuffixes:[],
+
+  equippedTitlePrefix:"",
+
+  equippedTitleSuffix:"",
 
   friendId:"",
 
@@ -2418,6 +2510,26 @@ function loadLocal(){
       ?parsed.profileBio
       :"";
 
+    data.unlockedTitlePrefixes=
+      Array.isArray(parsed.unlockedTitlePrefixes)
+      ?parsed.unlockedTitlePrefixes
+      :[];
+
+    data.unlockedTitleSuffixes=
+      Array.isArray(parsed.unlockedTitleSuffixes)
+      ?parsed.unlockedTitleSuffixes
+      :[];
+
+    data.equippedTitlePrefix=
+      typeof parsed.equippedTitlePrefix==="string"
+      ?parsed.equippedTitlePrefix
+      :"";
+
+    data.equippedTitleSuffix=
+      typeof parsed.equippedTitleSuffix==="string"
+      ?parsed.equippedTitleSuffix
+      :"";
+
     data.friendId=
       typeof parsed.friendId==="string"
       ?parsed.friendId
@@ -2663,6 +2775,15 @@ async function publishPublicProfile(){
       profileBio:
         data.profileBio||"",
 
+      equippedTitlePrefix:
+        data.equippedTitlePrefix||"",
+
+      equippedTitleSuffix:
+        data.equippedTitleSuffix||"",
+
+      titleText:
+        getEquippedTitle(),
+
       xp:
         Number(data.xp)||0,
 
@@ -2718,6 +2839,18 @@ async function saveToFirestore(){
 
         profileBio:
           data.profileBio||"",
+
+        unlockedTitlePrefixes:
+          data.unlockedTitlePrefixes||[],
+
+        unlockedTitleSuffixes:
+          data.unlockedTitleSuffixes||[],
+
+        equippedTitlePrefix:
+          data.equippedTitlePrefix||"",
+
+        equippedTitleSuffix:
+          data.equippedTitleSuffix||"",
 
         friendId:
           data.friendId||"",
@@ -2855,6 +2988,28 @@ async function loadFromFirestore(){
 
     }
 
+    if(Array.isArray(remote.unlockedTitlePrefixes)){
+      data.unlockedTitlePrefixes=[...new Set([
+        ...data.unlockedTitlePrefixes,
+        ...remote.unlockedTitlePrefixes
+      ])];
+    }
+
+    if(Array.isArray(remote.unlockedTitleSuffixes)){
+      data.unlockedTitleSuffixes=[...new Set([
+        ...data.unlockedTitleSuffixes,
+        ...remote.unlockedTitleSuffixes
+      ])];
+    }
+
+    if(typeof remote.equippedTitlePrefix==="string"){
+      data.equippedTitlePrefix=remote.equippedTitlePrefix;
+    }
+
+    if(typeof remote.equippedTitleSuffix==="string"){
+      data.equippedTitleSuffix=remote.equippedTitleSuffix;
+    }
+
     if(
       typeof remote.friendId==="string"
     ){
@@ -2966,6 +3121,7 @@ onAuthStateChanged(
         "Googleアカウントでログイン中";
 
       await loadFromFirestore();
+      await loadTitleParts();
 
       updateRankingNameUI();
 
@@ -6187,6 +6343,14 @@ async function openPublicProfile(uid){
       profile.profileBio||
       "自己紹介はありません。";
 
+    document.getElementById(
+      "publicTitle"
+    ).textContent=
+      profile.titleText||
+      [profile.equippedTitlePrefix||"",profile.equippedTitleSuffix||""]
+        .join("")||
+      "二つ名未設定";
+
     const xp=
       Number(
         profile.xp
@@ -6293,6 +6457,274 @@ document
 
 
 /* =========================
+   TITLE PARTS
+========================= */
+
+let availableTitleParts=[];
+
+function normalizeTitleType(part){
+
+  const raw=String(
+    part.type||
+    part.partType||
+    part.position||
+    ""
+  ).toLowerCase();
+
+  if(raw==="prefix"||raw==="前半"||raw==="前")return "prefix";
+  if(raw==="suffix"||raw==="後半"||raw==="後")return "suffix";
+
+  return raw.includes("後")||raw.includes("suffix") ? "suffix" : "prefix";
+}
+
+function getEquippedTitle(){
+  return `${data.equippedTitlePrefix||""}${data.equippedTitleSuffix||""}`;
+}
+
+function titlePartUnlocked(part){
+
+  const id=String(part.id||"");
+  const type=normalizeTitleType(part);
+  const unlockedList=type==="suffix"
+    ?data.unlockedTitleSuffixes
+    :data.unlockedTitlePrefixes;
+
+  if(unlockedList.includes(id))return true;
+
+  const achievementId=
+    part.achievementId||
+    part.requiredAchievement||
+    part.unlockAchievement||
+    "";
+
+  if(achievementId){
+    return data.achievements.includes(String(achievementId));
+  }
+
+  const requirementType=String(
+    part.requirementType||
+    part.unlockType||
+    ""
+  ).toLowerCase();
+
+  const value=Number(
+    part.requirementValue??
+    part.unlockValue??
+    part.value
+  );
+
+  if(!requirementType||!Number.isFinite(value))return true;
+
+  if(requirementType.includes("achievement")||requirementType.includes("実績")){
+    return data.achievements.includes(String(part.requirementValue));
+  }
+
+  if(requirementType.includes("measurement")||requirementType.includes("測定")||requirementType.includes("count")){
+    return data.history.length>=value;
+  }
+
+  if(requirementType.includes("score")||requirementType.includes("スコア")){
+    return data.history.some(x=>(Number(x.score)||0) >= value);
+  }
+
+  if(requirementType.includes("improvement")||requirementType.includes("改善")){
+    return (Number(data.improvement.improvementRate)||0) >= value;
+  }
+
+  if(requirementType.includes("streak")||requirementType.includes("連続")){
+    return calculateStreak()>=value;
+  }
+
+  if(requirementType.includes("xp")){
+    return (Number(data.xp)||0) >= value;
+  }
+
+  if(requirementType.includes("level")||requirementType.includes("レベル")){
+    return Math.floor((Number(data.xp)||0)/100)+1 >= value;
+  }
+
+  return false;
+}
+
+function addUnlockedTitlePart(part){
+
+  const id=String(part.id||"");
+  if(!id)return false;
+
+  const type=normalizeTitleType(part);
+  const target=type==="suffix"
+    ?data.unlockedTitleSuffixes
+    :data.unlockedTitlePrefixes;
+
+  if(target.includes(id))return false;
+
+  target.push(id);
+  return true;
+}
+
+async function loadTitleParts(){
+
+  try{
+
+    const snap=await getDocs(
+      collection(db,"titleParts")
+    );
+
+    availableTitleParts=snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(part=>part.active!==false);
+
+    const beforePrefix=data.unlockedTitlePrefixes.length;
+    const beforeSuffix=data.unlockedTitleSuffixes.length;
+
+    let newlyUnlocked=[];
+
+    availableTitleParts.forEach(part=>{
+      if(titlePartUnlocked(part)){
+        const was=
+          (normalizeTitleType(part)==="suffix"
+            ?data.unlockedTitleSuffixes
+            :data.unlockedTitlePrefixes)
+          .includes(part.id);
+
+        if(addUnlockedTitlePart(part)&&!was){
+          newlyUnlocked.push(part);
+        }
+      }
+    });
+
+    if(data.equippedTitlePrefix &&
+       !data.unlockedTitlePrefixes.includes(data.equippedTitlePrefix)){
+      data.equippedTitlePrefix="";
+    }
+
+    if(data.equippedTitleSuffix &&
+       !data.unlockedTitleSuffixes.includes(data.equippedTitleSuffix)){
+      data.equippedTitleSuffix="";
+    }
+
+    saveLocal();
+    renderTitlePartOptions();
+    updateProfileUI();
+
+    if(currentUser && (newlyUnlocked.length>0 || beforePrefix!==data.unlockedTitlePrefixes.length || beforeSuffix!==data.unlockedTitleSuffixes.length)){
+      await setDoc(
+        doc(db,"users",currentUser.uid),
+        {
+          unlockedTitlePrefixes:data.unlockedTitlePrefixes,
+          unlockedTitleSuffixes:data.unlockedTitleSuffixes,
+          equippedTitlePrefix:data.equippedTitlePrefix||"",
+          equippedTitleSuffix:data.equippedTitleSuffix||"",
+          updatedAt:serverTimestamp()
+        },
+        {merge:true}
+      );
+      await publishPublicProfile();
+    }
+
+    if(newlyUnlocked.length>0){
+      const names=newlyUnlocked
+        .map(part=>String(part.name||part.text||part.title||part.value||""))
+        .filter(Boolean);
+      if(names.length){
+        alert("新しい二つ名パーツを獲得しました。\n\n"+names.join("\n"));
+      }
+    }
+
+  }catch(e){
+    console.error("Title parts load error:",e);
+    availableTitleParts=[];
+    renderTitlePartOptions();
+  }
+}
+
+function getTitlePartName(part){
+  return String(
+    part.name||
+    part.text||
+    part.title||
+    part.value||
+    "二つ名"
+  );
+}
+
+function getTitlePartRarity(part){
+  const raw=String(part.rarity||part.rank||"");
+  return raw ? `・${raw}` : "";
+}
+
+function renderTitlePartOptions(){
+
+  const prefixEl=document.getElementById("titlePrefixOptions");
+  const suffixEl=document.getElementById("titleSuffixOptions");
+  if(!prefixEl||!suffixEl)return;
+
+  const render=(type,el)=>{
+    const parts=availableTitleParts
+      .filter(p=>normalizeTitleType(p)===type);
+
+    if(parts.length===0){
+      el.innerHTML='<div class="title-sub">まだ二つ名が登録されていません。</div>';
+      return;
+    }
+
+    el.innerHTML=parts.map(part=>{
+      const id=String(part.id);
+      const unlocked=(type==="suffix"
+        ?data.unlockedTitleSuffixes
+        :data.unlockedTitlePrefixes).includes(id);
+      const selected=(type==="suffix"
+        ?data.equippedTitleSuffix
+        :data.equippedTitlePrefix)===id;
+      const name=escapeHTML(getTitlePartName(part));
+      const rarity=escapeHTML(getTitlePartRarity(part));
+
+      return `<button type="button" class="title-part-button ${selected?"selected":""} ${unlocked?"":"locked"}" data-title-type="${type}" data-title-id="${escapeHTML(id)}" ${unlocked?"":"disabled"}>${name}<span class="title-rarity">${unlocked?rarity:"未獲得"}</span></button>`;
+    }).join("");
+
+    el.querySelectorAll(".title-part-button").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const type=button.dataset.titleType;
+        const id=button.dataset.titleId;
+        if(type==="suffix") data.equippedTitleSuffix=id;
+        else data.equippedTitlePrefix=id;
+        saveLocal();
+        renderTitlePartOptions();
+        updateProfileUI();
+        saveEquippedTitle();
+      });
+    });
+  };
+
+  render("prefix",prefixEl);
+  render("suffix",suffixEl);
+
+  const preview=document.getElementById("titlePreview");
+  if(preview)preview.textContent=getEquippedTitle()||"二つ名未設定";
+}
+
+async function saveEquippedTitle(){
+  saveLocal();
+  if(!currentUser)return;
+  try{
+    await setDoc(
+      doc(db,"users",currentUser.uid),
+      {
+        unlockedTitlePrefixes:data.unlockedTitlePrefixes||[],
+        unlockedTitleSuffixes:data.unlockedTitleSuffixes||[],
+        equippedTitlePrefix:data.equippedTitlePrefix||"",
+        equippedTitleSuffix:data.equippedTitleSuffix||"",
+        updatedAt:serverTimestamp()
+      },
+      {merge:true}
+    );
+    await publishPublicProfile();
+  }catch(e){
+    console.error("Title save error:",e);
+  }
+}
+
+/* =========================
    PROFILE
 ========================= */
 
@@ -6321,6 +6753,12 @@ function updateProfileUI(){
   ).textContent=
     data.profileBio||
     "自己紹介はまだ設定されていません。";
+
+  document.getElementById(
+    "profileTitle"
+  ).textContent=
+    getEquippedTitle()||
+    "二つ名未設定";
 
   const xp=
     Number(data.xp)||0;
@@ -6471,6 +6909,7 @@ function openProfileEditor(){
     "🌙";
 
   updateProfileAvatarSelection();
+  renderTitlePartOptions();
 
 }
 
@@ -6611,6 +7050,18 @@ document
 
             profileBio:
               data.profileBio,
+
+            unlockedTitlePrefixes:
+              data.unlockedTitlePrefixes||[],
+
+            unlockedTitleSuffixes:
+              data.unlockedTitleSuffixes||[],
+
+            equippedTitlePrefix:
+              data.equippedTitlePrefix||"",
+
+            equippedTitleSuffix:
+              data.equippedTitleSuffix||"",
 
             updatedAt:
               serverTimestamp()
@@ -7036,6 +7487,10 @@ function checkAchievements(){
       "improve10"
     );
 
+  }
+
+  if(currentUser){
+    loadTitleParts();
   }
 
 }
@@ -7520,6 +7975,18 @@ document
           data.profileBio||
           "",
 
+        unlockedTitlePrefixes:
+          data.unlockedTitlePrefixes||[],
+
+        unlockedTitleSuffixes:
+          data.unlockedTitleSuffixes||[],
+
+        equippedTitlePrefix:
+          data.equippedTitlePrefix||"",
+
+        equippedTitleSuffix:
+          data.equippedTitleSuffix||"",
+
         friendId:
           data.friendId||
           "",
@@ -7578,6 +8045,18 @@ document
 
               profileBio:
                 data.profileBio,
+
+              unlockedTitlePrefixes:
+                data.unlockedTitlePrefixes||[],
+
+              unlockedTitleSuffixes:
+                data.unlockedTitleSuffixes||[],
+
+              equippedTitlePrefix:
+                data.equippedTitlePrefix||"",
+
+              equippedTitleSuffix:
+                data.equippedTitleSuffix||"",
 
               friendId:
                 data.friendId,
