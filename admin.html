@@ -106,6 +106,18 @@ th{color:#888;font-weight:700}
   .grid{grid-template-columns:1fr 1fr}
   h1{font-size:22px}
 }
+
+.title-parts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.title-part-box{border:1px solid #2b2b2b;border-radius:14px;padding:14px;background:#151515}
+.title-part-box h3{margin:0 0 10px}
+.title-part-row{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #252525}
+.title-part-row:last-child{border-bottom:0}
+.title-part-name{flex:1;font-size:15px}
+.title-part-meta{font-size:12px;color:#aaa}
+.badge.common{background:#333;color:#ddd}.badge.rare{background:#17406b;color:#bfe1ff}
+.badge.epic{background:#4a245f;color:#efc8ff}.badge.legendary{background:#6b4b13;color:#ffe4a3}
+@media(max-width:700px){.title-parts{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -192,6 +204,62 @@ th{color:#888;font-weight:700}
       <div id="announcementList" style="margin-top:14px"></div>
     </div>
 
+    <div class="card" id="titlePartsCard">
+      <div class="row">
+        <h2 style="margin:0">二つ名管理</h2>
+        <button class="btn secondary" id="reloadTitlePartsBtn">再読み込み</button>
+      </div>
+      <div class="sub">前半と後半を別々に登録し、利用者側で自由に組み合わせられるようにします。実績報酬との紐付けは後から追加できます。</div>
+
+      <div class="form-grid" style="margin-top:14px">
+        <div>
+          <label>二つ名パーツ</label>
+          <input class="input" id="titlePartName" placeholder="例：不屈の / 達人">
+        </div>
+        <div>
+          <label>種類</label>
+          <select class="input" id="titlePartType">
+            <option value="prefix">前半</option>
+            <option value="suffix">後半</option>
+          </select>
+        </div>
+        <div>
+          <label>レア度</label>
+          <select class="input" id="titlePartRarity">
+            <option value="common">通常</option>
+            <option value="rare">レア</option>
+            <option value="epic">エピック</option>
+            <option value="legendary">伝説</option>
+          </select>
+        </div>
+        <div>
+          <label>公開状態</label>
+          <select class="input" id="titlePartActive">
+            <option value="true">公開</option>
+            <option value="false">非公開</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn" id="titlePartSaveBtn">二つ名を追加</button>
+        <button class="btn secondary hidden" id="titlePartCancelBtn">編集をキャンセル</button>
+      </div>
+      <div id="titlePartFormStatus" style="margin-top:10px"></div>
+
+      <div class="title-parts">
+        <div class="title-part-box">
+          <h3>前半</h3>
+          <div id="prefixTitleParts"></div>
+        </div>
+        <div class="title-part-box">
+          <h3>後半</h3>
+          <div id="suffixTitleParts"></div>
+        </div>
+      </div>
+    </div>
+
+
     <div class="card">
       <div class="row">
         <h2 style="margin:0">ユーザー検索</h2>
@@ -273,12 +341,14 @@ const provider=new GoogleAuthProvider();
  * 複数人いる場合はカンマ区切りで追加。
  */
 const ADMIN_EMAILS=[
-  "kawamata.sousuke@ryugasaki1-h.ibk.ed.jp"
+  "ここに管理者のGoogleメールアドレス"
 ];
 
 let currentUser=null;
 let usersCache=[];
 let announcementsCache=[];
+let titlePartsCache=[];
+let editingTitlePartId=null;
 let editingAnnouncementId=null;
 
 const $=id=>document.getElementById(id);
@@ -411,6 +481,7 @@ async function loadDashboard(){
     usersCache=users;
     await renderUsers(users);
     await loadAnnouncements();
+      loadTitleParts();
     await loadRanking();
     await loadRequests();
 
@@ -983,6 +1054,139 @@ onAuthStateChanged(auth,async user=>{
 
   await loadDashboard();
 });
+
+function titlePartDateValue(v){
+  if(!v)return 0;
+  if(typeof v.toMillis==="function")return v.toMillis();
+  if(typeof v.seconds==="number")return v.seconds*1000;
+  const n=Date.parse(v);
+  return Number.isFinite(n)?n:0;
+}
+
+function rarityLabel(r){
+  return ({
+    common:"通常",
+    rare:"レア",
+    epic:"エピック",
+    legendary:"伝説"
+  })[r] || "通常";
+}
+
+function renderTitleParts(){
+  const prefix=document.getElementById("prefixTitleParts");
+  const suffix=document.getElementById("suffixTitleParts");
+  if(!prefix || !suffix)return;
+
+  const make=(items)=>{
+    if(!items.length)return '<div class="sub">登録されていません。</div>';
+    return items.map(p=>`
+      <div class="title-part-row">
+        <div class="title-part-name">${escapeHtml(p.name||"")}</div>
+        <span class="badge ${escapeHtml(p.rarity||"common")}">${rarityLabel(p.rarity)}</span>
+        <span class="title-part-meta">${p.active===false?"非公開":"公開"}</span>
+        <button class="btn secondary small" onclick="editTitlePart('${p.id}')">編集</button>
+        <button class="btn danger small" onclick="deleteTitlePart('${p.id}')">削除</button>
+      </div>
+    `).join("");
+  };
+
+  const sorted=[...titlePartsCache].sort((a,b)=>titlePartDateValue(b.updatedAt||b.createdAt)-titlePartDateValue(a.updatedAt||a.createdAt));
+  prefix.innerHTML=make(sorted.filter(x=>x.type==="prefix"));
+  suffix.innerHTML=make(sorted.filter(x=>x.type==="suffix"));
+}
+
+async function loadTitleParts(){
+  const status=document.getElementById("titlePartFormStatus");
+  try{
+    const snap=await getDocs(collection(db,"titleParts"));
+    titlePartsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderTitleParts();
+    if(status)status.textContent=`${titlePartsCache.length}件読み込みました。`;
+  }catch(e){
+    console.error("二つ名読み込み失敗:",e);
+    if(status)status.textContent="二つ名の読み込みに失敗しました: "+e.message;
+  }
+}
+
+function resetTitlePartForm(){
+  editingTitlePartId=null;
+  document.getElementById("titlePartName").value="";
+  document.getElementById("titlePartType").value="prefix";
+  document.getElementById("titlePartRarity").value="common";
+  document.getElementById("titlePartActive").value="true";
+  document.getElementById("titlePartSaveBtn").textContent="二つ名を追加";
+  document.getElementById("titlePartCancelBtn").classList.add("hidden");
+}
+
+window.editTitlePart=function(id){
+  const p=titlePartsCache.find(x=>x.id===id);
+  if(!p)return;
+  editingTitlePartId=id;
+  document.getElementById("titlePartName").value=p.name||"";
+  document.getElementById("titlePartType").value=p.type||"prefix";
+  document.getElementById("titlePartRarity").value=p.rarity||"common";
+  document.getElementById("titlePartActive").value=p.active===false?"false":"true";
+  document.getElementById("titlePartSaveBtn").textContent="二つ名を更新";
+  document.getElementById("titlePartCancelBtn").classList.remove("hidden");
+  document.getElementById("titlePartsCard").scrollIntoView({behavior:"smooth",block:"start"});
+};
+
+window.deleteTitlePart=async function(id){
+  const p=titlePartsCache.find(x=>x.id===id);
+  if(!p)return;
+  if(!confirm(`「${p.name}」を削除しますか？`))return;
+  try{
+    await deleteDoc(doc(db,"titleParts",id));
+    await loadTitleParts();
+  }catch(e){
+    console.error("二つ名削除失敗:",e);
+    alert("削除に失敗しました。\n"+e.message);
+  }
+};
+
+async function saveTitlePart(){
+  const name=document.getElementById("titlePartName").value.trim();
+  const type=document.getElementById("titlePartType").value;
+  const rarity=document.getElementById("titlePartRarity").value;
+  const active=document.getElementById("titlePartActive").value==="true";
+  const status=document.getElementById("titlePartFormStatus");
+
+  if(!name){
+    status.textContent="二つ名を入力してください。";
+    return;
+  }
+  if(name.length>30){
+    status.textContent="二つ名は30文字以内にしてください。";
+    return;
+  }
+
+  try{
+    const payload={
+      name,type,rarity,active,
+      updatedAt:serverTimestamp(),
+      updatedBy:currentUser.uid
+    };
+
+    if(editingTitlePartId){
+      await updateDoc(doc(db,"titleParts",editingTitlePartId),payload);
+      status.textContent="二つ名を更新しました。";
+    }else{
+      await setDoc(doc(collection(db,"titleParts")),{
+        ...payload,
+        createdAt:serverTimestamp(),
+        createdBy:currentUser.uid
+      });
+      status.textContent="二つ名を追加しました。";
+    }
+
+    resetTitlePartForm();
+    await loadTitleParts();
+  }catch(e){
+    console.error("二つ名保存失敗:",e);
+    status.textContent="保存に失敗しました: "+e.message;
+  }
+}
+
 </script>
 </body>
 </html>
