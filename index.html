@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111111">
-  <title>No Sleep No Life v22</title>
+  <title>No Sleep No Life v23</title>
 
   <style>
     * {
@@ -155,6 +155,31 @@
       width: 0%;
       background: #fff;
       transition: 0.4s;
+    }
+
+    #improvementFill {
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      transition: 0.4s;
+    }
+
+    .improvement-rate {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .improvement-positive {
+      color: #8cff8c;
+    }
+
+    .improvement-negative {
+      color: #ff8080;
+    }
+
+    .improvement-neutral {
+      color: #f5f5f5;
     }
 
     .achievement {
@@ -480,6 +505,96 @@
     </section>
 
 
+    <section class="card full">
+
+      <h2>睡眠改善率</h2>
+
+      <div
+        class="improvement-rate improvement-neutral"
+        id="improvementRate"
+      >
+        --
+      </div>
+
+      <div
+        id="improvementStatus"
+        style="margin-top:8px"
+      >
+        最初の7回を測定すると、開始時の基準値を作成します。
+      </div>
+
+      <div style="margin-top:16px">
+
+        <div
+          class="label"
+          id="improvementProgressText"
+        >
+          基準値作成まで 7回
+        </div>
+
+        <div class="scorebar">
+          <div id="improvementFill"></div>
+        </div>
+
+      </div>
+
+      <div
+        class="stats"
+        style="margin-top:16px"
+      >
+
+        <div class="stat">
+          <div class="label">
+            開始時の基準スコア
+          </div>
+
+          <div
+            class="value"
+            id="baselineScore"
+          >
+            --
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="label">
+            現在の平均スコア
+          </div>
+
+          <div
+            class="value"
+            id="currentAverageScore"
+          >
+            --
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="label">
+            改善率計算に使用する測定
+          </div>
+
+          <div
+            class="value"
+            id="improvementCount"
+          >
+            0 / 7
+          </div>
+        </div>
+
+      </div>
+
+      <div
+        class="notice"
+        style="margin-top:16px"
+      >
+        最初の7回の平均スコアを「開始時の基準値」として固定し、
+        その後は直近7回の平均スコアと比較して改善率を計算します。
+      </div>
+
+    </section>
+
+
     <section class="card">
 
       <h2>レベル・ストリーク</h2>
@@ -700,7 +815,7 @@
 <script type="module">
 
 /* =====================================================
-   No Sleep No Life v22
+   No Sleep No Life v23
    Firebase + センサー + 睡眠記録
 ===================================================== */
 
@@ -774,7 +889,19 @@ let data = {
 
   history: [],
 
-  achievements: []
+  achievements: [],
+
+  improvement: {
+
+    baselineReady: false,
+
+    baselineScore: null,
+
+    baselineStartAt: null,
+
+    baselineEndAt: null
+
+  }
 
 };
 
@@ -799,6 +926,12 @@ function loadLocal() {
         JSON.parse(saved);
 
 
+      const savedImprovement =
+        parsed.improvement &&
+        typeof parsed.improvement === "object"
+          ? parsed.improvement
+          : {};
+
       data = {
 
         xp:
@@ -816,7 +949,37 @@ function loadLocal() {
             parsed.achievements
           )
             ? parsed.achievements
-            : []
+            : [],
+
+        improvement: {
+
+          baselineReady:
+            Boolean(
+              savedImprovement.baselineReady
+            ),
+
+          baselineScore:
+            Number.isFinite(
+              Number(
+                savedImprovement.baselineScore
+              )
+            )
+              ? Number(
+                  savedImprovement.baselineScore
+                )
+              : null,
+
+          baselineStartAt:
+            Number(
+              savedImprovement.baselineStartAt
+            ) || null,
+
+          baselineEndAt:
+            Number(
+              savedImprovement.baselineEndAt
+            ) || null
+
+        }
 
       };
 
@@ -1506,6 +1669,9 @@ async function saveToFirestore() {
         achievements:
           data.achievements,
 
+        improvement:
+          data.improvement,
+
         updatedAt:
           serverTimestamp()
 
@@ -1676,6 +1842,82 @@ async function loadFromFirestore() {
             : [])
         ])
       );
+
+
+    /*
+      改善率の基準値は、一度作成したら固定する。
+      Google側に完成した基準値があればそれを優先し、
+      ローカル側だけが完成している場合はローカルを維持する。
+    */
+
+    const remoteImprovement =
+      remote.improvement &&
+      typeof remote.improvement === "object"
+        ? remote.improvement
+        : null;
+
+
+    if (
+      remoteImprovement &&
+      remoteImprovement.baselineReady &&
+      Number.isFinite(
+        Number(
+          remoteImprovement.baselineScore
+        )
+      )
+    ) {
+
+      data.improvement = {
+
+        baselineReady:
+          true,
+
+        baselineScore:
+          Number(
+            remoteImprovement.baselineScore
+          ),
+
+        baselineStartAt:
+          Number(
+            remoteImprovement.baselineStartAt
+          ) || null,
+
+        baselineEndAt:
+          Number(
+            remoteImprovement.baselineEndAt
+          ) || null
+
+      };
+
+    } else if (
+      !data.improvement ||
+      !data.improvement.baselineReady
+    ) {
+
+      data.improvement = {
+
+        baselineReady:
+          false,
+
+        baselineScore:
+          null,
+
+        baselineStartAt:
+          null,
+
+        baselineEndAt:
+          null
+
+      };
+
+    }
+
+
+    /*
+      履歴を統合したあと、まだ基準値が作れる状態なら作成する。
+    */
+
+    updateImprovementData();
 
 
     saveLocal();
@@ -3117,6 +3359,14 @@ function calculateResult() {
   );
 
 
+  /*
+    新しい測定結果を追加した直後に
+    改善率を更新してから保存する。
+  */
+
+  updateImprovementData();
+
+
   saveLocal();
 
   queueFirestoreSave();
@@ -3758,6 +4008,436 @@ function calculateBestStreak() {
 
 
 /* =====================================================
+   睡眠改善率
+===================================================== */
+
+/*
+  最初の7回の有効な測定結果を開始時の基準値にする。
+  一度作成した基準値は、その後の測定では変更しない。
+*/
+function updateImprovementData() {
+
+  if (
+    !data.improvement ||
+    typeof data.improvement !== "object"
+  ) {
+
+    data.improvement = {
+
+      baselineReady:
+        false,
+
+      baselineScore:
+        null,
+
+      baselineStartAt:
+        null,
+
+      baselineEndAt:
+        null
+
+    };
+
+  }
+
+
+  const validHistory =
+    data.history
+      .filter(
+        item =>
+          Number.isFinite(
+            Number(item.score)
+          )
+      )
+      .sort(
+        (a, b) =>
+          Number(
+            a.timestamp || 0
+          ) -
+          Number(
+            b.timestamp || 0
+          )
+      );
+
+
+  /*
+    まだ基準値がなく、7回以上の測定がある場合だけ
+    最初の7回から基準値を作る。
+  */
+
+  if (
+    !data.improvement.baselineReady &&
+    validHistory.length >= 7
+  ) {
+
+    const baselineRecords =
+      validHistory.slice(
+        0,
+        7
+      );
+
+
+    const baselineAverage =
+      baselineRecords.reduce(
+        (sum, item) =>
+          sum +
+          Number(item.score),
+        0
+      ) /
+      baselineRecords.length;
+
+
+    data.improvement = {
+
+      baselineReady:
+        true,
+
+      baselineScore:
+        baselineAverage,
+
+      baselineStartAt:
+        Number(
+          baselineRecords[0].timestamp
+        ) || null,
+
+      baselineEndAt:
+        Number(
+          baselineRecords[
+            baselineRecords.length - 1
+          ].timestamp
+        ) || null
+
+    };
+
+  }
+
+
+  /*
+    直近7回の平均を現在のスコアとして使う。
+  */
+
+  const latestRecords =
+    validHistory
+      .slice(-7);
+
+
+  const currentAverage =
+    latestRecords.length
+      ? latestRecords.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.score),
+          0
+        ) /
+        latestRecords.length
+      : null;
+
+
+  let improvementRate =
+    null;
+
+
+  if (
+    data.improvement.baselineReady &&
+    Number.isFinite(
+      Number(
+        data.improvement.baselineScore
+      )
+    ) &&
+    Number(
+      data.improvement.baselineScore
+    ) > 0 &&
+    currentAverage !== null
+  ) {
+
+    improvementRate =
+      (
+        (
+          currentAverage -
+          Number(
+            data.improvement.baselineScore
+          )
+        ) /
+        Number(
+          data.improvement.baselineScore
+        )
+      ) *
+      100;
+
+  }
+
+
+  data.improvement.currentAverage =
+    currentAverage;
+
+  data.improvement.improvementRate =
+    improvementRate;
+
+}
+
+
+/* =====================================================
+   睡眠改善率UI
+===================================================== */
+
+function updateImprovementUI() {
+
+  const rateEl =
+    document.getElementById(
+      "improvementRate"
+    );
+
+  const statusEl =
+    document.getElementById(
+      "improvementStatus"
+    );
+
+  const progressTextEl =
+    document.getElementById(
+      "improvementProgressText"
+    );
+
+  const progressFillEl =
+    document.getElementById(
+      "improvementFill"
+    );
+
+  const baselineEl =
+    document.getElementById(
+      "baselineScore"
+    );
+
+  const currentEl =
+    document.getElementById(
+      "currentAverageScore"
+    );
+
+  const countEl =
+    document.getElementById(
+      "improvementCount"
+    );
+
+
+  if (
+    !rateEl ||
+    !statusEl ||
+    !progressTextEl ||
+    !progressFillEl ||
+    !baselineEl ||
+    !currentEl ||
+    !countEl
+  ) {
+
+    return;
+
+  }
+
+
+  const validCount =
+    data.history.filter(
+      item =>
+        Number.isFinite(
+          Number(item.score)
+        )
+    ).length;
+
+
+  const baselineCount =
+    Math.min(
+      validCount,
+      7
+    );
+
+
+  countEl.textContent =
+    baselineCount +
+    " / 7";
+
+
+  if (
+    !data.improvement.baselineReady
+  ) {
+
+    rateEl.textContent =
+      "--";
+
+
+    rateEl.className =
+      "improvement-rate improvement-neutral";
+
+
+    baselineEl.textContent =
+      "--";
+
+
+    currentEl.textContent =
+      validCount
+        ? (
+            validCount >= 7
+              ? "--"
+              : "作成中"
+          )
+        : "--";
+
+
+    const remaining =
+      Math.max(
+        0,
+        7 -
+        validCount
+      );
+
+
+    if (
+      remaining > 0
+    ) {
+
+      statusEl.textContent =
+        "あと" +
+        remaining +
+        "回測定すると、開始時の基準値を作成できます。";
+
+    } else {
+
+      statusEl.textContent =
+        "基準値を作成しています……";
+
+    }
+
+
+    progressTextEl.textContent =
+      "基準値作成 " +
+      baselineCount +
+      " / 7回";
+
+
+    progressFillEl.style.width =
+      (
+        baselineCount /
+        7 *
+        100
+      ) +
+      "%";
+
+
+    return;
+
+  }
+
+
+  const baseline =
+    Number(
+      data.improvement.baselineScore
+    );
+
+
+  const current =
+    Number(
+      data.improvement.currentAverage
+    );
+
+
+  const rate =
+    Number(
+      data.improvement.improvementRate
+    );
+
+
+  baselineEl.textContent =
+    baseline.toFixed(1) +
+    "点";
+
+
+  if (
+    Number.isFinite(current)
+  ) {
+
+    currentEl.textContent =
+      current.toFixed(1) +
+      "点";
+
+  } else {
+
+    currentEl.textContent =
+      "--";
+
+  }
+
+
+  if (
+    Number.isFinite(rate)
+  ) {
+
+    const sign =
+      rate > 0
+        ? "+"
+        : "";
+
+
+    rateEl.textContent =
+      sign +
+      rate.toFixed(1) +
+      "%";
+
+
+    if (
+      rate > 0.05
+    ) {
+
+      rateEl.className =
+        "improvement-rate improvement-positive";
+
+
+      statusEl.textContent =
+        "開始時と比べて睡眠スコアが改善しています。";
+
+    } else if (
+      rate < -0.05
+    ) {
+
+      rateEl.className =
+        "improvement-rate improvement-negative";
+
+
+      statusEl.textContent =
+        "開始時と比べて睡眠スコアが低下しています。";
+
+    } else {
+
+      rateEl.className =
+        "improvement-rate improvement-neutral";
+
+
+      statusEl.textContent =
+        "開始時と比べて大きな変化はありません。";
+
+    }
+
+  } else {
+
+    rateEl.textContent =
+      "--";
+
+    rateEl.className =
+      "improvement-rate improvement-neutral";
+
+    statusEl.textContent =
+      "改善率を計算できる測定データがありません。";
+
+  }
+
+
+  progressTextEl.textContent =
+    "開始時の基準値：最初の7回の平均";
+
+
+  progressFillEl.style.width =
+    "100%";
+
+}
+
+
+/* =====================================================
    レベル
 ===================================================== */
 
@@ -4241,6 +4921,10 @@ function drawGraph() {
 
 function updateAllUI() {
 
+  updateImprovementData();
+
+  updateImprovementUI();
+
   updateLevel();
 
   updateAchievements();
@@ -4350,7 +5034,9 @@ function exportCSV() {
     "still_seconds",
     "small_seconds",
     "large_seconds",
-    "sound_events"
+    "sound_events",
+    "improvement_rate_percent",
+    "baseline_score"
 
   ];
 
@@ -4375,7 +5061,27 @@ function exportCSV() {
 
         item.large,
 
-        item.sound
+        item.sound,
+
+        Number.isFinite(
+          Number(
+            data.improvement?.improvementRate
+          )
+        )
+          ? Number(
+              data.improvement.improvementRate
+            ).toFixed(1)
+          : "",
+
+        Number.isFinite(
+          Number(
+            data.improvement?.baselineScore
+          )
+        )
+          ? Number(
+              data.improvement.baselineScore
+            ).toFixed(1)
+          : ""
 
       ]
     );
@@ -4562,7 +5268,19 @@ async function resetAll() {
 
     history: [],
 
-    achievements: []
+    achievements: [],
+
+    improvement: {
+
+      baselineReady: false,
+
+      baselineScore: null,
+
+      baselineStartAt: null,
+
+      baselineEndAt: null
+
+    }
 
   };
 
