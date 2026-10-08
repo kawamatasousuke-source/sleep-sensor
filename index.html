@@ -1006,6 +1006,35 @@ select{
 
   </section>
 
+  <section class="card" id="announcementsCard">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+
+      <h2 style="margin:0">
+        お知らせ
+      </h2>
+
+      <button
+        id="announcementRefreshBtn"
+        class="secondary"
+        style="margin:0">
+        更新
+      </button>
+
+    </div>
+
+    <div
+      id="announcementArea"
+      style="margin-top:12px">
+
+      <div class="rank-loading">
+        お知らせを読み込んでいます...
+      </div>
+
+    </div>
+
+  </section>
+
   <section class="card">
 
     <h2>最新の睡眠分析</h2>
@@ -2950,6 +2979,8 @@ onAuthStateChanged(
 
       await loadFriendsPage();
 
+      await loadAnnouncements();
+
     }else{
 
       status.textContent=
@@ -2988,6 +3019,8 @@ onAuthStateChanged(
       );
 
       updateFriendsUI();
+
+      await loadAnnouncements();
 
     }
 
@@ -7596,6 +7629,20 @@ document
   );
 
 
+const announcementRefreshBtn=document.getElementById(
+  "announcementRefreshBtn"
+);
+
+if(announcementRefreshBtn){
+
+  announcementRefreshBtn.addEventListener(
+    "click",
+    loadAnnouncements
+  );
+
+}
+
+
 /* =========================
    VISIBILITY
 ========================= */
@@ -7617,6 +7664,134 @@ document.addEventListener(
   }
 );
 
+
+
+/* =========================
+   ANNOUNCEMENTS
+========================= */
+
+async function loadAnnouncements(){
+
+  const area=document.getElementById("announcementArea");
+
+  if(!area)return;
+
+  if(!currentUser){
+
+    area.innerHTML=`<div class="notice">
+      お知らせを見るにはGoogleログインしてください。
+    </div>`;
+
+    return;
+
+  }
+
+  area.innerHTML=`<div class="rank-loading">
+    お知らせを読み込んでいます...
+  </div>`;
+
+  try{
+
+    const snap=await getDocs(
+      collection(db,"announcements")
+    );
+
+    const announcements=snap.docs
+      .map(docSnap=>({
+        id:docSnap.id,
+        ...docSnap.data()
+      }))
+      .filter(item=>item.active!==false)
+      .sort((a,b)=>{
+
+        const aTime=a.createdAt?.toMillis
+          ?a.createdAt.toMillis()
+          :0;
+
+        const bTime=b.createdAt?.toMillis
+          ?b.createdAt.toMillis()
+          :0;
+
+        return bTime-aTime;
+
+      })
+      .slice(0,10);
+
+    if(announcements.length===0){
+
+      area.innerHTML=`<div class="notice">
+        現在、お知らせはありません。
+      </div>`;
+
+      return;
+
+    }
+
+    area.innerHTML=announcements.map(announcement=>{
+
+      let dateText="";
+
+      if(announcement.createdAt?.toDate){
+
+        const date=announcement.createdAt.toDate();
+
+        dateText=date.toLocaleString("ja-JP",{
+          year:"numeric",
+          month:"2-digit",
+          day:"2-digit",
+          hour:"2-digit",
+          minute:"2-digit"
+        });
+
+      }
+
+      const title=escapeHTML(
+        announcement.title||"お知らせ"
+      );
+
+      const message=escapeHTML(
+        announcement.message||""
+      );
+
+      return `
+        <div style="padding:14px 0;border-bottom:1px solid #292929">
+
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+
+            <div style="font-weight:900;font-size:16px">
+              ${title}
+            </div>
+
+            ${dateText?`
+              <div style="color:#777;font-size:11px;white-space:nowrap">
+                ${dateText}
+              </div>
+            `:""}
+
+          </div>
+
+          <div style="margin-top:7px;color:#bbb;white-space:pre-wrap;line-height:1.7">
+            ${message}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  }catch(e){
+
+    console.error("Announcements load error:",e);
+
+    area.innerHTML=`<div class="notice">
+      お知らせを読み込めませんでした。
+      <br>
+      <small>${escapeHTML(e.message||"Firestoreエラー")}</small>
+    </div>`;
+
+  }
+
+}
 
 /* =========================
    ESCAPE HTML
