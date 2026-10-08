@@ -7672,122 +7672,300 @@ document.addEventListener(
 
 async function loadAnnouncements(){
 
-  const area=document.getElementById("announcementArea");
+  const area =
+    document.getElementById("announcementArea");
 
   if(!area)return;
 
   if(!currentUser){
 
-    area.innerHTML=`<div class="notice">
-      お知らせを見るにはGoogleログインしてください。
-    </div>`;
+    area.innerHTML = `
+      <div class="notice">
+        お知らせを見るにはGoogleログインしてください。
+      </div>
+    `;
 
     return;
 
   }
 
-  area.innerHTML=`<div class="rank-loading">
-    お知らせを読み込んでいます...
-  </div>`;
+  area.innerHTML = `
+    <div class="rank-loading">
+      お知らせを読み込んでいます...
+    </div>
+  `;
 
   try{
 
-    const snap=await getDocs(
-      collection(db,"announcements")
+    const snap =
+      await getDocs(
+        collection(db,"announcements")
+      );
+
+    console.log(
+      "お知らせ取得件数:",
+      snap.size
     );
 
-    const announcements=snap.docs
-      .map(docSnap=>({
-        id:docSnap.id,
-        ...docSnap.data()
-      }))
-      .filter(item=>item.active!==false)
-      .sort((a,b)=>{
+    const announcements =
+      snap.docs
+        .map(docSnap => {
 
-        const aTime=a.createdAt?.toMillis
-          ?a.createdAt.toMillis()
-          :0;
+          const item = docSnap.data();
 
-        const bTime=b.createdAt?.toMillis
-          ?b.createdAt.toMillis()
-          :0;
+          console.log(
+            "お知らせデータ:",
+            docSnap.id,
+            item
+          );
 
-        return bTime-aTime;
+          return {
+            id:docSnap.id,
+            ...item
+          };
 
-      })
-      .slice(0,10);
+        })
+        .filter(item => {
 
-    if(announcements.length===0){
+          // active が false のものだけ非表示
+          return item.active !== false;
 
-      area.innerHTML=`<div class="notice">
-        現在、お知らせはありません。
-      </div>`;
+        })
+        .sort((a,b)=>{
+
+          const getTime = item => {
+
+            if(
+              item.createdAt &&
+              typeof item.createdAt.toMillis === "function"
+            ){
+
+              return item.createdAt.toMillis();
+
+            }
+
+            if(
+              item.createdAt &&
+              typeof item.createdAt.seconds === "number"
+            ){
+
+              return item.createdAt.seconds * 1000;
+
+            }
+
+            if(
+              typeof item.createdAt === "string"
+            ){
+
+              const time =
+                new Date(item.createdAt).getTime();
+
+              return Number.isNaN(time)
+                ?0
+                :time;
+
+            }
+
+            if(
+              item.date &&
+              typeof item.date === "string"
+            ){
+
+              const time =
+                new Date(item.date).getTime();
+
+              return Number.isNaN(time)
+                ?0
+                :time;
+
+            }
+
+            return 0;
+
+          };
+
+          return getTime(b) - getTime(a);
+
+        })
+        .slice(0,10);
+
+
+    if(announcements.length === 0){
+
+      area.innerHTML = `
+        <div class="notice">
+          現在、お知らせはありません。
+        </div>
+      `;
 
       return;
 
     }
 
-    area.innerHTML=announcements.map(announcement=>{
 
-      let dateText="";
+    area.innerHTML =
+      announcements
+        .map(announcement => {
 
-      if(announcement.createdAt?.toDate){
+          /*
+           * 本文のフィールド名が
+           * message / content / body
+           * のどれでも表示できるようにする
+           */
 
-        const date=announcement.createdAt.toDate();
+          const title =
+            announcement.title ||
+            announcement.name ||
+            "お知らせ";
 
-        dateText=date.toLocaleString("ja-JP",{
-          year:"numeric",
-          month:"2-digit",
-          day:"2-digit",
-          hour:"2-digit",
-          minute:"2-digit"
-        });
 
-      }
+          const message =
+            announcement.message ||
+            announcement.content ||
+            announcement.body ||
+            announcement.text ||
+            "";
 
-      const title=escapeHTML(
-        announcement.title||"お知らせ"
-      );
 
-      const message=escapeHTML(
-        announcement.message||""
-      );
+          let dateText = "";
 
-      return `
-        <div style="padding:14px 0;border-bottom:1px solid #292929">
 
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          if(
+            announcement.createdAt &&
+            typeof announcement.createdAt.toDate === "function"
+          ){
 
-            <div style="font-weight:900;font-size:16px">
-              ${title}
-            </div>
+            const date =
+              announcement.createdAt.toDate();
 
-            ${dateText?`
-              <div style="color:#777;font-size:11px;white-space:nowrap">
-                ${dateText}
+            dateText =
+              date.toLocaleString(
+                "ja-JP",
+                {
+                  year:"numeric",
+                  month:"2-digit",
+                  day:"2-digit",
+                  hour:"2-digit",
+                  minute:"2-digit"
+                }
+              );
+
+          }
+          else if(
+            announcement.createdAt
+          ){
+
+            const date =
+              new Date(
+                announcement.createdAt
+              );
+
+            if(!Number.isNaN(date.getTime())){
+
+              dateText =
+                date.toLocaleString(
+                  "ja-JP",
+                  {
+                    year:"numeric",
+                    month:"2-digit",
+                    day:"2-digit",
+                    hour:"2-digit",
+                    minute:"2-digit"
+                  }
+                );
+
+            }
+
+          }
+
+
+          return `
+            <div
+              style="
+                padding:16px 0;
+                border-bottom:1px solid #292929;
+              "
+            >
+
+              <div
+                style="
+                  display:flex;
+                  justify-content:space-between;
+                  align-items:flex-start;
+                  gap:10px;
+                "
+              >
+
+                <div
+                  style="
+                    font-weight:900;
+                    font-size:16px;
+                    color:#fff;
+                  "
+                >
+                  ${escapeHTML(title)}
+                </div>
+
+                ${
+                  dateText
+                  ?`
+                    <div
+                      style="
+                        color:#777;
+                        font-size:11px;
+                        white-space:nowrap;
+                      "
+                    >
+                      ${escapeHTML(dateText)}
+                    </div>
+                  `
+                  :""
+                }
+
               </div>
-            `:""}
 
-          </div>
 
-          <div style="margin-top:7px;color:#bbb;white-space:pre-wrap;line-height:1.7">
-            ${message}
-          </div>
+              <div
+                style="
+                  margin-top:8px;
+                  color:#bbb;
+                  white-space:pre-wrap;
+                  line-height:1.7;
+                "
+              >
+                ${escapeHTML(message)}
+              </div>
 
-        </div>
-      `;
+            </div>
+          `;
 
-    }).join("");
+        })
+        .join("");
+
 
   }catch(e){
 
-    console.error("Announcements load error:",e);
+    console.error(
+      "Announcements load error:",
+      e
+    );
 
-    area.innerHTML=`<div class="notice">
-      お知らせを読み込めませんでした。
-      <br>
-      <small>${escapeHTML(e.message||"Firestoreエラー")}</small>
-    </div>`;
+    area.innerHTML = `
+      <div class="notice">
+
+        お知らせを読み込めませんでした。
+
+        <br>
+
+        <small>
+          ${escapeHTML(
+            e.message ||
+            "Firestoreエラー"
+          )}
+        </small>
+
+      </div>
+    `;
 
   }
 
