@@ -1,1 +1,2202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>No Sleep No Life - 管理者</title>
 
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:#111;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,
+    "Segoe UI","Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",Meiryo,sans-serif;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:rgba(17,17,17,.95);
+  border-bottom:1px solid #292929;
+  backdrop-filter:blur(12px);
+}
+
+.logo{
+  font-size:18px;
+  font-weight:800;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.header-user{
+  color:#aaa;
+  font-size:12px;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.container{
+  width:min(1100px,calc(100% - 32px));
+  margin:0 auto;
+  padding:28px 0 60px;
+}
+
+.hero{
+  padding:24px 0 30px;
+}
+
+.hero h1{
+  margin:0 0 8px;
+  font-size:32px;
+}
+
+.hero p{
+  margin:0;
+  color:#999;
+  line-height:1.7;
+}
+
+.admin-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:16px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#1d1d1d;
+  border:1px solid #333;
+  color:#ddd;
+  font-size:13px;
+}
+
+.card{
+  background:#181818;
+  border:1px solid #2d2d2d;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+}
+
+.card h2{
+  margin:0 0 16px;
+  font-size:19px;
+}
+
+.card h3{
+  margin:0 0 10px;
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.stat-card{
+  background:#111;
+  border:1px solid #2c2c2c;
+  border-radius:16px;
+  padding:18px;
+  min-height:120px;
+}
+
+.stat-label{
+  color:#999;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+.stat-value{
+  font-size:30px;
+  font-weight:800;
+  line-height:1;
+}
+
+.stat-sub{
+  color:#777;
+  font-size:12px;
+  margin-top:10px;
+}
+
+.button-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn{
+  border:0;
+  border-radius:12px;
+  padding:12px 16px;
+  font-weight:700;
+  transition:.15s;
+}
+
+.primary-btn{
+  background:#fff;
+  color:#111;
+}
+
+.primary-btn:hover{
+  opacity:.88;
+}
+
+.secondary-btn{
+  background:#252525;
+  color:#fff;
+  border:1px solid #383838;
+}
+
+.secondary-btn:hover{
+  background:#303030;
+}
+
+.danger-btn{
+  background:#3a1818;
+  color:#ffb0b0;
+  border:1px solid #633030;
+}
+
+.input-row{
+  display:flex;
+  gap:10px;
+}
+
+.input{
+  flex:1;
+  min-width:0;
+  background:#111;
+  color:#fff;
+  border:1px solid #3a3a3a;
+  border-radius:12px;
+  padding:13px 14px;
+  outline:none;
+}
+
+.input:focus{
+  border-color:#777;
+}
+
+.info-list{
+  display:flex;
+  flex-direction:column;
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:14px 0;
+  border-bottom:1px solid #292929;
+}
+
+.info-row:last-child{
+  border-bottom:0;
+}
+
+.info-label{
+  color:#999;
+}
+
+.info-value{
+  text-align:right;
+  word-break:break-word;
+}
+
+.user-result{
+  margin-top:18px;
+}
+
+.user-card{
+  background:#111;
+  border:1px solid #333;
+  border-radius:16px;
+  padding:18px;
+}
+
+.user-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.user-avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#222;
+  font-size:25px;
+}
+
+.user-name{
+  font-size:18px;
+  font-weight:800;
+}
+
+.user-id{
+  color:#777;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.user-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+
+.mini-stat{
+  background:#191919;
+  border-radius:12px;
+  padding:12px;
+}
+
+.mini-stat-label{
+  color:#888;
+  font-size:11px;
+  margin-bottom:6px;
+}
+
+.mini-stat-value{
+  font-size:18px;
+  font-weight:700;
+}
+
+.empty{
+  padding:24px;
+  text-align:center;
+  color:#777;
+}
+
+.loading{
+  color:#999;
+  padding:20px 0;
+}
+
+.error{
+  color:#ff8f8f;
+  background:#261717;
+  border:1px solid #512727;
+  border-radius:12px;
+  padding:14px;
+  line-height:1.6;
+}
+
+.success{
+  color:#b8ffcf;
+  background:#15231a;
+  border:1px solid #294a33;
+  border-radius:12px;
+  padding:14px;
+  line-height:1.6;
+}
+
+.request-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.request-item{
+  background:#111;
+  border:1px solid #2d2d2d;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.request-main{
+  min-width:0;
+}
+
+.request-name{
+  font-weight:700;
+}
+
+.request-meta{
+  color:#777;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#252525;
+  color:#aaa;
+  font-size:11px;
+}
+
+.status.pending{
+  background:#2d2515;
+  color:#e7c87d;
+}
+
+.status.accepted{
+  background:#17281c;
+  color:#9de4ac;
+}
+
+.status.rejected{
+  background:#291818;
+  color:#df9b9b;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,
+td{
+  text-align:left;
+  padding:12px 10px;
+  border-bottom:1px solid #292929;
+}
+
+th{
+  color:#888;
+  font-size:12px;
+  font-weight:600;
+}
+
+td{
+  font-size:13px;
+}
+
+.notice{
+  color:#888;
+  font-size:12px;
+  line-height:1.7;
+  margin-top:12px;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.access-denied{
+  max-width:600px;
+  margin:70px auto;
+  text-align:center;
+}
+
+.access-denied h1{
+  font-size:28px;
+}
+
+.access-denied p{
+  color:#999;
+  line-height:1.8;
+}
+
+.footer{
+  text-align:center;
+  color:#555;
+  font-size:12px;
+  padding:30px 0;
+}
+
+@media(max-width:800px){
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:560px){
+
+  .container{
+    width:min(100% - 20px,1100px);
+    padding-top:18px;
+  }
+
+  .header{
+    padding:0 12px;
+  }
+
+  .header-user{
+    max-width:110px;
+  }
+
+  .hero h1{
+    font-size:27px;
+  }
+
+  .card{
+    padding:16px;
+    border-radius:15px;
+  }
+
+  .stats-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stat-card{
+    min-height:105px;
+    padding:14px;
+  }
+
+  .stat-value{
+    font-size:25px;
+  }
+
+  .input-row{
+    flex-direction:column;
+  }
+
+  .user-stats{
+    grid-template-columns:1fr;
+  }
+
+  .request-item{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .info-row{
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .info-value{
+    text-align:left;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="logo">
+    No Sleep No Life
+  </div>
+
+  <div class="header-right">
+
+    <div
+      class="header-user"
+      id="headerUser"
+    >
+      ログイン確認中...
+    </div>
+
+    <button
+      class="secondary-btn"
+      onclick="goHome()"
+    >
+      アプリへ
+    </button>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+  <!-- アクセス拒否 -->
+
+  <section
+    id="accessDenied"
+    class="access-denied hidden"
+  >
+
+    <div class="card">
+
+      <h1>アクセスできません</h1>
+
+      <p>
+        このページはNo Sleep No Lifeの
+        管理者専用ページです。
+      </p>
+
+      <p id="deniedReason">
+        管理者アカウントでログインしてください。
+      </p>
+
+      <div class="button-row" style="justify-content:center;">
+
+        <button
+          class="primary-btn"
+          onclick="loginWithGoogle()"
+        >
+          Googleでログイン
+        </button>
+
+        <button
+          class="secondary-btn"
+          onclick="goHome()"
+        >
+          アプリへ戻る
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- 管理画面 -->
+
+  <section
+    id="adminContent"
+    class="hidden"
+  >
+
+    <div class="hero">
+
+      <h1>管理者ダッシュボード</h1>
+
+      <p>
+        No Sleep No Lifeの利用状況を
+        管理・確認できます。
+      </p>
+
+      <div class="admin-badge">
+        🛠 管理者モード
+      </div>
+
+    </div>
+
+
+    <!-- システム概要 -->
+
+    <section class="card">
+
+      <h2>システム概要</h2>
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            登録ユーザー
+          </div>
+
+          <div
+            class="stat-value"
+            id="userCount"
+          >
+            --
+          </div>
+
+          <div class="stat-sub">
+            publicProfiles
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            ランキング参加者
+          </div>
+
+          <div
+            class="stat-value"
+            id="rankingCount"
+          >
+            --
+          </div>
+
+          <div class="stat-sub">
+            ranking
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            平均改善率
+          </div>
+
+          <div
+            class="stat-value"
+            id="averageImprovement"
+          >
+            --
+          </div>
+
+          <div class="stat-sub">
+            ランキング参加者
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            総測定回数
+          </div>
+
+          <div
+            class="stat-value"
+            id="measurementCount"
+          >
+            --
+          </div>
+
+          <div class="stat-sub">
+            公開プロフィール集計
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="button-row">
+
+        <button
+          class="primary-btn"
+          onclick="loadDashboard()"
+        >
+          データを更新
+        </button>
+
+      </div>
+
+      <div
+        class="notice"
+        id="dashboardUpdated"
+      >
+        --
+      </div>
+
+    </section>
+
+
+    <!-- ユーザー検索 -->
+
+    <section class="card">
+
+      <h2>ユーザー検索</h2>
+
+      <p class="notice">
+        フレンドIDから公開プロフィールを検索します。
+      </p>
+
+      <div class="input-row">
+
+        <input
+          id="friendIdInput"
+          class="input"
+          type="text"
+          placeholder="例：NSL-AB12CD34"
+          autocomplete="off"
+        >
+
+        <button
+          class="primary-btn"
+          onclick="searchUser()"
+        >
+          検索
+        </button>
+
+      </div>
+
+      <div
+        id="userSearchResult"
+        class="user-result"
+      ></div>
+
+    </section>
+
+
+    <!-- 最近のユーザー -->
+
+    <section class="card">
+
+      <h2>ユーザー一覧</h2>
+
+      <div
+        id="userList"
+        class="loading"
+      >
+        読み込み中...
+      </div>
+
+    </section>
+
+
+    <!-- ランキング -->
+
+    <section class="card">
+
+      <h2>ランキング状況</h2>
+
+      <div
+        id="rankingList"
+        class="loading"
+      >
+        読み込み中...
+      </div>
+
+    </section>
+
+
+    <!-- フレンド申請 -->
+
+    <section class="card">
+
+      <h2>フレンド申請状況</h2>
+
+      <div
+        class="stats-grid"
+        style="grid-template-columns:repeat(3,1fr);"
+      >
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            保留中
+          </div>
+
+          <div
+            class="stat-value"
+            id="pendingRequests"
+          >
+            --
+          </div>
+
+        </div>
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            承認済み
+          </div>
+
+          <div
+            class="stat-value"
+            id="acceptedRequests"
+          >
+            --
+          </div>
+
+        </div>
+
+        <div class="stat-card">
+
+          <div class="stat-label">
+            拒否
+          </div>
+
+          <div
+            class="stat-value"
+            id="rejectedRequests"
+          >
+            --
+          </div>
+
+        </div>
+
+      </div>
+
+      <div
+        id="requestList"
+        class="request-list"
+        style="margin-top:16px;"
+      >
+      </div>
+
+    </section>
+
+
+    <!-- 管理者情報 -->
+
+    <section class="card">
+
+      <h2>管理者情報</h2>
+
+      <div class="info-list">
+
+        <div class="info-row">
+
+          <div class="info-label">
+            Googleアカウント
+          </div>
+
+          <div
+            class="info-value"
+            id="adminEmail"
+          >
+            --
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            UID
+          </div>
+
+          <div
+            class="info-value"
+            id="adminUid"
+          >
+            --
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            権限
+          </div>
+
+          <div
+            class="info-value"
+            id="adminRole"
+          >
+            --
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            最終更新
+          </div>
+
+          <div
+            class="info-value"
+            id="lastUpdated"
+          >
+            --
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>注意</h2>
+
+      <p class="notice">
+        このページで表示されるのは、
+        Firestoreの公開プロフィール・ランキング・
+        フレンド申請など、管理画面から参照できる
+        データを集計したものです。
+      </p>
+
+      <p class="notice">
+        睡眠測定の詳細データはプライバシー保護のため、
+        管理画面から直接表示しない設計にしています。
+      </p>
+
+    </section>
+
+  </section>
+
+</main>
+
+
+<footer class="footer">
+  No Sleep No Life
+</footer>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+
+/* =========================================
+   Firebase設定
+========================================= */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyAOLvxQqUQ1MWL6dNcGYblcbVW6Q50NZVI",
+
+  authDomain:
+    "sleep-sensor-af01f.firebaseapp.com",
+
+  projectId:
+    "sleep-sensor-af01f",
+
+  storageBucket:
+    "sleep-sensor-af01f.firebasestorage.app",
+
+  messagingSenderId:
+    "86707291255",
+
+  appId:
+    "1:86707291255:web:01e2e67fa63c3513503272"
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+
+const auth =
+  getAuth(app);
+
+
+const db =
+  getFirestore(app);
+
+
+const provider =
+  new GoogleAuthProvider();
+
+
+
+/* =========================================
+   管理者設定
+========================================= */
+
+/*
+  ↓↓↓ ここだけ変更 ↓↓↓
+
+  管理者として使うGoogleアカウントの
+  メールアドレスを入れてください。
+
+  例：
+
+  const ADMIN_EMAILS = [
+    "example@gmail.com"
+  ];
+*/
+
+const ADMIN_EMAILS = [
+  "ここに管理者のGoogleアカウント"
+];
+
+
+/* =========================================
+   現在のユーザー
+========================================= */
+
+let currentUser = null;
+
+
+
+/* =========================================
+   管理者判定
+========================================= */
+
+function isAdmin(){
+
+  if(!currentUser){
+    return false;
+  }
+
+  if(!currentUser.email){
+    return false;
+  }
+
+  return ADMIN_EMAILS
+    .map(email => email.toLowerCase().trim())
+    .includes(
+      currentUser.email.toLowerCase().trim()
+    );
+}
+
+
+
+/* =========================================
+   HTMLエスケープ
+========================================= */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+
+/* =========================================
+   レベル計算
+========================================= */
+
+function calculateLevel(xp){
+
+  xp = Math.max(
+    0,
+    Number(xp) || 0
+  );
+
+  return Math.floor(xp / 100) + 1;
+}
+
+
+
+/* =========================================
+   ログイン
+========================================= */
+
+async function loginWithGoogle(){
+
+  try{
+
+    await signInWithPopup(
+      auth,
+      provider
+    );
+
+  }catch(error){
+
+    console.error(
+      "Googleログインエラー:",
+      error
+    );
+
+    alert(
+      "Googleログインに失敗しました。\n\n" +
+      error.message
+    );
+  }
+}
+
+
+
+/* =========================================
+   ログアウト
+========================================= */
+
+async function logout(){
+
+  try{
+
+    await signOut(auth);
+
+  }catch(error){
+
+    console.error(
+      "ログアウトエラー:",
+      error
+    );
+
+  }
+
+}
+
+
+
+/* =========================================
+   アプリへ戻る
+========================================= */
+
+function goHome(){
+
+  location.href = "index.html";
+
+}
+
+
+
+/* =========================================
+   管理者画面表示
+========================================= */
+
+function showAdmin(){
+
+  const denied =
+    document.getElementById(
+      "accessDenied"
+    );
+
+  const content =
+    document.getElementById(
+      "adminContent"
+    );
+
+
+  if(isAdmin()){
+
+    denied.classList.add("hidden");
+
+    content.classList.remove("hidden");
+
+    document.getElementById(
+      "headerUser"
+    ).textContent =
+      currentUser.email || "";
+
+
+    document.getElementById(
+      "adminEmail"
+    ).textContent =
+      currentUser.email || "--";
+
+
+    document.getElementById(
+      "adminUid"
+    ).textContent =
+      currentUser.uid || "--";
+
+
+    document.getElementById(
+      "adminRole"
+    ).textContent =
+      "管理者";
+
+
+    loadDashboard();
+
+  }else{
+
+    content.classList.add("hidden");
+
+    denied.classList.remove("hidden");
+
+    document.getElementById(
+      "headerUser"
+    ).textContent =
+      currentUser
+        ? (
+            currentUser.email ||
+            "ログイン済み"
+          )
+        : "未ログイン";
+
+
+    document.getElementById(
+      "deniedReason"
+    ).textContent =
+      currentUser
+        ? "このGoogleアカウントには管理者権限がありません。"
+        : "管理者アカウントでログインしてください。";
+  }
+
+}
+
+
+
+/* =========================================
+   ダッシュボード
+========================================= */
+
+async function loadDashboard(){
+
+  if(!isAdmin()){
+    return;
+  }
+
+
+  const userCountEl =
+    document.getElementById(
+      "userCount"
+    );
+
+  const rankingCountEl =
+    document.getElementById(
+      "rankingCount"
+    );
+
+  const averageImprovementEl =
+    document.getElementById(
+      "averageImprovement"
+    );
+
+  const measurementCountEl =
+    document.getElementById(
+      "measurementCount"
+    );
+
+
+  userCountEl.textContent = "...";
+  rankingCountEl.textContent = "...";
+  averageImprovementEl.textContent = "...";
+  measurementCountEl.textContent = "...";
+
+
+  try{
+
+    /*
+      公開プロフィール
+    */
+
+    const profileSnap =
+      await getDocs(
+        collection(
+          db,
+          "publicProfiles"
+        )
+      );
+
+
+    const users =
+      profileSnap.docs.map(
+        d => ({
+          id:d.id,
+          ...d.data()
+        })
+      );
+
+
+    /*
+      ランキング
+    */
+
+    const rankingSnap =
+      await getDocs(
+        collection(
+          db,
+          "ranking"
+        )
+      );
+
+
+    const rankings =
+      rankingSnap.docs.map(
+        d => ({
+          id:d.id,
+          ...d.data()
+        })
+      );
+
+
+    /*
+      フレンド申請
+    */
+
+    const requestSnap =
+      await getDocs(
+        collection(
+          db,
+          "friendRequests"
+        )
+      );
+
+
+    const requests =
+      requestSnap.docs.map(
+        d => ({
+          id:d.id,
+          ...d.data()
+        })
+      );
+
+
+    /*
+      ユーザー数
+    */
+
+    userCountEl.textContent =
+      users.length;
+
+
+    /*
+      ランキング参加者
+    */
+
+    rankingCountEl.textContent =
+      rankings.length;
+
+
+    /*
+      改善率
+    */
+
+    const rates =
+      rankings
+        .map(x => Number(x.improvementRate))
+        .filter(
+          x => Number.isFinite(x)
+        );
+
+
+    if(rates.length){
+
+      const average =
+        rates.reduce(
+          (a,b) => a+b,
+          0
+        ) / rates.length;
+
+
+      averageImprovementEl.textContent =
+        `${average >= 0 ? "+" : ""}${average.toFixed(1)}%`;
+
+    }else{
+
+      averageImprovementEl.textContent =
+        "--";
+
+    }
+
+
+    /*
+      測定回数
+
+      publicProfilesに
+      measurementCountがある場合に集計。
+    */
+
+    const measurementTotal =
+      users.reduce(
+        (total,user) =>
+          total +
+          (
+            Number(user.measurementCount) || 0
+          ),
+        0
+      );
+
+
+    measurementCountEl.textContent =
+      measurementTotal;
+
+
+    /*
+      更新時刻
+    */
+
+    document.getElementById(
+      "dashboardUpdated"
+    ).textContent =
+      "最終更新：" +
+      new Date().toLocaleString(
+        "ja-JP"
+      );
+
+
+    document.getElementById(
+      "lastUpdated"
+    ).textContent =
+      new Date().toLocaleString(
+        "ja-JP"
+      );
+
+
+    /*
+      各セクション
+    */
+
+    renderUserList(users);
+
+    renderRankingList(rankings);
+
+    renderRequests(requests);
+
+
+  }catch(error){
+
+    console.error(
+      "管理者データ取得エラー:",
+      error
+    );
+
+
+    userCountEl.textContent =
+      "--";
+
+    rankingCountEl.textContent =
+      "--";
+
+    averageImprovementEl.textContent =
+      "--";
+
+    measurementCountEl.textContent =
+      "--";
+
+
+    document.getElementById(
+      "dashboardUpdated"
+    ).innerHTML =
+
+      `<div class="error">
+        データの読み込みに失敗しました。<br>
+        ${escapeHtml(error.message)}
+      </div>`;
+  }
+
+}
+
+
+
+/* =========================================
+   ユーザー一覧
+========================================= */
+
+function renderUserList(users){
+
+  const container =
+    document.getElementById(
+      "userList"
+    );
+
+
+  if(!users.length){
+
+    container.innerHTML =
+      `<div class="empty">
+        ユーザーがまだいません。
+      </div>`;
+
+    return;
+  }
+
+
+  /*
+    更新日時がある場合は新しい順
+  */
+
+  users.sort(
+    (a,b) => {
+
+      const aTime =
+        a.updatedAt?.seconds || 0;
+
+      const bTime =
+        b.updatedAt?.seconds || 0;
+
+      return bTime - aTime;
+    }
+  );
+
+
+  const displayUsers =
+    users.slice(0,20);
+
+
+  container.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>ユーザー</th>
+            <th>フレンドID</th>
+            <th>XP</th>
+            <th>改善率</th>
+            <th>測定回数</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${displayUsers.map(user => {
+
+            const rate =
+              typeof user.improvementRate === "number"
+              ? (
+                  `${user.improvementRate >= 0 ? "+" : ""}` +
+                  `${user.improvementRate.toFixed(1)}%`
+                )
+              : "--";
+
+
+            return `
+
+              <tr>
+
+                <td>
+                  ${escapeHtml(
+                    user.profileAvatar || "🌙"
+                  )}
+                  ${escapeHtml(
+                    user.rankingName || "ユーザー"
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    user.friendId || "--"
+                  )}
+                </td>
+
+                <td>
+                  ${Number(user.xp)||0}
+                </td>
+
+                <td>
+                  ${rate}
+                </td>
+
+                <td>
+                  ${Number(user.measurementCount)||0}
+                </td>
+
+              </tr>
+
+            `;
+
+          }).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    ${
+      users.length > 20
+      ? `
+        <div class="notice">
+          最初の20人を表示しています。
+          全${users.length}人
+        </div>
+      `
+      : ""
+    }
+
+  `;
+}
+
+
+
+/* =========================================
+   ランキング一覧
+========================================= */
+
+function renderRankingList(rankings){
+
+  const container =
+    document.getElementById(
+      "rankingList"
+    );
+
+
+  if(!rankings.length){
+
+    container.innerHTML =
+      `<div class="empty">
+        ランキング参加者はいません。
+      </div>`;
+
+    return;
+  }
+
+
+  rankings.sort(
+    (a,b) =>
+      Number(b.improvementRate || 0) -
+      Number(a.improvementRate || 0)
+  );
+
+
+  const display =
+    rankings.slice(0,20);
+
+
+  container.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>#</th>
+            <th>ユーザー</th>
+            <th>改善率</th>
+            <th>XP</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${display.map((user,index)=>{
+
+            const rate =
+              Number(
+                user.improvementRate || 0
+              );
+
+
+            return `
+
+              <tr>
+
+                <td>
+                  ${index + 1}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    user.rankingName ||
+                    "ユーザー"
+                  )}
+                </td>
+
+                <td>
+                  ${rate >= 0 ? "+" : ""}
+                  ${rate.toFixed(1)}%
+                </td>
+
+                <td>
+                  ${Number(user.xp)||0}
+                </td>
+
+              </tr>
+
+            `;
+
+          }).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+
+/* =========================================
+   フレンド申請
+========================================= */
+
+function renderRequests(requests){
+
+  const pending =
+    requests.filter(
+      x => x.status === "pending"
+    ).length;
+
+
+  const accepted =
+    requests.filter(
+      x => x.status === "accepted"
+    ).length;
+
+
+  const rejected =
+    requests.filter(
+      x => x.status === "rejected"
+    ).length;
+
+
+  document.getElementById(
+    "pendingRequests"
+  ).textContent = pending;
+
+
+  document.getElementById(
+    "acceptedRequests"
+  ).textContent = accepted;
+
+
+  document.getElementById(
+    "rejectedRequests"
+  ).textContent = rejected;
+
+
+  const container =
+    document.getElementById(
+      "requestList"
+    );
+
+
+  if(!requests.length){
+
+    container.innerHTML =
+      `<div class="empty">
+        フレンド申請はありません。
+      </div>`;
+
+    return;
+  }
+
+
+  const display =
+    requests.slice(0,20);
+
+
+  container.innerHTML =
+    display.map(request => {
+
+      const statusClass =
+        request.status || "";
+
+
+      const statusText =
+        request.status === "pending"
+        ? "保留中"
+        : request.status === "accepted"
+        ? "承認済み"
+        : request.status === "rejected"
+        ? "拒否"
+        : (
+            request.status || "不明"
+          );
+
+
+      return `
+
+        <div class="request-item">
+
+          <div class="request-main">
+
+            <div class="request-name">
+              ${escapeHtml(
+                request.fromName ||
+                request.fromUid ||
+                "ユーザー"
+              )}
+            </div>
+
+            <div class="request-meta">
+
+              送信者：
+              ${escapeHtml(
+                request.fromUid || "--"
+              )}
+
+              <br>
+
+              送信先：
+              ${escapeHtml(
+                request.toUid || "--"
+              )}
+
+            </div>
+
+          </div>
+
+          <div>
+
+            <span
+              class="status ${statusClass}"
+            >
+              ${statusText}
+            </span>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+
+/* =========================================
+   ユーザー検索
+========================================= */
+
+async function searchUser(){
+
+  if(!isAdmin()){
+    return;
+  }
+
+
+  const input =
+    document.getElementById(
+      "friendIdInput"
+    );
+
+
+  const result =
+    document.getElementById(
+      "userSearchResult"
+    );
+
+
+  const friendId =
+    input.value.trim();
+
+
+  if(!friendId){
+
+    result.innerHTML =
+      `<div class="error">
+        フレンドIDを入力してください。
+      </div>`;
+
+    return;
+  }
+
+
+  result.innerHTML =
+    `<div class="loading">
+      検索中...
+    </div>`;
+
+
+  try{
+
+    const q =
+      query(
+        collection(
+          db,
+          "publicProfiles"
+        ),
+        where(
+          "friendId",
+          "==",
+          friendId
+        )
+      );
+
+
+    const snap =
+      await getDocs(q);
+
+
+    if(snap.empty){
+
+      result.innerHTML =
+        `<div class="empty">
+          ユーザーが見つかりませんでした。
+        </div>`;
+
+      return;
+    }
+
+
+    const data =
+      snap.docs[0].data();
+
+
+    const rate =
+      typeof data.improvementRate === "number"
+      ? (
+          `${data.improvementRate >= 0 ? "+" : ""}` +
+          `${data.improvementRate.toFixed(1)}%`
+        )
+      : "--";
+
+
+    const xp =
+      Number(data.xp) || 0;
+
+
+    const level =
+      calculateLevel(xp);
+
+
+    result.innerHTML = `
+
+      <div class="user-card">
+
+        <div class="user-title">
+
+          <div class="user-avatar">
+            ${escapeHtml(
+              data.profileAvatar || "🌙"
+            )}
+          </div>
+
+          <div>
+
+            <div class="user-name">
+              ${escapeHtml(
+                data.rankingName ||
+                "ユーザー"
+              )}
+            </div>
+
+            <div class="user-id">
+              ${escapeHtml(
+                data.friendId ||
+                "IDなし"
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="user-stats">
+
+          <div class="mini-stat">
+
+            <div class="mini-stat-label">
+              レベル
+            </div>
+
+            <div class="mini-stat-value">
+              Lv.${level}
+            </div>
+
+          </div>
+
+
+          <div class="mini-stat">
+
+            <div class="mini-stat-label">
+              XP
+            </div>
+
+            <div class="mini-stat-value">
+              ${xp}
+            </div>
+
+          </div>
+
+
+          <div class="mini-stat">
+
+            <div class="mini-stat-label">
+              改善率
+            </div>
+
+            <div class="mini-stat-value">
+              ${rate}
+            </div>
+
+          </div>
+
+
+          <div class="mini-stat">
+
+            <div class="mini-stat-label">
+              測定回数
+            </div>
+
+            <div class="mini-stat-value">
+              ${Number(data.measurementCount)||0}
+            </div>
+
+          </div>
+
+
+          <div class="mini-stat">
+
+            <div class="mini-stat-label">
+              UID
+            </div>
+
+            <div
+              class="mini-stat-value"
+              style="font-size:11px;word-break:break-all;"
+            >
+              ${escapeHtml(
+                data.uid || "--"
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div style="margin-top:16px;">
+
+          <div
+            style="
+              color:#888;
+              font-size:12px;
+              margin-bottom:6px;
+            "
+          >
+            自己紹介
+          </div>
+
+          <div style="line-height:1.7;">
+
+            ${escapeHtml(
+              data.profileBio ||
+              "自己紹介は設定されていません。"
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }catch(error){
+
+    console.error(
+      "ユーザー検索エラー:",
+      error
+    );
+
+
+    result.innerHTML =
+      `<div class="error">
+        ユーザー検索に失敗しました。<br>
+        ${escapeHtml(
+          error.message
+        )}
+      </div>`;
+  }
+
+}
+
+
+
+/* =========================================
+   Enterキー検索
+========================================= */
+
+document
+  .getElementById("friendIdInput")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter"){
+        searchUser();
+      }
+
+    }
+  );
+
+
+
+/* =========================================
+   Firebase認証状態
+========================================= */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    currentUser = user || null;
+
+    if(user){
+
+      document.getElementById(
+        "headerUser"
+      ).textContent =
+        user.email || "ログイン済み";
+
+    }else{
+
+      document.getElementById(
+        "headerUser"
+      ).textContent =
+        "未ログイン";
+
+    }
+
+
+    showAdmin();
+
+  }
+);
+
+
+/* =========================================
+   グローバル公開
+========================================= */
+
+window.loginWithGoogle =
+  loginWithGoogle;
+
+window.logout =
+  logout;
+
+window.goHome =
+  goHome;
+
+window.loadDashboard =
+  loadDashboard;
+
+window.searchUser =
+  searchUser;
+
+</script>
+
+</body>
+</html>
