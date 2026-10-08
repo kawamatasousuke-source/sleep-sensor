@@ -3,3391 +3,2474 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#111">
 <title>No Sleep No Life v25</title>
 
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;
- font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
- background:#0b0b0b;
- color:#f5f5f5;
+  margin:0;
+  background:#111;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.6
 }
-.wrap{
- width:min(100% - 24px,1000px);
- margin:auto;
- padding:24px 0 60px;
+header{
+  padding:20px;
+  border-bottom:1px solid #292929;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  background:#111;
+  z-index:10
 }
-h1{margin:0 0 6px;font-size:30px}
-h2{font-size:20px;margin:0 0 16px}
-.sub{color:#999;margin-bottom:24px}
+.logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:.5px
+}
 .version{
- display:inline-block;
- margin-left:8px;
- padding:3px 8px;
- border:1px solid #333;
- border-radius:999px;
- font-size:11px;
- color:#aaa;
- vertical-align:middle;
+  font-size:12px;
+  color:#888
 }
-.grid{
- display:grid;
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:14px;
+main{
+  max-width:900px;
+  margin:auto;
+  padding:18px
 }
 .card{
- background:#151515;
- border:1px solid #292929;
- border-radius:16px;
- padding:18px;
- margin-bottom:14px;
+  background:#181818;
+  border:1px solid #292929;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px
 }
-.full{grid-column:1/-1}
-.stats{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
+.card h2{
+  margin:0 0 14px;
+  font-size:19px
 }
-.stat{
- background:#0e0e0e;
- border-radius:12px;
- padding:13px;
-}
-.label{font-size:12px;color:#888}
-.value{font-size:18px;font-weight:700;margin-top:4px}
+.full{width:100%}
 button{
- border:0;
- border-radius:10px;
- padding:12px 16px;
- margin:4px;
- background:#fff;
- color:#000;
- font-weight:700;
- cursor:pointer;
+  border:0;
+  border-radius:10px;
+  padding:12px 16px;
+  background:#fff;
+  color:#111;
+  font-weight:800;
+  cursor:pointer;
+  margin:4px
 }
-button:disabled{opacity:.35;cursor:not-allowed}
-button.secondary{background:#292929;color:#fff}
-button.danger{background:#5a2020;color:#fff}
-.buttons{display:flex;flex-wrap:wrap;gap:4px}
-#graph{
- width:100%;
- height:260px;
- background:#090909;
- border-radius:12px;
- display:block;
+button:disabled{
+  opacity:.4;
+  cursor:not-allowed
+}
+button.secondary{
+  background:#292929;
+  color:#fff
+}
+button.danger{
+  background:#6b2020;
+  color:#fff
+}
+.status{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px
+}
+.badge{
+  background:#242424;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:13px
+}
+.good{color:#8cff8c}
+.warn{color:#ffcf66}
+.bad{color:#ff8080}
+.big{
+  font-size:42px;
+  font-weight:900
 }
 .score{
- font-size:64px;
- font-weight:800;
- line-height:1;
+  font-size:64px;
+  font-weight:900;
+  line-height:1
 }
-.scorebar{
- height:12px;
- background:#292929;
- border-radius:99px;
- overflow:hidden;
- margin-top:15px;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px
 }
-#scoreFill,#improvementFill{
- height:100%;
- width:0%;
- background:#fff;
- transition:.4s;
+.stat{
+  background:#202020;
+  border-radius:12px;
+  padding:14px
 }
-.improvement-rate{
- font-size:56px;
- font-weight:800;
- line-height:1;
+.stat-label{
+  color:#888;
+  font-size:12px
 }
-.improvement-positive{color:#8cff8c}
-.improvement-negative{color:#ff8080}
-.improvement-neutral{color:#f5f5f5}
-.achievement{
- display:flex;
- justify-content:space-between;
- gap:10px;
- padding:10px 0;
- border-bottom:1px solid #292929;
-}
-.achievement:last-child{border-bottom:0}
-.unlocked{color:#fff}
-.locked{color:#555}
-.history-item{
- padding:13px 0;
- border-bottom:1px solid #292929;
-}
-.history-item:last-child{border-bottom:0}
-.history-score{
- float:right;
- font-size:20px;
- font-weight:800;
+.stat-value{
+  font-size:22px;
+  font-weight:800
 }
 .progress{
- height:8px;
- background:#292929;
- border-radius:99px;
- overflow:hidden;
- margin-top:8px;
+  height:10px;
+  background:#292929;
+  border-radius:99px;
+  overflow:hidden;
+  margin:10px 0
 }
-.progress>div{
- height:100%;
- background:#fff;
+.progress-inner{
+  height:100%;
+  background:#fff;
+  width:0
 }
-.status-ok{color:#8cff8c}
-.status-ng{color:#ff8080}
 .notice{
- background:#101010;
- border-left:3px solid #fff;
- padding:12px;
- color:#bbb;
- font-size:13px;
- line-height:1.6;
+  background:#202020;
+  border-radius:10px;
+  padding:12px;
+  color:#bbb;
+  font-size:13px
 }
-.volume-meter{
- width:100%;
- height:10px;
- background:#292929;
- border-radius:99px;
- overflow:hidden;
- margin-top:8px;
-}
-#volumeFill{
- width:0%;
- height:100%;
- background:#fff;
- transition:width .08s linear;
-}
-.xp-gain{
- margin-top:16px;
- padding:13px;
- background:#101010;
- border:1px solid #292929;
- border-radius:12px;
- font-weight:700;
-}
-.xp-bonus{color:#8cff8c}
-
 .analysis-main{
- background:#101010;
- border:1px solid #292929;
- border-radius:14px;
- padding:16px;
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:12px
 }
-.analysis-title{
- font-size:17px;
- font-weight:800;
- margin-bottom:8px;
+.analysis-item{
+  padding:12px 0;
+  border-bottom:1px solid #292929
 }
-.analysis-message{
- font-size:14px;
- line-height:1.7;
- color:#ddd;
+.analysis-item:last-child{border-bottom:0}
+.rank-list{
+  margin-top:12px
 }
-.analysis-list{
- margin:12px 0 0;
- padding:0;
- list-style:none;
+.rank-row{
+  display:grid;
+  grid-template-columns:48px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  border-bottom:1px solid #292929
 }
-.analysis-list li{
- padding:11px 0;
- border-bottom:1px solid #292929;
- line-height:1.6;
+.rank-row:last-child{border-bottom:0}
+.rank-row.me{
+  background:#292929;
+  border-radius:10px;
+  margin:4px 0
 }
-.analysis-list li:last-child{border-bottom:0}
-.analysis-good{color:#8cff8c}
-.analysis-attention{color:#ffd36a}
-.analysis-goal{
- margin-top:14px;
- padding:13px;
- border-radius:12px;
- background:#181818;
- border:1px solid #333;
+.rank-number{
+  font-size:20px;
+  font-weight:900;
+  text-align:center
 }
-.analysis-empty{
- color:#888;
- line-height:1.7;
+.rank-name{
+  font-weight:800
 }
-.analysis-score{
- font-size:30px;
- font-weight:800;
- margin-bottom:5px;
+.rank-score{
+  text-align:right;
+  font-weight:900
 }
-
-@media(max-width:700px){
- .grid{grid-template-columns:1fr}
- .full{grid-column:auto}
- h1{font-size:25px}
- .score{font-size:52px}
+.rank-sub{
+  color:#888;
+  font-size:11px
+}
+.rank-loading{
+  color:#888;
+  padding:15px 0
+}
+.history-item{
+  padding:14px 0;
+  border-bottom:1px solid #292929
+}
+.history-item:last-child{border-bottom:0}
+.history-date{
+  font-weight:800
+}
+.history-meta{
+  color:#999;
+  font-size:13px
+}
+canvas{
+  width:100%;
+  max-height:320px
+}
+.account{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap
+}
+.account-name{
+  font-weight:800
+}
+small{
+  color:#888
+}
+textarea{
+  width:100%;
+  min-height:100px;
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:10px;
+  padding:12px;
+  resize:vertical
+}
+@media(max-width:600px){
+  main{padding:12px}
+  .grid{grid-template-columns:1fr}
+  .score{font-size:52px}
+  .rank-row{
+    grid-template-columns:40px 1fr auto
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrap">
-
 <header>
-<h1>
-No Sleep No Life
-<span class="version">v25β</span>
-</h1>
-<div class="sub">睡眠を測って、記録して、改善する。</div>
+  <div class="logo">NO SLEEP NO LIFE</div>
+  <div class="version">v25β</div>
 </header>
 
-<div class="grid">
-
-<section class="card full">
-<h2>センサー状態</h2>
-
-<div class="stats">
-<div class="stat">
-<div class="label">状態</div>
-<div class="value" id="sensorStatus">待機中</div>
-</div>
-
-<div class="stat">
-<div class="label">マイク</div>
-<div class="value" id="micStatus">未接続</div>
-</div>
-
-<div class="stat">
-<div class="label">加速度</div>
-<div class="value" id="motionStatus">未接続</div>
-</div>
-
-<div class="stat">
-<div class="label">画面消灯防止</div>
-<div class="value" id="wakeStatus">未使用</div>
-</div>
-</div>
-
-<div class="buttons" style="margin-top:15px">
-<button id="startBtn">睡眠測定開始</button>
-<button id="stopBtn" class="secondary" disabled>測定終了</button>
-</div>
-</section>
-
+<main>
 
 <section class="card">
-<h2>リアルタイム</h2>
-
-<div class="stats">
-<div class="stat">
-<div class="label">経過時間</div>
-<div class="value" id="elapsed">00:00:00</div>
-</div>
-
-<div class="stat">
-<div class="label">睡眠状態</div>
-<div class="value" id="sleepState">待機中</div>
-</div>
-
-<div class="stat">
-<div class="label">動き</div>
-<div class="value" id="movement">0</div>
-</div>
-
-<div class="stat">
-<div class="label">音量</div>
-<div class="value" id="volume">0</div>
-<div class="volume-meter">
-<div id="volumeFill"></div>
-</div>
-</div>
-</div>
+  <h2>アカウント</h2>
+  <div class="account">
+    <span id="accountStatus">ログイン確認中...</span>
+    <button id="googleLoginBtn">Googleでログイン</button>
+    <button id="logoutBtn" class="secondary" style="display:none">ログアウト</button>
+  </div>
 </section>
-
 
 <section class="card">
-<h2>睡眠グラフ</h2>
-<canvas id="graph"></canvas>
+  <h2>センサー状態</h2>
+  <div class="status">
+    <div class="badge" id="motionStatus">加速度：待機中</div>
+    <div class="badge" id="micStatus">マイク：待機中</div>
+    <div class="badge" id="wakeStatus">画面保持：待機中</div>
+  </div>
+  <div>
+    <button id="startBtn">睡眠測定開始</button>
+    <button id="stopBtn" class="secondary" disabled>測定終了</button>
+  </div>
+  <p id="measurementStatus">測定していません。</p>
 </section>
-
-
-<section class="card full">
-<h2>今回の結果</h2>
-
-<div class="score" id="score">--</div>
-
-<div id="evaluation">まだ測定されていません</div>
-
-<div class="scorebar">
-<div id="scoreFill"></div>
-</div>
-
-<div class="stats" style="margin-top:16px">
-
-<div class="stat">
-<div class="label">睡眠時間</div>
-<div class="value" id="resultDuration">--</div>
-</div>
-
-<div class="stat">
-<div class="label">静止時間</div>
-<div class="value" id="resultStill">--</div>
-</div>
-
-<div class="stat">
-<div class="label">小さな動き</div>
-<div class="value" id="resultSmall">--</div>
-</div>
-
-<div class="stat">
-<div class="label">大きな動き</div>
-<div class="value" id="resultLarge">--</div>
-</div>
-
-<div class="stat">
-<div class="label">音イベント</div>
-<div class="value" id="resultSound">--</div>
-</div>
-
-</div>
-
-<div class="xp-gain" id="resultXPGain">
-今回の獲得XP：-- XP
-</div>
-</section>
-
-
-<section class="card full">
-<h2>睡眠自動分析</h2>
-
-<div id="sleepAnalysis">
-<div class="analysis-empty">
-睡眠を測定すると、今回の睡眠データを分析して改善ポイントを表示します。
-</div>
-</div>
-</section>
-
-
-<section class="card full">
-<h2>睡眠改善率</h2>
-
-<div class="improvement-rate improvement-neutral" id="improvementRate">--</div>
-
-<div id="improvementStatus" style="margin-top:8px">
-最初の7回を測定すると、開始時の基準値を作成します。
-</div>
-
-<div style="margin-top:16px">
-<div class="label" id="improvementProgressText">
-基準値作成まで 7回
-</div>
-
-<div class="scorebar">
-<div id="improvementFill"></div>
-</div>
-</div>
-
-<div class="stats" style="margin-top:16px">
-
-<div class="stat">
-<div class="label">開始時の基準スコア</div>
-<div class="value" id="baselineScore">--</div>
-</div>
-
-<div class="stat">
-<div class="label">現在の平均スコア</div>
-<div class="value" id="currentAverageScore">--</div>
-</div>
-
-<div class="stat">
-<div class="label">改善率計算に使用する測定</div>
-<div class="value" id="improvementCount">0 / 7</div>
-</div>
-
-</div>
-
-<div class="notice" style="margin-top:16px">
-最初の7回の平均スコアを「開始時の基準値」として固定し、
-その後は直近7回の平均スコアと比較して改善率を計算します。
-</div>
-</section>
-
 
 <section class="card">
-<h2>レベル・ストリーク</h2>
-
-<div class="stats">
-
-<div class="stat">
-<div class="label">レベル</div>
-<div class="value" id="level">Lv.1</div>
-</div>
-
-<div class="stat">
-<div class="label">XP</div>
-<div class="value" id="xp">0 XP</div>
-</div>
-
-<div class="stat">
-<div class="label">現在のストリーク</div>
-<div class="value" id="streak">0日</div>
-</div>
-
-<div class="stat">
-<div class="label">最高ストリーク</div>
-<div class="value" id="bestStreak">0日</div>
-</div>
-
-<div class="stat">
-<div class="label">測定日数</div>
-<div class="value" id="totalDays">0日</div>
-</div>
-
-<div class="stat">
-<div class="label">最高スコア</div>
-<div class="value" id="bestScore">--</div>
-</div>
-
-</div>
-
-<div style="margin-top:15px">
-<div class="label" id="levelText">
-次のレベルまで 100 XP
-</div>
-
-<div class="progress">
-<div id="levelProgress" style="width:0%"></div>
-</div>
-</div>
-
-<div class="notice" id="improvementXPStatus" style="margin-top:15px">
-基準値作成後、睡眠改善率に応じてXPボーナスを獲得できます。
-</div>
+  <h2>リアルタイムデータ</h2>
+  <div class="grid">
+    <div class="stat">
+      <div class="stat-label">経過時間</div>
+      <div class="stat-value" id="realtimeDuration">0分</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">現在の動き</div>
+      <div class="stat-value" id="realtimeMovement">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">小さな動き</div>
+      <div class="stat-value" id="realtimeSmall">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">大きな動き</div>
+      <div class="stat-value" id="realtimeLarge">0</div>
+    </div>
+  </div>
 </section>
-
 
 <section class="card">
-<h2>実績</h2>
-<div id="achievements"></div>
+  <h2>睡眠グラフ</h2>
+  <canvas id="sleepGraph" width="800" height="300"></canvas>
 </section>
 
+<section class="card" id="resultCard" style="display:none">
+  <h2>今回の睡眠結果</h2>
 
-<section class="card full">
-<h2>測定履歴</h2>
+  <div class="score" id="resultScore">0</div>
+  <div id="resultEvaluation"></div>
 
-<div id="history">まだ履歴がありません。</div>
+  <div class="grid" style="margin-top:15px">
+    <div class="stat">
+      <div class="stat-label">睡眠時間</div>
+      <div class="stat-value" id="resultDuration">0時間</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">大きな動き</div>
+      <div class="stat-value" id="resultLarge">0秒</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">小さな動き</div>
+      <div class="stat-value" id="resultSmall">0秒</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">音イベント</div>
+      <div class="stat-value" id="resultSound">0</div>
+    </div>
+  </div>
 
-<div class="buttons" style="margin-top:14px">
-
-<button id="csvBtn" class="secondary">
-CSV出力
-</button>
-
-<button id="resetCurrentBtn" class="secondary">
-今回のデータをリセット
-</button>
-
-<button id="resetAllBtn" class="danger">
-全データ削除
-</button>
-
-</div>
+  <div class="notice" style="margin-top:15px">
+    <div id="resultXP">今回の獲得XP：0 XP</div>
+  </div>
 </section>
 
+<section class="card">
+  <h2>睡眠改善率</h2>
 
-<section class="card full">
-<h2>Googleアカウント</h2>
+  <div class="grid">
+    <div class="stat">
+      <div class="stat-label">開始時の基準値</div>
+      <div class="stat-value" id="baselineScore">--</div>
+    </div>
 
-<div class="notice" id="accountStatus">
-Firebase認証を開始しています……
-</div>
+    <div class="stat">
+      <div class="stat-label">現在の平均</div>
+      <div class="stat-value" id="currentAverage">--</div>
+    </div>
 
-<div class="buttons" style="margin-top:12px">
+    <div class="stat">
+      <div class="stat-label">睡眠改善率</div>
+      <div class="stat-value" id="improvementRate">--</div>
+    </div>
 
-<button id="googleBtn">
-Googleと連携
-</button>
+    <div class="stat">
+      <div class="stat-label">基準値まで</div>
+      <div class="stat-value" id="baselineProgress">0 / 7</div>
+    </div>
+  </div>
 
-<button id="googleSignOutBtn" class="secondary" style="display:none">
-Googleからログアウト
-</button>
+  <div class="progress">
+    <div class="progress-inner" id="baselineProgressBar"></div>
+  </div>
 
-</div>
+  <p id="improvementMessage" class="notice">
+    最初の7回の測定から基準値を作成します。
+  </p>
 </section>
 
+<section class="card">
+  <h2>睡眠分析</h2>
 
-<section class="card full">
-<h2>探究用メモ</h2>
+  <div class="analysis-main" id="analysisSummary">
+    まだ測定結果がありません。
+  </div>
 
-<div class="notice">
+  <div id="analysisDetails">
+    <div class="notice">
+      睡眠時間・動き・音・改善率から、現在の睡眠状態を自動分析します。
+    </div>
+  </div>
 
-このアプリはスマートフォンの加速度センサーと
-マイクを利用して、睡眠中の動きや音を記録します。
-
-<br><br>
-
-中高生の睡眠時間の目安として、
-8〜10時間に近いほど睡眠時間スコアが高くなるようにしています。
-
-<br><br>
-
-また、最初の7回の睡眠スコアを基準値として、
-その後の睡眠改善率を計算します。
-
-<br><br>
-
-改善率がプラスになるほど、
-睡眠改善ボーナスXPを多く獲得できます。
-
-<br><br>
-
-さらに、今回の睡眠時間・体動・音イベント・睡眠スコア・改善率を
-自動分析し、次回に向けた改善ポイントを表示します。
-
-<br><br>
-
-このアプリは医学的な診断を行うものではありません。
-
-</div>
+  <div class="notice" style="margin-top:12px">
+    この分析は測定データをもとにした生活習慣の振り返りです。
+    医療的な診断ではありません。
+  </div>
 </section>
 
-</div>
-</div>
+<section class="card">
+  <h2>睡眠改善ランキング</h2>
 
+  <p class="notice">
+    睡眠スコアそのものではなく、開始時からどれだけ改善したかを競うランキングです。
+    最初の7回の測定が終わるとランキングに参加できます。
+  </p>
+
+  <div id="rankingMyStatus" class="notice" style="margin-top:12px">
+    ランキング情報を読み込んでいます。
+  </div>
+
+  <div id="rankingList" class="rank-list">
+    <div class="rank-loading">ランキングを読み込んでいます...</div>
+  </div>
+
+  <button id="rankingRefreshBtn" class="secondary">
+    ランキングを更新
+  </button>
+</section>
+
+<section class="card">
+  <h2>レベル・ストリーク</h2>
+
+  <div class="grid">
+    <div class="stat">
+      <div class="stat-label">レベル</div>
+      <div class="stat-value" id="levelValue">Lv.1</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">XP</div>
+      <div class="stat-value" id="xpValue">0 XP</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">連続記録</div>
+      <div class="stat-value" id="streakValue">0日</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">最高スコア</div>
+      <div class="stat-value" id="bestScoreValue">--</div>
+    </div>
+  </div>
+
+  <p id="xpImprovementStatus" class="notice" style="margin-top:12px">
+    基準値作成後、睡眠改善率に応じてXPボーナスを獲得できます。
+  </p>
+</section>
+
+<section class="card">
+  <h2>実績</h2>
+  <div id="achievements">まだ実績はありません。</div>
+</section>
+
+<section class="card">
+  <h2>測定履歴</h2>
+  <div id="history">まだ履歴がありません。</div>
+  <button id="csvBtn" class="secondary">CSV出力</button>
+</section>
+
+<section class="card">
+  <h2>メモ</h2>
+  <textarea id="memo" placeholder="今日の睡眠についてメモできます。"></textarea>
+</section>
+
+<section class="card">
+  <button id="resetCurrentBtn" class="secondary">今回の表示をリセット</button>
+  <button id="resetAllBtn" class="danger">すべてのデータをリセット</button>
+</section>
+
+</main>
 
 <script type="module">
 
-/* =====================================================
-   No Sleep No Life v25
-   Firebase + センサー + 睡眠記録
-   睡眠改善率 + 改善率XPボーナス
-   睡眠自動分析・改善アドバイス
-===================================================== */
-
-
-/* =====================================================
-   Firebase
-===================================================== */
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
 import {
- initializeApp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInAnonymously,
+  onAuthStateChanged,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 import {
- getAuth,
- GoogleAuthProvider,
- signInWithPopup,
- signInAnonymously,
- onAuthStateChanged,
- signOut
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-import {
- getFirestore,
- doc,
- getDoc,
- setDoc,
- serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
 const firebaseConfig={
- apiKey:"AIzaSyAOLvxQqUQ1MWL6dNcGYblcbVW6Q50NZVI",
- authDomain:"sleep-sensor-af01f.firebaseapp.com",
- projectId:"sleep-sensor-af01f",
- storageBucket:"sleep-sensor-af01f.firebasestorage.app",
- messagingSenderId:"86707291255",
- appId:"1:86707291255:web:01e2e67fa63c3513503272"
+  apiKey:"AIzaSyAOLvxQqUQ1MWL6dNcGYblcbVW6Q50NZVI",
+  authDomain:"sleep-sensor-af01f.firebaseapp.com",
+  projectId:"sleep-sensor-af01f",
+  storageBucket:"sleep-sensor-af01f.firebasestorage.app",
+  messagingSenderId:"86707291255",
+  appId:"1:86707291255:web:01e2e67fa63c3513503272"
 };
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
+
 const provider=new GoogleAuthProvider();
-
-
-/* =====================================================
-   データ
-===================================================== */
 
 const STORAGE_KEY="sleepSensorV8";
 
 let data={
- xp:0,
- lastXPGain:0,
- history:[],
- achievements:[],
- improvement:{
-  baselineReady:false,
-  baselineScore:null,
-  baselineStartAt:null,
-  baselineEndAt:null,
-  currentAverage:null,
-  improvementRate:null
- },
- lastAnalysis:null
-};
-
-
-/* =====================================================
-   ローカル読み込み
-===================================================== */
-
-function loadLocal(){
-
- try{
-
-  const saved=localStorage.getItem(STORAGE_KEY);
-
-  if(saved){
-
-   const parsed=JSON.parse(saved);
-
-   const imp=
-    parsed.improvement&&
-    typeof parsed.improvement==="object"
-      ?parsed.improvement:{};
-
-   data={
-    xp:Number(parsed.xp)||0,
-    lastXPGain:Number(parsed.lastXPGain)||0,
-
-    history:
-     Array.isArray(parsed.history)
-       ?parsed.history:[],
-
-    achievements:
-     Array.isArray(parsed.achievements)
-       ?parsed.achievements:[],
-
-    improvement:{
-     baselineReady:Boolean(imp.baselineReady),
-
-     baselineScore:
-      Number.isFinite(Number(imp.baselineScore))
-       ?Number(imp.baselineScore):null,
-
-     baselineStartAt:
-      Number(imp.baselineStartAt)||null,
-
-     baselineEndAt:
-      Number(imp.baselineEndAt)||null,
-
-     currentAverage:
-      Number.isFinite(Number(imp.currentAverage))
-       ?Number(imp.currentAverage):null,
-
-     improvementRate:
-      Number.isFinite(Number(imp.improvementRate))
-       ?Number(imp.improvementRate):null
-    },
-
-    lastAnalysis:
-     parsed.lastAnalysis&&
-     typeof parsed.lastAnalysis==="object"
-       ?parsed.lastAnalysis:null
-   };
-  }
-
- }catch(error){
-  console.error("LocalStorage読み込みエラー:",error);
- }
-
- updateAllUI();
-}
-
-
-/* =====================================================
-   ローカル保存
-===================================================== */
-
-function saveLocal(){
-
- try{
-  localStorage.setItem(
-   STORAGE_KEY,
-   JSON.stringify(data)
-  );
- }catch(error){
-  console.error("LocalStorage保存エラー:",error);
- }
-
- updateAllUI();
-}
-
-
-/* =====================================================
-   Firebase認証
-===================================================== */
-
-let firebaseUser=null;
-let firestoreSaveTimer=null;
-let authInitializationFailed=false;
-
-
-async function ensureAnonymousUser(){
-
- if(auth.currentUser)return auth.currentUser;
-
- const result=await signInAnonymously(auth);
- return result.user;
-}
-
-
-function isFatalApiKeyError(error){
-
- const code=String(error?.code||"").toLowerCase();
- const message=String(error?.message||"").toLowerCase();
-
- return(
-  code.includes("api-key-not-valid")||
-  code.includes("invalid-api-key")||
-  message.includes("api key not valid")||
-  message.includes("api_key_invalid")
- );
-}
-
-
-function showAuthError(error){
-
- console.error("Firebase認証エラー:",error);
-
- const el=document.getElementById("accountStatus");
- if(!el)return;
-
- const code=String(error?.code||"");
-
- if(isFatalApiKeyError(error)){
-  el.textContent=
-   "Firebase APIキーが無効です。Firebase ConsoleのWebアプリ設定とGoogle CloudのAPIキー設定を確認してください。";
-  return;
- }
-
- if(code==="auth/unauthorized-domain"){
-  el.textContent=
-   "このサイトのドメインがFirebaseの承認済みドメインに登録されていません。";
-  return;
- }
-
- if(code==="auth/operation-not-allowed"){
-  el.textContent=
-   "Firebase Authenticationで匿名ログインが有効になっていません。";
-  return;
- }
-
- if(code==="auth/network-request-failed"){
-  el.textContent=
-   "Firebaseへの接続に失敗しました。ネットワーク接続を確認してください。";
-  return;
- }
-
- if(code==="auth/credential-already-in-use"){
-  el.textContent=
-   "このGoogleアカウントは別のFirebaseユーザーにすでに連携されています。";
-  return;
- }
-
- if(code==="auth/popup-blocked"){
-  el.textContent=
-   "Googleログインのポップアップがブラウザによってブロックされました。";
-  return;
- }
-
- if(code==="auth/popup-closed-by-user"){
-  el.textContent=
-   "Googleログイン画面が閉じられました。";
-  return;
- }
-
- el.textContent=
-  "Firebase認証エラー："+(
-   error?.code||
-   error?.message||
-   "不明なエラー"
-  );
-}
-
-
-function updateAccountUI(){
-
- const status=document.getElementById("accountStatus");
- const googleBtn=document.getElementById("googleBtn");
- const signOutBtn=document.getElementById("googleSignOutBtn");
-
- if(!status||!googleBtn||!signOutBtn)return;
-
- if(authInitializationFailed){
-  googleBtn.style.display="";
-  signOutBtn.style.display="none";
-  return;
- }
-
- if(!firebaseUser){
-  status.textContent="Firebase認証を開始しています……";
-  googleBtn.style.display="";
-  signOutBtn.style.display="none";
-  return;
- }
-
- if(firebaseUser.isAnonymous){
-
-  status.textContent="匿名ユーザーで保存中";
-  googleBtn.style.display="";
-  signOutBtn.style.display="none";
-
- }else{
-
-  const name=
-   firebaseUser.displayName||
-   firebaseUser.email||
-   "Googleユーザー";
-
-  status.textContent="Google連携済み："+name;
-  googleBtn.style.display="none";
-  signOutBtn.style.display="";
- }
-}
-
-
-async function initializeAuth(){
-
- try{
-
-  console.log("Firebase認証初期化開始");
-
-  if(auth.currentUser){
-
-   firebaseUser=auth.currentUser;
-   updateAccountUI();
-
-   if(firebaseUser&&!firebaseUser.isAnonymous){
-    await loadFromFirestore();
-   }
-
-   return;
-  }
-
-  const result=await signInAnonymously(auth);
-  firebaseUser=result.user;
-
-  console.log(
-   "匿名Firebase認証成功:",
-   firebaseUser.uid
-  );
-
-  updateAccountUI();
-
- }catch(error){
-
-  console.error("Firebase初期化エラー:",error);
-
-  authInitializationFailed=true;
-  showAuthError(error);
- }
-}
-
-
-onAuthStateChanged(
- auth,
- async user=>{
-
-  if(authInitializationFailed)return;
-
-  firebaseUser=user;
-  updateAccountUI();
-
-  if(user&&!user.isAnonymous){
-   await loadFromFirestore();
-  }
- }
-);
-
-
-/* =====================================================
-   Googleログイン
-===================================================== */
-
-document.getElementById("googleBtn").addEventListener(
- "click",
- async()=>{
-
-  try{
-
-   const result=
-    await signInWithPopup(auth,provider);
-
-   firebaseUser=result.user;
-
-   await loadFromFirestore();
-
-   authInitializationFailed=false;
-   updateAccountUI();
-
-  }catch(error){
-
-   console.error("Googleログインエラー:",error);
-   showAuthError(error);
-  }
- }
-);
-
-
-/* =====================================================
-   Googleログアウト
-===================================================== */
-
-document.getElementById("googleSignOutBtn").addEventListener(
- "click",
- async()=>{
-
-  try{
-
-   await signOut(auth);
-
-   firebaseUser=
-    await ensureAnonymousUser();
-
-   authInitializationFailed=false;
-   updateAccountUI();
-
-  }catch(error){
-
-   console.error("ログアウトエラー:",error);
-   showAuthError(error);
-  }
- }
-);
-
-
-/* =====================================================
-   Firestore保存
-===================================================== */
-
-async function saveToFirestore(){
-
- if(!firebaseUser||firebaseUser.isAnonymous)return;
-
- try{
-
-  await setDoc(
-   doc(db,"users",firebaseUser.uid),
-   {
-    xp:data.xp,
-    lastXPGain:data.lastXPGain,
-    history:data.history,
-    achievements:data.achievements,
-    improvement:data.improvement,
-    lastAnalysis:data.lastAnalysis,
-    updatedAt:serverTimestamp()
-   },
-   {merge:true}
-  );
-
- }catch(error){
-  console.error("Firestore保存エラー:",error);
- }
-}
-
-
-function queueFirestoreSave(){
-
- clearTimeout(firestoreSaveTimer);
-
- firestoreSaveTimer=
-  setTimeout(
-   saveToFirestore,
-   1000
-  );
-}
-
-
-/* =====================================================
-   Firestore読み込み
-===================================================== */
-
-async function loadFromFirestore(){
-
- if(!firebaseUser||firebaseUser.isAnonymous)return;
-
- try{
-
-  const snapshot=
-   await getDoc(
-    doc(db,"users",firebaseUser.uid)
-   );
-
-  if(!snapshot.exists()){
-   await saveToFirestore();
-   return;
-  }
-
-  const remote=snapshot.data();
-
-  const localHistory=
-   Array.isArray(data.history)
-    ?data.history:[];
-
-  const remoteHistory=
-   Array.isArray(remote.history)
-    ?remote.history:[];
-
-  const map=new Map();
-
-  [...localHistory,...remoteHistory].forEach(item=>{
-   const key=String(item.timestamp||"");
-   if(key)map.set(key,item);
-  });
-
-  data.history=
-   Array.from(map.values()).sort(
-    (a,b)=>
-     Number(b.timestamp||0)-
-     Number(a.timestamp||0)
-   );
-
-  data.xp=
-   Math.max(
-    Number(data.xp)||0,
-    Number(remote.xp)||0
-   );
-
-  data.lastXPGain=
-   Number(remote.lastXPGain)||
-   Number(data.lastXPGain)||
-   0;
-
-  data.achievements=
-   Array.from(
-    new Set([
-     ...(data.achievements||[]),
-     ...(Array.isArray(remote.achievements)
-       ?remote.achievements:[])
-    ])
-   );
-
-  const remoteImprovement=
-   remote.improvement&&
-   typeof remote.improvement==="object"
-    ?remote.improvement:null;
-
-  if(
-   remoteImprovement&&
-   remoteImprovement.baselineReady&&
-   Number.isFinite(
-    Number(remoteImprovement.baselineScore)
-   )
-  ){
-
-   data.improvement={
-    baselineReady:true,
-    baselineScore:Number(remoteImprovement.baselineScore),
-    baselineStartAt:Number(remoteImprovement.baselineStartAt)||null,
-    baselineEndAt:Number(remoteImprovement.baselineEndAt)||null,
-    currentAverage:
-     Number.isFinite(Number(remoteImprovement.currentAverage))
-      ?Number(remoteImprovement.currentAverage):null,
-    improvementRate:
-     Number.isFinite(Number(remoteImprovement.improvementRate))
-      ?Number(remoteImprovement.improvementRate):null
-   };
-
-  }else if(!data.improvement||!data.improvement.baselineReady){
-
-   data.improvement={
+  xp:0,
+  lastXPGain:0,
+  history:[],
+  achievements:[],
+  improvement:{
     baselineReady:false,
     baselineScore:null,
     baselineStartAt:null,
     baselineEndAt:null,
     currentAverage:null,
     improvementRate:null
-   };
-  }
-
-  if(
-   remote.lastAnalysis&&
-   typeof remote.lastAnalysis==="object"
-  ){
-   data.lastAnalysis=remote.lastAnalysis;
-  }
-
-  updateImprovementData();
-  saveLocal();
-
- }catch(error){
-
-  console.error("Firestore読み込みエラー:",error);
- }
-}
-
-
-/* =====================================================
-   センサー変数
-===================================================== */
-
-let measuring=false;
-let startTime=0;
-let elapsedTimer=null;
-let sampleTimer=null;
-let volumeTimer=null;
-
-let audioContext=null;
-let analyser=null;
-let microphoneStream=null;
-let microphoneSource=null;
-let wakeLock=null;
-
-let lastMotion=null;
-let movementSamples=[];
-
-let currentStats={
- still:0,
- small:0,
- large:0,
- sound:0,
- samples:0
+  },
+  lastAnalysis:null
 };
 
-let summaryData=[];
+let currentUser=null;
 
-let soundActiveSince=0;
-let soundCooldownUntil=0;
+let measuring=false;
+let measurementStart=0;
+let measurementTimer=null;
+let motionHandler=null;
+let audioContext=null;
+let analyser=null;
+let micStream=null;
+let audioTimer=null;
+let wakeLock=null;
+
+let stillSeconds=0;
+let smallSeconds=0;
+let largeSeconds=0;
+let soundEvents=0;
+let movementScoreTotal=0;
+
+let graphData=[];
+
+let lastResult=null;
 
 
-/* =====================================================
-   センサー許可
-===================================================== */
+/* =========================
+   LOCAL STORAGE
+========================= */
 
-async function requestMotionPermission(){
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
 
- if(
-  typeof DeviceMotionEvent!=="undefined"&&
-  typeof DeviceMotionEvent.requestPermission==="function"
- ){
+function loadLocal(){
 
-  const permission=
-   await DeviceMotionEvent.requestPermission();
+  try{
 
-  if(permission!=="granted"){
-   throw new Error(
-    "加速度センサーの使用が許可されませんでした。"
-   );
+    const raw=localStorage.getItem(STORAGE_KEY);
+
+    if(!raw)return;
+
+    const parsed=JSON.parse(raw);
+
+    data.xp=Number(parsed.xp)||0;
+    data.lastXPGain=Number(parsed.lastXPGain)||0;
+
+    data.history=Array.isArray(parsed.history)
+      ? parsed.history
+      : [];
+
+    data.achievements=Array.isArray(parsed.achievements)
+      ? parsed.achievements
+      : [];
+
+    data.improvement=parsed.improvement||{
+      baselineReady:false,
+      baselineScore:null,
+      baselineStartAt:null,
+      baselineEndAt:null,
+      currentAverage:null,
+      improvementRate:null
+    };
+
+    data.lastAnalysis=parsed.lastAnalysis||null;
+
+  }catch(e){
+
+    console.error("Local load error:",e);
+
   }
- }
+
 }
 
 
-/* =====================================================
-   マイク
-===================================================== */
+/* =========================
+   FIREBASE
+========================= */
 
-async function startMicrophone(){
+async function saveToFirestore(){
 
- if(
-  !navigator.mediaDevices||
-  !navigator.mediaDevices.getUserMedia
- ){
+  if(!currentUser)return;
 
-  throw new Error(
-   "このブラウザではマイクを使用できません。HTTPS接続を確認してください。"
-  );
- }
+  try{
 
- microphoneStream=
-  await navigator.mediaDevices.getUserMedia({
-   audio:{
-    echoCancellation:false,
-    noiseSuppression:false,
-    autoGainControl:false
-   }
-  });
+    await setDoc(
+      doc(db,"users",currentUser.uid),
+      {
+        xp:data.xp,
+        lastXPGain:data.lastXPGain,
+        history:data.history,
+        achievements:data.achievements,
+        improvement:data.improvement,
+        lastAnalysis:data.lastAnalysis,
+        displayName:currentUser.displayName||"ユーザー",
+        updatedAt:serverTimestamp()
+      },
+      {merge:true}
+    );
 
- const AudioContextClass=
-  window.AudioContext||
-  window.webkitAudioContext;
+    await updateRanking();
 
- if(!AudioContextClass){
-  throw new Error(
-   "このブラウザではAudioContextを使用できません。"
-  );
- }
+  }catch(e){
 
- audioContext=new AudioContextClass();
+    console.error("Firestore save error:",e);
 
- if(audioContext.state==="suspended"){
-  await audioContext.resume();
- }
+  }
 
- analyser=audioContext.createAnalyser();
- analyser.fftSize=2048;
- analyser.smoothingTimeConstant=.15;
-
- microphoneSource=
-  audioContext.createMediaStreamSource(
-   microphoneStream
-  );
-
- microphoneSource.connect(analyser);
-
- const mic=document.getElementById("micStatus");
-
- mic.textContent="接続済み";
- mic.className="value status-ok";
 }
 
 
-/* =====================================================
-   Wake Lock
-===================================================== */
+async function loadFromFirestore(){
 
-async function requestWakeLock(){
+  if(!currentUser)return;
 
- try{
+  try{
 
-  if("wakeLock" in navigator){
+    const snap=await getDoc(
+      doc(db,"users",currentUser.uid)
+    );
 
-   wakeLock=
-    await navigator.wakeLock.request("screen");
+    if(!snap.exists())return;
 
-   wakeLock.addEventListener(
-    "release",
-    ()=>{
-     if(measuring){
-      document.getElementById("wakeStatus").textContent="解除";
-     }
+    const remote=snap.data();
+
+    if(Array.isArray(remote.history)){
+
+      const merged=[
+        ...data.history,
+        ...remote.history
+      ];
+
+      const map=new Map();
+
+      merged.forEach(item=>{
+
+        if(item&&item.timestamp){
+          map.set(String(item.timestamp),item);
+        }
+
+      });
+
+      data.history=[
+        ...map.values()
+      ].sort((a,b)=>b.timestamp-a.timestamp)
+       .slice(0,100);
+
     }
-   );
 
-   document.getElementById("wakeStatus").textContent="有効";
+    data.xp=Math.max(
+      Number(data.xp)||0,
+      Number(remote.xp)||0
+    );
+
+    if(Array.isArray(remote.achievements)){
+
+      data.achievements=[
+        ...new Set([
+          ...data.achievements,
+          ...remote.achievements
+        ])
+      ];
+
+    }
+
+    if(remote.improvement){
+      data.improvement=remote.improvement;
+    }
+
+    if(remote.lastAnalysis){
+      data.lastAnalysis=remote.lastAnalysis;
+    }
+
+    data.lastXPGain=Math.max(
+      Number(data.lastXPGain)||0,
+      Number(remote.lastXPGain)||0
+    );
+
+    updateImprovementData();
+    saveLocal();
+
+  }catch(e){
+
+    console.error("Firestore load error:",e);
+
+  }
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
+
+onAuthStateChanged(auth,async user=>{
+
+  currentUser=user;
+
+  const status=document.getElementById("accountStatus");
+  const login=document.getElementById("googleLoginBtn");
+  const logout=document.getElementById("logoutBtn");
+
+  if(user){
+
+    status.textContent=
+      user.isAnonymous
+      ? "匿名ユーザー"
+      : (user.displayName||user.email||"ログイン中");
+
+    if(user.isAnonymous){
+
+      login.style.display="inline-block";
+      logout.style.display="none";
+
+    }else{
+
+      login.style.display="none";
+      logout.style.display="inline-block";
+
+    }
+
+    await loadFromFirestore();
+
+    updateAllUI();
+    await updateRanking();
 
   }else{
 
-   document.getElementById("wakeStatus").textContent="非対応";
+    status.textContent="未ログイン";
+    login.style.display="inline-block";
+    logout.style.display="none";
+
+    updateAllUI();
+    showRankingMessage("Googleログインするとランキングに参加できます。");
+
   }
 
- }catch(error){
+});
 
-  console.warn("Wake Lock:",error);
-  document.getElementById("wakeStatus").textContent="使用不可";
- }
+
+document.getElementById("googleLoginBtn")
+.addEventListener("click",async()=>{
+
+  try{
+
+    await signInWithPopup(auth,provider);
+
+  }catch(e){
+
+    console.error(e);
+    alert("Googleログインに失敗しました。");
+
+  }
+
+});
+
+
+document.getElementById("logoutBtn")
+.addEventListener("click",async()=>{
+
+  try{
+
+    await signOut(auth);
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+});
+
+
+/* =========================
+   SENSOR
+========================= */
+
+function resetMeasurementValues(){
+
+  stillSeconds=0;
+  smallSeconds=0;
+  largeSeconds=0;
+  soundEvents=0;
+  movementScoreTotal=0;
+  graphData=[];
+
+}
+
+
+async function requestWakeLock(){
+
+  try{
+
+    if("wakeLock" in navigator){
+
+      wakeLock=
+        await navigator.wakeLock.request("screen");
+
+      document.getElementById("wakeStatus")
+        .textContent="画面保持：ON";
+
+    }
+
+  }catch(e){
+
+    console.log("WakeLock:",e);
+
+  }
+
 }
 
 
 async function releaseWakeLock(){
 
- if(wakeLock){
+  try{
+
+    if(wakeLock){
+
+      await wakeLock.release();
+      wakeLock=null;
+
+    }
+
+  }catch(e){}
+
+  document.getElementById("wakeStatus")
+    .textContent="画面保持：待機中";
+
+}
+
+
+async function startMicrophone(){
 
   try{
-   await wakeLock.release();
-  }catch(error){
-   console.warn("Wake Lock解除:",error);
+
+    micStream=
+      await navigator.mediaDevices.getUserMedia({
+        audio:true
+      });
+
+    audioContext=
+      new AudioContext();
+
+    const source=
+      audioContext.createMediaStreamSource(micStream);
+
+    analyser=
+      audioContext.createAnalyser();
+
+    analyser.fftSize=256;
+
+    source.connect(analyser);
+
+    const buffer=
+      new Uint8Array(analyser.frequencyBinCount);
+
+    audioTimer=setInterval(()=>{
+
+      if(!measuring)return;
+
+      analyser.getByteFrequencyData(buffer);
+
+      let sum=0;
+
+      for(let i=0;i<buffer.length;i++){
+        sum+=buffer[i];
+      }
+
+      const average=
+        sum/buffer.length;
+
+      if(average>45){
+
+        soundEvents++;
+
+      }
+
+    },3000);
+
+    document.getElementById("micStatus")
+      .textContent="マイク：測定中";
+
+  }catch(e){
+
+    console.warn("Microphone unavailable:",e);
+
+    document.getElementById("micStatus")
+      .textContent="マイク：利用不可";
+
   }
 
-  wakeLock=null;
- }
-
- document.getElementById("wakeStatus").textContent="未使用";
 }
 
 
-/* =====================================================
-   加速度
-===================================================== */
+function stopMicrophone(){
 
-function handleMotion(event){
+  if(audioTimer){
 
- if(!measuring)return;
+    clearInterval(audioTimer);
+    audioTimer=null;
 
- const acceleration=
-  event.accelerationIncludingGravity;
-
- if(!acceleration)return;
-
- const x=Number(acceleration.x)||0;
- const y=Number(acceleration.y)||0;
- const z=Number(acceleration.z)||0;
-
- if(lastMotion){
-
-  const dx=x-lastMotion.x;
-  const dy=y-lastMotion.y;
-  const dz=z-lastMotion.z;
-
-  const delta=
-   Math.sqrt(dx*dx+dy*dy+dz*dz);
-
-  movementSamples.push(delta);
-
-  if(movementSamples.length>30){
-   movementSamples.shift();
   }
 
-  const average=
-   movementSamples.length
-    ?movementSamples.reduce(
-      (sum,value)=>sum+value,0
-     )/movementSamples.length
-    :0;
+  if(micStream){
 
-  document.getElementById("movement").textContent=
-   average.toFixed(2);
- }
+    micStream.getTracks().forEach(t=>t.stop());
+    micStream=null;
 
- lastMotion={x,y,z};
-}
-
-
-/* =====================================================
-   音量
-===================================================== */
-
-function readVolume(){
-
- if(!analyser)return 0;
-
- const buffer=
-  new Float32Array(analyser.fftSize);
-
- analyser.getFloatTimeDomainData(buffer);
-
- let sum=0;
- let peak=0;
-
- for(const value of buffer){
-
-  sum+=value*value;
-
-  const abs=Math.abs(value);
-
-  if(abs>peak)peak=abs;
- }
-
- const rms=Math.sqrt(sum/buffer.length);
-
- const db=
-  20*Math.log10(Math.max(rms,.000001));
-
- let volume=
-  (db+60)*(100/60);
-
- volume+=peak*10;
-
- volume=Math.max(0,Math.min(100,volume));
-
- document.getElementById("volume").textContent=
-  volume.toFixed(1);
-
- document.getElementById("volumeFill").style.width=
-  volume+"%";
-
- if(volume>=35){
-
-  if(soundActiveSince===0){
-   soundActiveSince=Date.now();
   }
 
-  if(
-   Date.now()-soundActiveSince>=800&&
-   Date.now()>=soundCooldownUntil
-  ){
+  if(audioContext){
 
-   currentStats.sound++;
+    audioContext.close().catch(()=>{});
+    audioContext=null;
 
-   soundCooldownUntil=Date.now()+20000;
-   soundActiveSince=0;
   }
 
- }else{
-  soundActiveSince=0;
- }
+  document.getElementById("micStatus")
+    .textContent="マイク：待機中";
 
- return volume;
 }
 
 
-/* =====================================================
-   睡眠状態
-===================================================== */
+function startMotion(){
 
-function calculateSleepState(){
+  motionHandler=e=>{
 
- if(!movementSamples.length)return "判定中";
+    if(!measuring)return;
 
- const average=
-  movementSamples.reduce(
-   (a,b)=>a+b,0
-  )/movementSamples.length;
+    const a=e.accelerationIncludingGravity;
 
- if(average<.10)return "静か";
- if(average<.60)return "小さな動き";
+    if(!a)return;
 
- return "大きな動き";
-}
+    const x=a.x||0;
+    const y=a.y||0;
+    const z=a.z||0;
 
+    const magnitude=
+      Math.sqrt(x*x+y*y+z*z);
 
-/* =====================================================
-   10秒記録
-===================================================== */
+    const diff=
+      Math.abs(magnitude-9.8);
 
-function summarize10Seconds(){
+    movementScoreTotal+=diff;
 
- const motion=
-  movementSamples.length
-   ?movementSamples.reduce(
-     (a,b)=>a+b,0
-    )/movementSamples.length
-   :0;
+    if(diff<0.25){
 
- let type="still";
+      stillSeconds+=0.5;
 
- if(motion<.10){
-  type="still";
-  currentStats.still+=10;
- }else if(motion<.60){
-  type="small";
-  currentStats.small+=10;
- }else{
-  type="large";
-  currentStats.large+=10;
- }
+    }else if(diff<1.2){
 
- currentStats.samples++;
+      smallSeconds+=0.5;
 
- const volume=readVolume();
+    }else{
 
- summaryData.push({
-  time:Date.now(),
-  motion,
-  volume,
-  type
- });
+      largeSeconds+=0.5;
 
- if(summaryData.length>250){
-  summaryData.shift();
- }
+    }
 
- drawGraph();
-}
+    graphData.push({
+      time:Date.now(),
+      value:diff
+    });
 
+    if(graphData.length>300){
+      graphData.shift();
+    }
 
-/* =====================================================
-   時間
-===================================================== */
+    document.getElementById("realtimeMovement")
+      .textContent=diff.toFixed(2);
 
-function formatDuration(ms){
+    document.getElementById("realtimeSmall")
+      .textContent=Math.round(smallSeconds);
 
- const total=
-  Math.max(0,Math.floor(ms/1000));
+    document.getElementById("realtimeLarge")
+      .textContent=Math.round(largeSeconds);
 
- const h=Math.floor(total/3600);
- const m=Math.floor((total%3600)/60);
- const s=total%60;
+    drawGraph();
 
- return[
-  String(h).padStart(2,"0"),
-  String(m).padStart(2,"0"),
-  String(s).padStart(2,"0")
- ].join(":");
-}
-
-
-function updateElapsed(){
-
- if(!measuring)return;
-
- const elapsed=Date.now()-startTime;
-
- document.getElementById("elapsed").textContent=
-  formatDuration(elapsed);
-
- document.getElementById("sleepState").textContent=
-  calculateSleepState();
-}
-
-
-/* =====================================================
-   測定開始
-===================================================== */
-
-async function startMeasurement(){
-
- if(measuring)return;
-
- try{
-
-  await requestMotionPermission();
-  await startMicrophone();
-  await requestWakeLock();
-
-  measuring=true;
-  startTime=Date.now();
-
-  lastMotion=null;
-  movementSamples=[];
-
-  currentStats={
-   still:0,
-   small:0,
-   large:0,
-   sound:0,
-   samples:0
   };
-
-  summaryData=[];
-  soundActiveSince=0;
-  soundCooldownUntil=0;
-
-  const sensorStatus=
-   document.getElementById("sensorStatus");
-
-  sensorStatus.textContent="測定中";
-  sensorStatus.className="value status-ok";
-
-  const motionStatus=
-   document.getElementById("motionStatus");
-
-  motionStatus.textContent="接続済み";
-  motionStatus.className="value status-ok";
-
-  document.getElementById("startBtn").disabled=true;
-  document.getElementById("stopBtn").disabled=false;
 
   window.addEventListener(
-   "devicemotion",
-   handleMotion
+    "devicemotion",
+    motionHandler
   );
 
-  elapsedTimer=
-   setInterval(updateElapsed,1000);
+  document.getElementById("motionStatus")
+    .textContent="加速度：測定中";
 
-  sampleTimer=
-   setInterval(summarize10Seconds,10000);
-
-  volumeTimer=
-   setInterval(readVolume,100);
-
-  updateElapsed();
-  readVolume();
-
- }catch(error){
-
-  console.error("センサー開始エラー:",error);
-
-  await cleanupMeasurement();
-
-  alert(
-   "センサーを開始できませんでした。\n\n"+
-   (error?.message||"不明なエラー")
-  );
- }
 }
 
 
-/* =====================================================
-   センサー終了
-===================================================== */
+function stopMotion(){
 
-async function cleanupMeasurement(){
+  if(motionHandler){
 
- clearInterval(elapsedTimer);
- clearInterval(sampleTimer);
- clearInterval(volumeTimer);
+    window.removeEventListener(
+      "devicemotion",
+      motionHandler
+    );
 
- elapsedTimer=null;
- sampleTimer=null;
- volumeTimer=null;
+    motionHandler=null;
 
- window.removeEventListener(
-  "devicemotion",
-  handleMotion
- );
-
- if(microphoneStream){
-
-  microphoneStream
-   .getTracks()
-   .forEach(track=>{
-    try{track.stop()}catch(error){}
-   });
-
-  microphoneStream=null;
- }
-
- if(audioContext){
-
-  try{
-   await audioContext.close();
-  }catch(error){
-   console.warn("AudioContext終了:",error);
   }
 
-  audioContext=null;
- }
+  document.getElementById("motionStatus")
+    .textContent="加速度：待機中";
 
- analyser=null;
- microphoneSource=null;
-
- await releaseWakeLock();
 }
 
 
-/* =====================================================
-   測定終了
-===================================================== */
-
-async function stopMeasurement(){
-
- if(!measuring)return;
-
- measuring=false;
-
- const elapsed=Date.now()-startTime;
-
- if(elapsed>=10000){
-  summarize10Seconds();
- }
-
- await cleanupMeasurement();
-
- document.getElementById("startBtn").disabled=false;
- document.getElementById("stopBtn").disabled=true;
-
- const sensorStatus=
-  document.getElementById("sensorStatus");
-
- sensorStatus.textContent="測定終了";
- sensorStatus.className="value";
-
- const micStatus=
-  document.getElementById("micStatus");
-
- micStatus.textContent="未接続";
- micStatus.className="value";
-
- const motionStatus=
-  document.getElementById("motionStatus");
-
- motionStatus.textContent="未接続";
- motionStatus.className="value";
-
- calculateResult();
-}
-
-
-/* =====================================================
-   睡眠時間スコア
-===================================================== */
-
-function calculateDurationScore(hours){
-
- if(hours>=8&&hours<=10)return 100;
-
- if(hours<8){
-  return Math.max(
-   0,
-   100-(8-hours)*30
-  );
- }
-
- return Math.max(
-  0,
-  100-(hours-10)*25
- );
-}
-
-
-/* =====================================================
-   ★ 睡眠自動分析
-===================================================== */
-
-function generateSleepAnalysis(result){
-
- const hours=Number(result.durationHours)||0;
- const score=Number(result.score)||0;
-
- const totalMovement=
-  Number(result.still||0)+
-  Number(result.small||0)+
-  Number(result.large||0);
-
- const largeRatio=
-  totalMovement>0
-   ?Number(result.large||0)/totalMovement
-   :0;
-
- const smallRatio=
-  totalMovement>0
-   ?Number(result.small||0)/totalMovement
-   :0;
-
- const sound=Number(result.sound)||0;
-
- const rate=
-  Number(data.improvement?.improvementRate);
-
- const good=[];
- const attention=[];
- let message="";
- let goal="";
-
-
-/* 睡眠時間 */
-
- if(hours>=8&&hours<=10){
-
-  good.push(
-   "睡眠時間が8〜10時間の範囲に入っています。"
-  );
-
- }else if(hours<8){
-
-  attention.push(
-   "睡眠時間が8時間未満です。まずは睡眠時間を確保することを優先しましょう。"
-  );
-
- }else if(hours>10){
-
-  attention.push(
-   "睡眠時間が10時間を超えています。起床時間や生活リズムも合わせて確認してみましょう。"
-  );
- }
-
-
-/* 体動 */
-
- if(totalMovement>0){
-
-  if(largeRatio<.15){
-
-   good.push(
-    "大きな動きが少なく、比較的安定した睡眠でした。"
-   );
-
-  }else if(largeRatio>=.30){
-
-   attention.push(
-    "大きな動きの割合が高めでした。寝る前の生活リズムや睡眠環境を見直してみましょう。"
-   );
-
-  }else{
-
-   attention.push(
-    "睡眠中にある程度の動きが記録されています。次回も変化を確認しましょう。"
-   );
-  }
- }
-
-
-/* 音 */
-
- if(sound<=3){
-
-  good.push(
-   "音イベントが少なく、静かな睡眠環境だったと考えられます。"
-  );
-
- }else if(sound>=10){
-
-  attention.push(
-   "音イベントが多めでした。寝室周辺の音や寝る前のスマートフォン使用などを確認してみましょう。"
-  );
-
- }else{
-
-  attention.push(
-   "いくつかの音イベントが記録されています。睡眠環境の変化を次回も確認しましょう。"
-  );
- }
-
-
-/* 改善率 */
-
- if(Number.isFinite(rate)){
-
-  if(rate>=10){
-
-   good.push(
-    "開始時の基準値から大きく改善しています。この生活習慣を続けてみましょう。"
-   );
-
-  }else if(rate>0){
-
-   good.push(
-    "開始時の基準値から睡眠スコアが改善しています。"
-   );
-
-  }else if(rate<=-10){
-
-   attention.push(
-    "開始時の基準値より睡眠スコアが大きく低下しています。最近の生活習慣の変化を確認してみましょう。"
-   );
-
-  }else{
-
-   attention.push(
-    "開始時と比べて大きな改善はまだ見られていません。まずは一つの習慣に絞って改善してみましょう。"
-   );
-  }
- }
-
-
-/* 総合メッセージ */
-
- if(score>=90){
-
-  message=
-   "今回の睡眠はかなり良い状態です。現在できている習慣を維持することが次の目標です。";
-
- }else if(score>=75){
-
-  message=
-   "今回の睡眠は良好です。大きな問題は少ないため、気になる項目を一つずつ改善していきましょう。";
-
- }else if(score>=60){
-
-  message=
-   "まずまずの睡眠です。睡眠時間・体動・音のうち、改善しやすい項目から取り組んでみましょう。";
-
- }else if(score>=40){
-
-  message=
-   "睡眠スコアを上げられるポイントがあります。今回の分析を参考に、次の睡眠で一つ改善してみましょう。";
-
- }else{
-
-  message=
-   "今回の睡眠には改善できるポイントが多くあります。無理に全部変えず、まず一つの習慣から取り組みましょう。";
- }
-
-
-/* 優先目標 */
-
- if(hours<8){
-
-  goal="次回の目標：睡眠時間を8時間に近づける";
-
- }else if(largeRatio>=.30){
-
-  goal="次回の目標：寝る前の生活リズムと睡眠環境を見直す";
-
- }else if(sound>=10){
-
-  goal="次回の目標：睡眠中の音イベントを減らせる環境を作る";
-
- }else if(Number.isFinite(rate)&&rate<0){
-
-  goal="次回の目標：最近変化した生活習慣を一つ確認する";
-
- }else if(score>=90){
-
-  goal="次回の目標：現在の良い睡眠習慣を継続する";
-
- }else{
-
-  goal="次回の目標：今回より睡眠スコアを少し上げる";
- }
-
-
- const analysis={
-  timestamp:Date.now(),
-  score,
-  durationHours:hours,
-  improvementRate:
-   Number.isFinite(rate)?rate:null,
-  message,
-  good,
-  attention,
-  goal
- };
-
- return analysis;
-}
-
-
-/* =====================================================
-   分析UI
-===================================================== */
-
-function showSleepAnalysis(analysis){
-
- const container=
-  document.getElementById("sleepAnalysis");
-
- if(!container||!analysis)return;
-
- const rateText=
-  Number.isFinite(Number(analysis.improvementRate))
-   ?(
-     (Number(analysis.improvementRate)>0?"+":"")+
-     Number(analysis.improvementRate).toFixed(1)+
-     "%"
-    )
-   :"未計算";
-
- let goodHTML="";
-
- if(analysis.good?.length){
-
-  goodHTML=
-   `<ul class="analysis-list">`+
-   analysis.good.map(
-    item=>
-     `<li><span class="analysis-good">✓ 良かった点</span><br>${item}</li>`
-   ).join("")+
-   `</ul>`;
- }
-
- let attentionHTML="";
-
- if(analysis.attention?.length){
-
-  attentionHTML=
-   `<ul class="analysis-list">`+
-   analysis.attention.map(
-    item=>
-     `<li><span class="analysis-attention">▲ 改善ポイント</span><br>${item}</li>`
-   ).join("")+
-   `</ul>`;
- }
-
- container.innerHTML=`
-
- <div class="analysis-main">
-
-   <div class="analysis-title">
-     今回の睡眠を自動分析しました
-   </div>
-
-   <div class="analysis-score">
-     ${analysis.score}点
-   </div>
-
-   <div class="label">
-     睡眠時間 ${Number(analysis.durationHours).toFixed(2)}時間
-     ・ 改善率 ${rateText}
-   </div>
-
-   <div class="analysis-message" style="margin-top:14px">
-     ${analysis.message}
-   </div>
-
-   ${goodHTML}
-
-   ${attentionHTML}
-
-   <div class="analysis-goal">
-     <strong>次回の目標</strong>
-     <div style="margin-top:6px;color:#ddd">
-       ${analysis.goal}
-     </div>
-   </div>
-
- </div>
- `;
-}
-
-
-/* =====================================================
-   最新分析を表示
-===================================================== */
-
-function updateAnalysisUI(){
-
- const container=
-  document.getElementById("sleepAnalysis");
-
- if(!container)return;
-
- if(!data.lastAnalysis){
-
-  container.innerHTML=`
-   <div class="analysis-empty">
-    睡眠を測定すると、今回の睡眠データを分析して改善ポイントを表示します。
-   </div>
-  `;
-
-  return;
- }
-
- showSleepAnalysis(data.lastAnalysis);
-}
-
-
-/* =====================================================
-   測定結果計算
-===================================================== */
-
-function calculateResult(){
-
- const durationMs=Date.now()-startTime;
-
- const hours=
-  Math.max(
-   0,
-   durationMs/3600000
-  );
-
- const totalMovement=
-  currentStats.still+
-  currentStats.small+
-  currentStats.large;
-
- const stillRatio=
-  totalMovement>0
-   ?currentStats.still/totalMovement
-   :0;
-
- const largeRatio=
-  totalMovement>0
-   ?currentStats.large/totalMovement
-   :0;
-
- const movementScore=
-  Math.max(
-   0,
-   Math.min(
-    100,
-    stillRatio*100-
-    largeRatio*60+
-    20
-   )
-  );
-
- const soundRatio=
-  hours>0
-   ?currentStats.sound/(hours*60)
-   :0;
-
- const soundScore=
-  Math.max(
-   0,
-   Math.min(
-    100,
-    100-soundRatio*3
-   )
-  );
-
- const durationScore=
-  calculateDurationScore(hours);
-
- const score=
-  Math.round(
-   durationScore*.45+
-   movementScore*.35+
-   soundScore*.20
-  );
-
- let evaluation;
-
- if(score>=90){
-  evaluation="かなり良い睡眠です。";
- }else if(score>=75){
-  evaluation="良い睡眠です。";
- }else if(score>=60){
-  evaluation="まずまずの睡眠です。";
- }else if(score>=40){
-  evaluation="改善できるところがあります。";
- }else{
-  evaluation="睡眠習慣を見直してみましょう。";
- }
-
- const result={
-  timestamp:Date.now(),
-  date:new Date().toLocaleDateString("ja-JP"),
-  dateKey:dateKey(Date.now()),
-  durationMs,
-  durationHours:hours,
-  score,
-  evaluation,
-  still:currentStats.still,
-  small:currentStats.small,
-  large:currentStats.large,
-  sound:currentStats.sound,
-  xpGain:0,
-  improvementBonusXP:0,
-  analysis:null
- };
-
- data.history.unshift(result);
-
- if(data.history.length>100){
-  data.history=data.history.slice(0,100);
- }
-
-
- /* 改善率を更新 */
-
- updateImprovementData();
-
-
- /* XP */
-
- const baseXP=10;
-
- const improvementRate=
-  Number(data.improvement?.improvementRate);
-
- let improvementBonusXP=0;
-
- if(
-  Number.isFinite(improvementRate)&&
-  improvementRate>0
- ){
-
-  improvementBonusXP=
-   Math.min(
-    50,
-    Math.round(improvementRate*2)
-   );
- }
-
- const totalXPGain=
-  baseXP+
-  improvementBonusXP;
-
- result.xpGain=totalXPGain;
- result.improvementBonusXP=improvementBonusXP;
-
- data.lastXPGain=totalXPGain;
- data.xp+=totalXPGain;
-
-
- /* 実績 */
-
- checkAchievements(result);
-
-
- /* ★自動分析 */
-
- const analysis=
-  generateSleepAnalysis(result);
-
- result.analysis=analysis;
- data.lastAnalysis=analysis;
-
-
- /* 保存 */
-
- saveLocal();
- queueFirestoreSave();
-
-
- /* 表示 */
-
- showResult(result);
- showSleepAnalysis(analysis);
- updateAllUI();
-}
-
-
-/* =====================================================
-   結果表示
-===================================================== */
-
-function showResult(result){
-
- document.getElementById("score").textContent=result.score;
-
- document.getElementById("evaluation").textContent=
-  result.evaluation;
-
- document.getElementById("scoreFill").style.width=
-  result.score+"%";
-
- document.getElementById("resultDuration").textContent=
-  result.durationHours.toFixed(2)+"時間";
-
- document.getElementById("resultStill").textContent=
-  Math.round(result.still/60)+"分";
-
- document.getElementById("resultSmall").textContent=
-  Math.round(result.small/60)+"分";
-
- document.getElementById("resultLarge").textContent=
-  Math.round(result.large/60)+"分";
-
- document.getElementById("resultSound").textContent=
-  result.sound+"回";
-
- const xpEl=
-  document.getElementById("resultXPGain");
-
- if(result.improvementBonusXP>0){
-
-  xpEl.innerHTML=
-   "今回の獲得XP："+result.xpGain+
-   " XP（基本XP 10 XP ＋ "+
-   '<span class="xp-bonus">改善ボーナス +'+
-   result.improvementBonusXP+
-   " XP</span>）";
-
- }else{
-
-  xpEl.textContent=
-   "今回の獲得XP："+result.xpGain+
-   " XP（基本XP 10 XP）";
- }
-}
-
-
-/* =====================================================
-   実績
-===================================================== */
-
-const ACHIEVEMENTS={
-
- first:{
-  name:"はじめの一歩",
-  description:"初めて睡眠を測定する"
- },
-
- min30:{
-  name:"30分突破",
-  description:"30分以上測定する"
- },
-
- hour1:{
-  name:"1時間測定",
-  description:"1時間以上測定する"
- },
-
- hour8:{
-  name:"ロングスリーパー",
-  description:"8時間以上測定する"
- },
-
- sleep8:{
-  name:"理想睡眠",
-  description:"8〜10時間の睡眠を記録する"
- },
-
- quiet:{
-  name:"静かな夜",
-  description:"音イベントを少なく抑える"
- },
-
- stable:{
-  name:"安定した睡眠",
-  description:"大きな動きを少なくする"
- },
-
- score90:{
-  name:"90点",
-  description:"睡眠スコア90点以上"
- },
-
- streak3:{
-  name:"3日継続",
-  description:"3日連続で測定する"
- },
-
- streak7:{
-  name:"1週間継続",
-  description:"7日連続で測定する"
- },
-
- streak14:{
-  name:"2週間継続",
-  description:"14日連続で測定する"
- },
-
- streak30:{
-  name:"1か月継続",
-  description:"30日連続で測定する"
- }
-
-};
-
-
-function unlock(id){
-
- if(!data.achievements.includes(id)){
-  data.achievements.push(id);
- }
-}
-
-
-function checkAchievements(result){
-
- unlock("first");
-
- if(result.durationHours>=.5)unlock("min30");
- if(result.durationHours>=1)unlock("hour1");
- if(result.durationHours>=8)unlock("hour8");
-
- if(
-  result.durationHours>=8&&
-  result.durationHours<=10
- ){
-  unlock("sleep8");
- }
-
- if(result.sound<=3)unlock("quiet");
-
- const total=
-  result.still+
-  result.small+
-  result.large;
-
- if(
-  total>0&&
-  result.large/total<.15
- ){
-  unlock("stable");
- }
-
- if(result.score>=90)unlock("score90");
-
- const current=calculateStreak();
-
- if(current>=3)unlock("streak3");
- if(current>=7)unlock("streak7");
- if(current>=14)unlock("streak14");
- if(current>=30)unlock("streak30");
-}
-
-
-/* =====================================================
-   日付
-===================================================== */
-
-function dateKey(date){
-
- return new Date(date).toLocaleDateString(
-  "sv-SE",
-  {
-   timeZone:"Asia/Tokyo"
-  }
- );
-}
-
-
-function getMeasurementDates(){
-
- return Array.from(
-  new Set(
-   data.history.map(
-    item=>
-     item.dateKey||
-     dateKey(item.timestamp)
-   )
-  )
- );
-}
-
-
-/* =====================================================
-   ストリーク
-===================================================== */
-
-function calculateStreak(){
-
- const dates=getMeasurementDates();
-
- if(!dates.length)return 0;
-
- const set=new Set(dates);
-
- const today=new Date();
-
- let key=dateKey(today);
-
- if(!set.has(key)){
-
-  today.setDate(
-   today.getDate()-1
-  );
-
-  key=dateKey(today);
-
-  if(!set.has(key))return 0;
- }
-
- let streak=0;
-
- while(set.has(key)){
-
-  streak++;
-
-  today.setDate(
-   today.getDate()-1
-  );
-
-  key=dateKey(today);
- }
-
- return streak;
-}
-
-
-function calculateBestStreak(){
-
- const dates=getMeasurementDates().sort();
-
- if(!dates.length)return 0;
-
- const set=new Set(dates);
-
- let best=0;
-
- for(const dateString of dates){
-
-  const current=
-   new Date(dateString+"T00:00:00");
-
-  const previous=new Date(current);
-
-  previous.setDate(
-   previous.getDate()-1
-  );
-
-  if(set.has(dateKey(previous)))continue;
-
-  let count=1;
-
-  const next=new Date(current);
-
-  while(true){
-
-   next.setDate(
-    next.getDate()+1
-   );
-
-   if(!set.has(dateKey(next)))break;
-
-   count++;
-  }
-
-  best=Math.max(best,count);
- }
-
- return best;
-}
-
-
-/* =====================================================
-   睡眠改善率
-===================================================== */
-
-function updateImprovementData(){
-
- if(
-  !data.improvement||
-  typeof data.improvement!=="object"
- ){
-
-  data.improvement={
-   baselineReady:false,
-   baselineScore:null,
-   baselineStartAt:null,
-   baselineEndAt:null,
-   currentAverage:null,
-   improvementRate:null
-  };
- }
-
- const validHistory=
-  data.history
-   .filter(
-    item=>
-     Number.isFinite(Number(item.score))
-   )
-   .sort(
-    (a,b)=>
-     Number(a.timestamp||0)-
-     Number(b.timestamp||0)
-   );
-
- if(
-  !data.improvement.baselineReady&&
-  validHistory.length>=7
- ){
-
-  const baselineRecords=
-   validHistory.slice(0,7);
-
-  const baselineAverage=
-   baselineRecords.reduce(
-    (sum,item)=>
-     sum+Number(item.score),
-    0
-   )/baselineRecords.length;
-
-  data.improvement={
-   baselineReady:true,
-   baselineScore:baselineAverage,
-   baselineStartAt:
-    Number(baselineRecords[0].timestamp)||null,
-   baselineEndAt:
-    Number(
-     baselineRecords[
-      baselineRecords.length-1
-     ].timestamp
-    )||null,
-   currentAverage:null,
-   improvementRate:null
-  };
- }
-
- const latestRecords=
-  validHistory.slice(-7);
-
- const currentAverage=
-  latestRecords.length
-   ?latestRecords.reduce(
-     (sum,item)=>
-      sum+Number(item.score),
-     0
-    )/latestRecords.length
-   :null;
-
- let improvementRate=null;
-
- if(
-  data.improvement.baselineReady&&
-  Number.isFinite(
-   Number(data.improvement.baselineScore)
-  )&&
-  Number(data.improvement.baselineScore)>0&&
-  currentAverage!==null
- ){
-
-  improvementRate=
-   (
-    (
-     currentAverage-
-     Number(data.improvement.baselineScore)
-    )/
-    Number(data.improvement.baselineScore)
-   )*100;
- }
-
- data.improvement.currentAverage=currentAverage;
- data.improvement.improvementRate=improvementRate;
-}
-
-
-/* =====================================================
-   改善率UI
-===================================================== */
-
-function updateImprovementUI(){
-
- const rateEl=document.getElementById("improvementRate");
- const statusEl=document.getElementById("improvementStatus");
- const progressTextEl=
-  document.getElementById("improvementProgressText");
- const progressFillEl=
-  document.getElementById("improvementFill");
- const baselineEl=
-  document.getElementById("baselineScore");
- const currentEl=
-  document.getElementById("currentAverageScore");
- const countEl=
-  document.getElementById("improvementCount");
-
- if(
-  !rateEl||
-  !statusEl||
-  !progressTextEl||
-  !progressFillEl||
-  !baselineEl||
-  !currentEl||
-  !countEl
- )return;
-
- const validCount=
-  data.history.filter(
-   item=>
-    Number.isFinite(Number(item.score))
-  ).length;
-
- const baselineCount=
-  Math.min(validCount,7);
-
- countEl.textContent=
-  baselineCount+" / 7";
-
- if(!data.improvement.baselineReady){
-
-  rateEl.textContent="--";
-  rateEl.className=
-   "improvement-rate improvement-neutral";
-
-  baselineEl.textContent="--";
-
-  currentEl.textContent=
-   validCount
-    ?(
-      validCount>=7
-       ?"--"
-       :"作成中"
-     )
-    :"--";
-
-  const remaining=
-   Math.max(0,7-validCount);
-
-  if(remaining>0){
-
-   statusEl.textContent=
-    "あと"+remaining+
-    "回測定すると、開始時の基準値を作成できます。";
-
-  }else{
-
-   statusEl.textContent=
-    "基準値を作成しています……";
-  }
-
-  progressTextEl.textContent=
-   "基準値作成 "+baselineCount+" / 7回";
-
-  progressFillEl.style.width=
-   baselineCount/7*100+"%";
-
-  return;
- }
-
- const baseline=
-  Number(data.improvement.baselineScore);
-
- const current=
-  Number(data.improvement.currentAverage);
-
- const rate=
-  Number(data.improvement.improvementRate);
-
- baselineEl.textContent=
-  baseline.toFixed(1)+"点";
-
- if(Number.isFinite(current)){
-  currentEl.textContent=
-   current.toFixed(1)+"点";
- }else{
-  currentEl.textContent="--";
- }
-
- if(Number.isFinite(rate)){
-
-  const sign=rate>0?"+":"";
-
-  rateEl.textContent=
-   sign+rate.toFixed(1)+"%";
-
-  if(rate>.05){
-
-   rateEl.className=
-    "improvement-rate improvement-positive";
-
-   statusEl.textContent=
-    "開始時と比べて睡眠スコアが改善しています。";
-
-  }else if(rate<-.05){
-
-   rateEl.className=
-    "improvement-rate improvement-negative";
-
-   statusEl.textContent=
-    "開始時と比べて睡眠スコアが低下しています。";
-
-  }else{
-
-   rateEl.className=
-    "improvement-rate improvement-neutral";
-
-   statusEl.textContent=
-    "開始時と比べて大きな変化はありません。";
-  }
-
- }else{
-
-  rateEl.textContent="--";
-
-  rateEl.className=
-   "improvement-rate improvement-neutral";
-
-  statusEl.textContent=
-   "改善率を計算できる測定データがありません。";
- }
-
- progressTextEl.textContent=
-  "開始時の基準値：最初の7回の平均";
-
- progressFillEl.style.width="100%";
-}
-
-
-/* =====================================================
-   レベル
-===================================================== */
-
-function updateLevel(){
-
- const xp=Number(data.xp)||0;
-
- const level=Math.floor(xp/100)+1;
- const currentXP=xp%100;
-
- document.getElementById("level").textContent=
-  "Lv."+level;
-
- document.getElementById("xp").textContent=
-  xp+" XP";
-
- document.getElementById("levelText").textContent=
-  "次のレベルまで "+(100-currentXP)+" XP";
-
- document.getElementById("levelProgress").style.width=
-  currentXP+"%";
-
- const status=
-  document.getElementById("improvementXPStatus");
-
- if(!status)return;
-
- if(
-  !data.improvement||
-  !data.improvement.baselineReady
- ){
-
-  status.textContent=
-   "基準値作成後、睡眠改善率に応じてXPボーナスを獲得できます。";
-
-  return;
- }
-
- const rate=
-  Number(data.improvement.improvementRate);
-
- if(!Number.isFinite(rate)){
-
-  status.textContent=
-   "睡眠改善率が計算されると、改善ボーナスXPを獲得できます。";
-
-  return;
- }
-
- if(rate>0){
-
-  const bonus=
-   Math.min(
-    50,
-    Math.round(rate*2)
-   );
-
-  status.innerHTML=
-   "現在の改善率 <strong>+"+
-   rate.toFixed(1)+
-   "%</strong> → 次回の改善ボーナス "+
-   '<span class="xp-bonus">+'+
-   bonus+
-   " XP</span>";
-
- }else{
-
-  status.textContent=
-   "現在の改善率 "+
-   rate.toFixed(1)+
-   "% → 現在は改善ボーナスなし";
- }
-}
-
-
-/* =====================================================
-   実績UI
-===================================================== */
-
-function updateAchievements(){
-
- const container=
-  document.getElementById("achievements");
-
- if(!container)return;
-
- container.innerHTML="";
-
- Object.entries(ACHIEVEMENTS).forEach(
-  ([id,achievement])=>{
-
-   const unlocked=
-    data.achievements.includes(id);
-
-   const div=document.createElement("div");
-
-   div.className=
-    "achievement "+
-    (unlocked?"unlocked":"locked");
-
-   div.innerHTML=`
-
-    <div>
-     <strong>
-      ${unlocked?"✓":"○"}
-      ${achievement.name}
-     </strong>
-
-     <div class="label">
-      ${achievement.description}
-     </div>
-    </div>
-
-    <div>
-     ${unlocked?"達成":"未達成"}
-    </div>
-   `;
-
-   container.appendChild(div);
-  }
- );
-}
-
-
-/* =====================================================
-   履歴UI
-===================================================== */
-
-function updateHistory(){
-
- const container=
-  document.getElementById("history");
-
- if(!data.history.length){
-
-  container.textContent=
-   "まだ履歴がありません。";
-
-  return;
- }
-
- container.innerHTML="";
-
- data.history.forEach(item=>{
-
-  const div=document.createElement("div");
-
-  div.className="history-item";
-
-  const date=
-   item.date||
-   new Date(item.timestamp)
-    .toLocaleDateString("ja-JP");
-
-  const duration=
-   Number(item.durationHours)||0;
-
-  const score=
-   Number(item.score)||0;
-
-  const sound=
-   Number(item.sound)||0;
-
-  const evaluation=
-   item.evaluation||"";
-
-  const xpGain=
-   Number(item.xpGain)||10;
-
-  const bonus=
-   Number(item.improvementBonusXP)||0;
-
-  const analysisText=
-   item.analysis?.goal||
-   "";
-
-  div.innerHTML=`
-
-   <div>
-
-    <strong>${date}</strong>
-
-    <span class="history-score">
-     ${score}点
-    </span>
-
-   </div>
-
-   <div class="label">
-    ${duration.toFixed(2)}時間
-    ・
-    ${sound}回の音イベント
-   </div>
-
-   <div class="label">
-    ${evaluation}
-   </div>
-
-   <div class="label" style="margin-top:5px">
-    獲得XP：${xpGain} XP
-    ${
-     bonus>0
-      ?`・ <span class="xp-bonus">改善ボーナス +${bonus} XP</span>`
-      :""
-    }
-   </div>
-
-   ${
-    analysisText
-     ?`
-      <div class="label" style="margin-top:5px">
-       次回の目標：${analysisText}
-      </div>
-      `
-     :""
-   }
-
-  `;
-
-  container.appendChild(div);
- });
-}
-
-
-/* =====================================================
-   グラフ
-===================================================== */
+/* =========================
+   GRAPH
+========================= */
 
 function drawGraph(){
 
- const canvas=document.getElementById("graph");
+  const canvas=
+    document.getElementById("sleepGraph");
 
- if(!canvas)return;
+  const ctx=canvas.getContext("2d");
 
- const rect=canvas.getBoundingClientRect();
+  const w=canvas.width;
+  const h=canvas.height;
 
- if(rect.width<=0||rect.height<=0)return;
+  ctx.clearRect(0,0,w,h);
 
- const dpr=window.devicePixelRatio||1;
+  ctx.strokeStyle="#333";
+  ctx.beginPath();
 
- canvas.width=rect.width*dpr;
- canvas.height=rect.height*dpr;
+  ctx.moveTo(0,h/2);
+  ctx.lineTo(w,h/2);
 
- const ctx=canvas.getContext("2d");
+  ctx.stroke();
 
- ctx.setTransform(
-  dpr,0,0,dpr,0,0
- );
+  if(graphData.length<2)return;
 
- const width=rect.width;
- const height=rect.height;
-
- ctx.clearRect(0,0,width,height);
-
- ctx.strokeStyle="#252525";
- ctx.lineWidth=1;
-
- for(let i=1;i<5;i++){
-
-  const y=height*i/5;
+  ctx.strokeStyle="#fff";
+  ctx.lineWidth=2;
 
   ctx.beginPath();
-  ctx.moveTo(0,y);
-  ctx.lineTo(width,y);
+
+  graphData.forEach((p,i)=>{
+
+    const x=
+      i/(graphData.length-1)*w;
+
+    const y=
+      h-
+      Math.min(
+        1,
+        p.value/5
+      )*h;
+
+    if(i===0)ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+
+  });
+
   ctx.stroke();
- }
 
- if(summaryData.length<2)return;
-
- const points=summaryData.slice(-250);
-
- const max=
-  Math.max(
-   1,
-   ...points.map(
-    p=>
-     Math.max(
-      p.motion*20,
-      p.volume
-     )
-   )
-  );
-
- ctx.strokeStyle="#ffffff";
- ctx.lineWidth=2;
-
- ctx.beginPath();
-
- points.forEach(
-  (point,index)=>{
-
-   const x=
-    index/(points.length-1)*width;
-
-   const value=
-    Math.min(
-     max,
-     Math.max(
-      point.motion*20,
-      point.volume
-     )
-    );
-
-   const y=
-    height-
-    value/max*(height-20)-
-    10;
-
-   if(index===0){
-    ctx.moveTo(x,y);
-   }else{
-    ctx.lineTo(x,y);
-   }
-  }
- );
-
- ctx.stroke();
 }
 
 
-/* =====================================================
-   全UI
-===================================================== */
+/* =========================
+   MEASUREMENT
+========================= */
+
+async function startMeasurement(){
+
+  if(measuring)return;
+
+  resetMeasurementValues();
+
+  measuring=true;
+  measurementStart=Date.now();
+
+  document.getElementById("startBtn")
+    .disabled=true;
+
+  document.getElementById("stopBtn")
+    .disabled=false;
+
+  document.getElementById("measurementStatus")
+    .textContent="睡眠測定中...";
+
+  await requestWakeLock();
+
+  startMotion();
+
+  await startMicrophone();
+
+  measurementTimer=setInterval(()=>{
+
+    const elapsed=
+      Date.now()-measurementStart;
+
+    const sec=
+      Math.floor(elapsed/1000);
+
+    const min=
+      Math.floor(sec/60);
+
+    const h=
+      Math.floor(sec/3600);
+
+    const m=
+      Math.floor(sec/60)%60;
+
+    document.getElementById("realtimeDuration")
+      .textContent=
+      h>0
+      ? `${h}時間${m}分`
+      : `${min}分`;
+
+  },1000);
+
+}
+
+
+function stopMeasurement(){
+
+  if(!measuring)return;
+
+  measuring=false;
+
+  clearInterval(measurementTimer);
+  measurementTimer=null;
+
+  stopMotion();
+  stopMicrophone();
+  releaseWakeLock();
+
+  document.getElementById("startBtn")
+    .disabled=false;
+
+  document.getElementById("stopBtn")
+    .disabled=true;
+
+  document.getElementById("measurementStatus")
+    .textContent="測定終了。結果を分析しています。";
+
+  calculateResult();
+
+}
+
+
+function calculateResult(){
+
+  const durationMs=
+    Date.now()-measurementStart;
+
+  const durationHours=
+    durationMs/3600000;
+
+  const durationScore=
+    Math.max(
+      0,
+      Math.min(
+        100,
+        100-Math.abs(durationHours-9)*15
+      )
+    );
+
+  const totalMovement=
+    stillSeconds+
+    smallSeconds+
+    largeSeconds;
+
+  const movementScore=
+    totalMovement>0
+    ? Math.max(
+        0,
+        100-
+        (
+          smallSeconds*0.25+
+          largeSeconds*1.2
+        )
+        /totalMovement*100
+      )
+    : 100;
+
+  const soundScore=
+    Math.max(
+      0,
+      100-soundEvents*5
+    );
+
+  const score=Math.round(
+    durationScore*0.45+
+    movementScore*0.35+
+    soundScore*0.20
+  );
+
+  let evaluation;
+
+  if(score>=90){
+    evaluation="かなり良い睡眠です。";
+  }else if(score>=75){
+    evaluation="良い睡眠です。";
+  }else if(score>=60){
+    evaluation="まずまずの睡眠です。";
+  }else if(score>=40){
+    evaluation="改善できるところがあります。";
+  }else{
+    evaluation="睡眠習慣を見直してみましょう。";
+  }
+
+  const result={
+    timestamp:Date.now(),
+    date:new Date().toLocaleString("ja-JP"),
+    dateKey:new Date().toISOString().slice(0,10),
+    durationMs,
+    durationHours,
+    score,
+    evaluation,
+    still:stillSeconds,
+    small:smallSeconds,
+    large:largeSeconds,
+    sound:soundEvents,
+    xpGain:0,
+    improvementBonusXP:0
+  };
+
+  data.history.unshift(result);
+
+  if(data.history.length>100){
+    data.history=data.history.slice(0,100);
+  }
+
+  updateImprovementData();
+
+  let improvementBonusXP=0;
+
+  const rate=
+    data.improvement.improvementRate;
+
+  if(
+    data.improvement.baselineReady &&
+    typeof rate==="number" &&
+    rate>0
+  ){
+
+    improvementBonusXP=
+      Math.min(
+        50,
+        Math.round(rate*2)
+      );
+
+  }
+
+  const totalXPGain=
+    10+improvementBonusXP;
+
+  result.xpGain=totalXPGain;
+  result.improvementBonusXP=
+    improvementBonusXP;
+
+  data.lastXPGain=totalXPGain;
+  data.xp+=totalXPGain;
+
+  lastResult=result;
+
+  analyzeSleep(result);
+
+  checkAchievements();
+
+  saveLocal();
+  queueFirestoreSave();
+
+  showResult(result);
+  updateAllUI();
+
+}
+
+
+/* =========================
+   IMPROVEMENT
+========================= */
+
+function updateImprovementData(){
+
+  const valid=
+    data.history
+      .filter(x=>
+        x &&
+        typeof x.score==="number"
+      )
+      .sort(
+        (a,b)=>a.timestamp-b.timestamp
+      );
+
+  if(
+    !data.improvement.baselineReady &&
+    valid.length>=7
+  ){
+
+    const first7=
+      valid.slice(0,7);
+
+    const avg=
+      first7.reduce(
+        (sum,x)=>sum+x.score,
+        0
+      )/7;
+
+    data.improvement={
+      baselineReady:true,
+      baselineScore:avg,
+      baselineStartAt:first7[0].timestamp,
+      baselineEndAt:first7[6].timestamp,
+      currentAverage:avg,
+      improvementRate:0
+    };
+
+  }
+
+  if(valid.length>0){
+
+    const latest=
+      valid.slice(-7);
+
+    const avg=
+      latest.reduce(
+        (sum,x)=>sum+x.score,
+        0
+      )/latest.length;
+
+    data.improvement.currentAverage=avg;
+
+  }
+
+  if(
+    data.improvement.baselineReady &&
+    data.improvement.baselineScore>0 &&
+    typeof data.improvement.currentAverage==="number"
+  ){
+
+    data.improvement.improvementRate=
+      (
+        (
+          data.improvement.currentAverage-
+          data.improvement.baselineScore
+        )/
+        data.improvement.baselineScore
+      )*100;
+
+  }
+
+}
+
+
+/* =========================
+   SLEEP ANALYSIS
+========================= */
+
+function analyzeSleep(result){
+
+  const issues=[];
+
+  const duration=result.durationHours;
+
+  if(duration<6){
+
+    issues.push({
+      priority:5,
+      title:"睡眠時間",
+      text:"睡眠時間がかなり短めです。就寝時刻を少し早めるなどして、十分な睡眠時間を確保することを目標にしましょう。"
+    });
+
+  }else if(duration<8){
+
+    issues.push({
+      priority:4,
+      title:"睡眠時間",
+      text:"睡眠時間が8時間を下回っています。可能なら少し早めに寝て、睡眠時間を確保してみましょう。"
+    });
+
+  }else if(duration<=10){
+
+    issues.push({
+      priority:1,
+      title:"睡眠時間",
+      text:"睡眠時間は8〜10時間の範囲です。現在の生活リズムをできるだけ維持してみましょう。"
+    });
+
+  }else{
+
+    issues.push({
+      priority:2,
+      title:"睡眠時間",
+      text:"睡眠時間は10時間を超えています。起床時刻や普段の生活リズムとのバランスも確認してみましょう。"
+    });
+
+  }
+
+  const totalMovement=
+    result.still+
+    result.small+
+    result.large;
+
+  const largeRatio=
+    totalMovement>0
+    ? result.large/totalMovement
+    : 0;
+
+  if(largeRatio>.30){
+
+    issues.push({
+      priority:5,
+      title:"大きな動き",
+      text:"大きな動きが多めでした。寝る前の過ごし方や寝室環境など、最近変わったことがないか振り返ってみましょう。"
+    });
+
+  }else if(largeRatio>.15){
+
+    issues.push({
+      priority:3,
+      title:"大きな動き",
+      text:"大きな動きがやや多めでした。就寝前の活動や寝室の環境を確認してみましょう。"
+    });
+
+  }else{
+
+    issues.push({
+      priority:1,
+      title:"大きな動き",
+      text:"大きな動きは少なく、比較的安定した睡眠でした。"
+    });
+
+  }
+
+  if(result.sound>=8){
+
+    issues.push({
+      priority:5,
+      title:"音イベント",
+      text:"音イベントが多めでした。寝室の周囲の音や通知音など、夜間の環境を確認してみましょう。"
+    });
+
+  }else if(result.sound>=4){
+
+    issues.push({
+      priority:3,
+      title:"音イベント",
+      text:"音イベントがややありました。可能なら寝室を静かな環境に整えてみましょう。"
+    });
+
+  }else{
+
+    issues.push({
+      priority:1,
+      title:"音イベント",
+      text:"音イベントは少なく、比較的静かな睡眠でした。"
+    });
+
+  }
+
+  const rate=
+    data.improvement.improvementRate;
+
+  if(
+    data.improvement.baselineReady &&
+    typeof rate==="number"
+  ){
+
+    if(rate>5){
+
+      issues.push({
+        priority:1,
+        title:"改善率",
+        text:"開始時より睡眠状態が改善しています。この調子で今の良い習慣を続けてみましょう。"
+      });
+
+    }else if(rate>0){
+
+      issues.push({
+        priority:2,
+        title:"改善率",
+        text:"開始時より少し改善しています。小さな生活習慣を1つ継続してみましょう。"
+      });
+
+    }else if(rate<-5){
+
+      issues.push({
+        priority:5,
+        title:"改善率",
+        text:"開始時より低下しています。最近変わった生活習慣を1つ振り返ってみましょう。"
+      });
+
+    }else{
+
+      issues.push({
+        priority:3,
+        title:"改善率",
+        text:"開始時と大きな差はありません。まずは1つの生活習慣に絞って改善してみましょう。"
+      });
+
+    }
+
+  }else{
+
+    issues.push({
+      priority:1,
+      title:"改善率",
+      text:"7回の測定が終わると、開始時からどれだけ改善したかも確認できます。"
+    });
+
+  }
+
+  issues.sort(
+    (a,b)=>b.priority-a.priority
+  );
+
+  let summary;
+
+  if(result.score>=90){
+
+    summary="今回の睡眠はかなり良い状態です。今の習慣を維持していきましょう。";
+
+  }else if(result.score>=75){
+
+    summary="今回の睡眠は良い状態です。さらに改善できそうなポイントを確認してみましょう。";
+
+  }else if(result.score>=60){
+
+    summary="まずまずの睡眠です。改善ポイントを1つ選んで取り組んでみましょう。";
+
+  }else{
+
+    summary="今回のデータから、いくつか改善できそうなポイントが見つかりました。";
+
+  }
+
+  data.lastAnalysis={
+    generatedAt:Date.now(),
+    score:result.score,
+    summary,
+    mainIssue:issues[0]?.title||"睡眠全体",
+    items:issues.slice(0,3).map(x=>({
+      title:x.title,
+      text:x.text
+    }))
+  };
+
+}
+
+
+/* =========================
+   RANKING
+========================= */
+
+function getRankingScore(){
+
+  if(!data.improvement.baselineReady){
+    return null;
+  }
+
+  const rate=
+    data.improvement.improvementRate;
+
+  if(typeof rate!=="number"){
+    return null;
+  }
+
+  return Number(rate.toFixed(2));
+
+}
+
+
+async function updateRanking(){
+
+  if(!currentUser)return;
+
+  if(currentUser.isAnonymous){
+
+    showRankingMessage(
+      "Googleログインするとランキングに参加できます。"
+    );
+
+    return;
+
+  }
+
+  const rate=getRankingScore();
+
+  if(rate===null){
+
+    showRankingMessage(
+      "あと少し！最初の7回の測定が終わるとランキングに参加できます。"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    await setDoc(
+      doc(db,"ranking",currentUser.uid),
+      {
+        uid:currentUser.uid,
+        displayName:
+          currentUser.displayName||"ユーザー",
+        improvementRate:rate,
+        score:
+          Number(
+            data.improvement.currentAverage
+          )||0,
+        updatedAt:serverTimestamp()
+      },
+      {merge:true}
+    );
+
+    await loadRanking();
+
+  }catch(e){
+
+    console.error("Ranking save error:",e);
+
+    showRankingMessage(
+      "ランキングの保存に失敗しました。Firestoreのルールを確認してください。"
+    );
+
+  }
+
+}
+
+
+async function loadRanking(){
+
+  const list=
+    document.getElementById("rankingList");
+
+  list.innerHTML=
+    '<div class="rank-loading">ランキングを読み込んでいます...</div>';
+
+  if(!currentUser){
+
+    showRankingMessage(
+      "Googleログインするとランキングに参加できます。"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const snap=
+      await getDoc(
+        doc(
+          db,
+          "ranking",
+          "public"
+        )
+      );
+
+    if(snap.exists()){
+
+      const rankingData=snap.data();
+
+      if(Array.isArray(rankingData.items)){
+
+        renderRanking(
+          rankingData.items
+        );
+
+        return;
+
+      }
+
+    }
+
+    await buildRankingFromCurrentUser();
+
+  }catch(e){
+
+    console.error("Ranking load error:",e);
+
+    list.innerHTML=
+      '<div class="rank-loading">ランキングを読み込めませんでした。</div>';
+
+  }
+
+}
+
+
+async function buildRankingFromCurrentUser(){
+
+  if(!currentUser)return;
+
+  try{
+
+    const userSnap=
+      await getDoc(
+        doc(
+          db,
+          "ranking",
+          currentUser.uid
+        )
+      );
+
+    if(!userSnap.exists()){
+
+      showRankingMessage(
+        "ランキングデータがまだありません。"
+      );
+
+      return;
+
+    }
+
+    const me=userSnap.data();
+
+    renderRanking([me]);
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+}
+
+
+function renderRanking(items){
+
+  const list=
+    document.getElementById("rankingList");
+
+  const myStatus=
+    document.getElementById("rankingMyStatus");
+
+  if(!Array.isArray(items)||items.length===0){
+
+    list.innerHTML=
+      '<div class="rank-loading">まだランキングデータがありません。</div>';
+
+    return;
+
+  }
+
+  const valid=items
+    .filter(x=>
+      x &&
+      typeof x.improvementRate==="number"
+    )
+    .sort(
+      (a,b)=>
+        b.improvementRate-
+        a.improvementRate
+    );
+
+  const top=valid.slice(0,10);
+
+  let myIndex=
+    currentUser
+    ? valid.findIndex(
+        x=>x.uid===currentUser.uid
+      )
+    : -1;
+
+  if(myIndex>=0){
+
+    myStatus.innerHTML=
+      `<strong>あなたの順位：</strong> ${myIndex+1}位　
+       <strong>改善率：</strong> ${valid[myIndex].improvementRate>=0?"+":""}${valid[myIndex].improvementRate.toFixed(1)}%`;
+
+  }else{
+
+    myStatus.textContent=
+      "現在ランキングに参加していません。";
+
+  }
+
+  list.innerHTML="";
+
+  top.forEach((item,index)=>{
+
+    const row=
+      document.createElement("div");
+
+    row.className=
+      "rank-row"+
+      (
+        currentUser&&
+        item.uid===currentUser.uid
+        ? " me"
+        : ""
+      );
+
+    const name=
+      item.uid===currentUser?.uid
+      ? "あなた"
+      : (item.displayName||"ユーザー");
+
+    const rate=
+      Number(item.improvementRate)||0;
+
+    row.innerHTML=`
+      <div class="rank-number">
+        ${index+1}
+      </div>
+
+      <div>
+        <div class="rank-name">
+          ${escapeHTML(name)}
+        </div>
+        <div class="rank-sub">
+          睡眠改善率ランキング
+        </div>
+      </div>
+
+      <div class="rank-score">
+        ${rate>=0?"+":""}${rate.toFixed(1)}%
+      </div>
+    `;
+
+    list.appendChild(row);
+
+  });
+
+}
+
+
+function showRankingMessage(message){
+
+  document.getElementById("rankingMyStatus")
+    .textContent=message;
+
+  document.getElementById("rankingList")
+    .innerHTML="";
+
+}
+
+
+function escapeHTML(str){
+
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+document.getElementById("rankingRefreshBtn")
+.addEventListener("click",async()=>{
+
+  await updateRanking();
+
+});
+
+
+/* =========================
+   UI
+========================= */
+
+function showResult(result){
+
+  document.getElementById("resultCard")
+    .style.display="block";
+
+  document.getElementById("resultScore")
+    .textContent=result.score;
+
+  document.getElementById("resultEvaluation")
+    .textContent=result.evaluation;
+
+  document.getElementById("resultDuration")
+    .textContent=
+      result.durationHours.toFixed(2)+"時間";
+
+  document.getElementById("resultLarge")
+    .textContent=
+      Math.round(result.large)+"秒";
+
+  document.getElementById("resultSmall")
+    .textContent=
+      Math.round(result.small)+"秒";
+
+  document.getElementById("resultSound")
+    .textContent=result.sound;
+
+  document.getElementById("resultXP")
+    .textContent=
+      result.improvementBonusXP>0
+      ? `今回の獲得XP：${result.xpGain} XP（基本XP 10 XP ＋ 改善ボーナス +${result.improvementBonusXP} XP）`
+      : `今回の獲得XP：${result.xpGain} XP（基本XP 10 XP）`;
+
+}
+
+
+function updateImprovementUI(){
+
+  const imp=data.improvement;
+
+  document.getElementById("baselineScore")
+    .textContent=
+      typeof imp.baselineScore==="number"
+      ? imp.baselineScore.toFixed(1)
+      : "--";
+
+  document.getElementById("currentAverage")
+    .textContent=
+      typeof imp.currentAverage==="number"
+      ? imp.currentAverage.toFixed(1)
+      : "--";
+
+  document.getElementById("improvementRate")
+    .textContent=
+      typeof imp.improvementRate==="number"
+      ? `${imp.improvementRate>=0?"+":""}${imp.improvementRate.toFixed(1)}%`
+      : "--";
+
+  const count=
+    Math.min(
+      7,
+      data.history.length
+    );
+
+  document.getElementById("baselineProgress")
+    .textContent=
+      imp.baselineReady
+      ? "7 / 7"
+      : `${count} / 7`;
+
+  document.getElementById("baselineProgressBar")
+    .style.width=
+      `${imp.baselineReady?100:(count/7)*100}%`;
+
+  if(imp.baselineReady){
+
+    document.getElementById("improvementMessage")
+      .textContent=
+        "開始時の7回を基準に、直近7回の睡眠状態がどれだけ改善したかを表示しています。";
+
+  }else{
+
+    document.getElementById("improvementMessage")
+      .textContent=
+        `最初の7回の測定から基準値を作成します。現在 ${count}/7 回です。`;
+
+  }
+
+}
+
+
+function updateAnalysisUI(){
+
+  const summary=
+    document.getElementById("analysisSummary");
+
+  const details=
+    document.getElementById("analysisDetails");
+
+  const analysis=
+    data.lastAnalysis;
+
+  if(!analysis){
+
+    summary.textContent=
+      "まだ測定結果がありません。";
+
+    details.innerHTML=
+      `<div class="notice">
+        睡眠時間・動き・音・改善率から、
+        現在の睡眠状態を自動分析します。
+      </div>`;
+
+    return;
+
+  }
+
+  summary.textContent=
+    analysis.summary;
+
+  details.innerHTML=
+    (analysis.items||[])
+      .map((item,index)=>`
+        <div class="analysis-item">
+          <strong>${index+1}. ${escapeHTML(item.title)}</strong>
+          <div>${escapeHTML(item.text)}</div>
+        </div>
+      `)
+      .join("");
+
+}
+
+
+function updateLevel(){
+
+  const xp=
+    Number(data.xp)||0;
+
+  const level=
+    Math.floor(xp/100)+1;
+
+  document.getElementById("levelValue")
+    .textContent=`Lv.${level}`;
+
+  document.getElementById("xpValue")
+    .textContent=`${xp} XP`;
+
+  const rate=
+    data.improvement.improvementRate;
+
+  if(
+    data.improvement.baselineReady &&
+    typeof rate==="number"
+  ){
+
+    const bonus=
+      rate>0
+      ? Math.min(50,Math.round(rate*2))
+      : 0;
+
+    document.getElementById("xpImprovementStatus")
+      .textContent=
+        bonus>0
+        ? `現在の改善率 +${rate.toFixed(1)}% → 次回の改善ボーナス +${bonus} XP`
+        : `現在の改善率 ${rate.toFixed(1)}% → 現在は改善ボーナスなし`;
+
+  }else{
+
+    document.getElementById("xpImprovementStatus")
+      .textContent=
+        "基準値作成後、睡眠改善率に応じてXPボーナスを獲得できます。";
+
+  }
+
+}
+
+
+function calculateStreak(){
+
+  const dates=
+    [...new Set(
+      data.history
+        .map(x=>x.dateKey)
+        .filter(Boolean)
+    )]
+    .sort()
+    .reverse();
+
+  if(dates.length===0)return 0;
+
+  let streak=0;
+
+  let current=
+    new Date();
+
+  current.setHours(0,0,0,0);
+
+  for(const date of dates){
+
+    const d=new Date(date+"T00:00:00");
+
+    const diff=
+      Math.round(
+        (current-d)/86400000
+      );
+
+    if(
+      diff===0 ||
+      diff===1
+    ){
+
+      streak++;
+
+      current=d;
+
+    }else{
+
+      break;
+
+    }
+
+  }
+
+  return streak;
+
+}
+
+
+function checkAchievements(){
+
+  const h=data.history;
+
+  if(
+    h.length>=1 &&
+    !data.achievements.includes("first")
+  ){
+
+    data.achievements.push("first");
+
+  }
+
+  if(
+    h.length>=7 &&
+    !data.achievements.includes("seven")
+  ){
+
+    data.achievements.push("seven");
+
+  }
+
+  if(
+    h.some(x=>x.score>=90) &&
+    !data.achievements.includes("score90")
+  ){
+
+    data.achievements.push("score90");
+
+  }
+
+  if(
+    data.improvement.baselineReady &&
+    data.improvement.improvementRate>10 &&
+    !data.achievements.includes("improve10")
+  ){
+
+    data.achievements.push("improve10");
+
+  }
+
+}
+
+
+function updateAchievements(){
+
+  const names={
+    first:"初回測定",
+    seven:"7回測定",
+    score90:"スコア90達成",
+    improve10:"改善率10%達成"
+  };
+
+  const el=
+    document.getElementById("achievements");
+
+  if(data.achievements.length===0){
+
+    el.textContent="まだ実績はありません。";
+    return;
+
+  }
+
+  el.innerHTML=
+    data.achievements
+      .map(x=>
+        `<div class="badge">
+          ${escapeHTML(names[x]||x)}
+        </div>`
+      )
+      .join(" ");
+
+}
+
+
+function updateHistory(){
+
+  const el=
+    document.getElementById("history");
+
+  if(data.history.length===0){
+
+    el.textContent=
+      "まだ履歴がありません。";
+
+    return;
+
+  }
+
+  el.innerHTML=
+    data.history
+      .slice(0,20)
+      .map(item=>`
+
+        <div class="history-item">
+
+          <div class="history-date">
+            ${escapeHTML(item.date||"")}
+          </div>
+
+          <div>
+            スコア：
+            <strong>${item.score}</strong>
+          </div>
+
+          <div class="history-meta">
+            睡眠時間：
+            ${Number(item.durationHours||0).toFixed(2)}時間
+            ／
+            XP：
+            +${item.xpGain||0}
+          </div>
+
+          ${
+            item.improvementBonusXP>0
+            ? `<div class="history-meta good">
+                改善ボーナス：
+                +${item.improvementBonusXP} XP
+              </div>`
+            :""
+          }
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
 
 function updateAllUI(){
 
- updateImprovementData();
- updateImprovementUI();
- updateLevel();
- updateAchievements();
- updateHistory();
- updateAnalysisUI();
+  updateImprovementData();
+  updateImprovementUI();
+  updateAnalysisUI();
+  updateLevel();
+  updateAchievements();
+  updateHistory();
 
- const streak=calculateStreak();
- const best=calculateBestStreak();
+  const streak=
+    calculateStreak();
 
- document.getElementById("streak").textContent=
-  streak+"日";
+  document.getElementById("streakValue")
+    .textContent=`${streak}日`;
 
- document.getElementById("bestStreak").textContent=
-  best+"日";
+  const best=
+    data.history.length
+    ? Math.max(
+        ...data.history.map(x=>x.score||0)
+      )
+    : null;
 
- document.getElementById("totalDays").textContent=
-  getMeasurementDates().length+"日";
+  document.getElementById("bestScoreValue")
+    .textContent=
+      best===null
+      ? "--"
+      : best;
 
- if(data.history.length){
-
-  const bestScore=
-   Math.max(
-    ...data.history.map(
-     item=>Number(item.score)||0
-    )
-   );
-
-  document.getElementById("bestScore").textContent=
-   bestScore+"点";
-
- }else{
-
-  document.getElementById("bestScore").textContent=
-   "--";
- }
 }
 
 
-/* =====================================================
+/* =========================
+   FIRESTORE QUEUE
+========================= */
+
+let saveTimer=null;
+
+function queueFirestoreSave(){
+
+  clearTimeout(saveTimer);
+
+  saveTimer=setTimeout(
+    ()=>saveToFirestore(),
+    800
+  );
+
+}
+
+
+/* =========================
    CSV
-===================================================== */
+========================= */
 
 function exportCSV(){
 
- if(!data.history.length){
+  const header=[
+    "date",
+    "timestamp",
+    "duration_hours",
+    "score",
+    "evaluation",
+    "still_seconds",
+    "small_seconds",
+    "large_seconds",
+    "sound_events",
+    "improvement_rate_percent",
+    "baseline_score",
+    "xp_gain",
+    "improvement_bonus_xp"
+  ];
 
-  alert("履歴がありません。");
-  return;
- }
+  const rows=
+    data.history.map(x=>[
+      x.date,
+      x.timestamp,
+      x.durationHours,
+      x.score,
+      x.evaluation,
+      x.still,
+      x.small,
+      x.large,
+      x.sound,
+      data.improvement.improvementRate??"",
+      data.improvement.baselineScore??"",
+      x.xpGain||0,
+      x.improvementBonusXP||0
+    ]);
 
- const header=[
-  "date",
-  "timestamp",
-  "duration_hours",
-  "score",
-  "evaluation",
-  "still_seconds",
-  "small_seconds",
-  "large_seconds",
-  "sound_events",
-  "improvement_rate_percent",
-  "baseline_score",
-  "xp_gain",
-  "improvement_bonus_xp",
-  "analysis_message",
-  "analysis_goal"
- ];
+  const csv=
+    [header,...rows]
+      .map(row=>
+        row.map(v=>
+          `"${String(v??"").replaceAll('"','""')}"`
+        ).join(",")
+      )
+      .join("\n");
 
- const rows=
-  data.history.map(
-   item=>[
+  const blob=
+    new Blob(
+      ["\uFEFF"+csv],
+      {type:"text/csv;charset=utf-8"}
+    );
 
-    item.date,
-    item.timestamp,
-    item.durationHours,
-    item.score,
-    item.evaluation,
-    item.still,
-    item.small,
-    item.large,
-    item.sound,
+  const url=
+    URL.createObjectURL(blob);
 
-    Number.isFinite(
-     Number(data.improvement?.improvementRate)
-    )
-     ?Number(
-       data.improvement.improvementRate
-      ).toFixed(1)
-     :"",
+  const a=
+    document.createElement("a");
 
-    Number.isFinite(
-     Number(data.improvement?.baselineScore)
-    )
-     ?Number(
-       data.improvement.baselineScore
-      ).toFixed(1)
-     :"",
+  a.href=url;
+  a.download=
+    `sleep_history_${new Date().toISOString().slice(0,10)}.csv`;
 
-    Number(item.xpGain)||10,
+  a.click();
 
-    Number(item.improvementBonusXP)||0,
+  URL.revokeObjectURL(url);
 
-    item.analysis?.message||"",
-
-    item.analysis?.goal||""
-
-   ]
-  );
-
- const csv=
-  [header,...rows]
-   .map(
-    row=>
-     row.map(
-      value=>
-       `"${String(value).replaceAll('"','""')}"`
-     ).join(",")
-   )
-   .join("\n");
-
- const blob=
-  new Blob(
-   ["\ufeff"+csv],
-   {type:"text/csv;charset=utf-8"}
-  );
-
- const url=URL.createObjectURL(blob);
-
- const a=document.createElement("a");
-
- a.href=url;
- a.download="sleep_history.csv";
-
- document.body.appendChild(a);
-
- a.click();
-
- a.remove();
-
- setTimeout(
-  ()=>{
-   URL.revokeObjectURL(url);
-  },
-  100
- );
 }
 
 
-/* =====================================================
-   今回のデータをリセット
-===================================================== */
-
-function resetCurrent(){
-
- document.getElementById("score").textContent="--";
-
- document.getElementById("evaluation").textContent=
-  "まだ測定されていません";
-
- document.getElementById("scoreFill").style.width="0%";
-
- document.getElementById("resultDuration").textContent="--";
- document.getElementById("resultStill").textContent="--";
- document.getElementById("resultSmall").textContent="--";
- document.getElementById("resultLarge").textContent="--";
- document.getElementById("resultSound").textContent="--";
-
- document.getElementById("resultXPGain").textContent=
-  "今回の獲得XP：-- XP";
-
- summaryData=[];
-
- drawGraph();
-
- updateAnalysisUI();
-}
-
-
-/* =====================================================
-   全データ削除
-===================================================== */
-
-async function resetAll(){
-
- const ok=
-  confirm(
-   "履歴・XP・実績・睡眠改善率・睡眠分析データをすべて削除します。\n本当に削除しますか？"
-  );
-
- if(!ok)return;
-
- data={
-  xp:0,
-  lastXPGain:0,
-  history:[],
-  achievements:[],
-  improvement:{
-   baselineReady:false,
-   baselineScore:null,
-   baselineStartAt:null,
-   baselineEndAt:null,
-   currentAverage:null,
-   improvementRate:null
-  },
-  lastAnalysis:null
- };
-
- saveLocal();
-
- if(
-  firebaseUser&&
-  !firebaseUser.isAnonymous
- ){
-  await saveToFirestore();
- }
-
- resetCurrent();
-}
-
-
-/* =====================================================
-   ボタン
-===================================================== */
+/* =========================
+   BUTTONS
+========================= */
 
 document.getElementById("startBtn")
- .addEventListener(
+.addEventListener(
   "click",
   startMeasurement
- );
+);
 
 document.getElementById("stopBtn")
- .addEventListener(
+.addEventListener(
   "click",
   stopMeasurement
- );
+);
 
 document.getElementById("csvBtn")
- .addEventListener(
+.addEventListener(
   "click",
   exportCSV
- );
+);
+
 
 document.getElementById("resetCurrentBtn")
- .addEventListener(
+.addEventListener(
   "click",
-  resetCurrent
- );
+  ()=>{
+
+    document.getElementById("resultCard")
+      .style.display="none";
+
+    document.getElementById("measurementStatus")
+      .textContent="測定していません。";
+
+  }
+);
+
 
 document.getElementById("resetAllBtn")
- .addEventListener(
+.addEventListener(
   "click",
-  resetAll
- );
+  async()=>{
 
-window.addEventListener(
- "resize",
- drawGraph
- );
+    if(
+      !confirm(
+        "すべての睡眠履歴・XP・実績・改善率・分析データを削除します。よろしいですか？"
+      )
+    )return;
+
+    data={
+      xp:0,
+      lastXPGain:0,
+      history:[],
+      achievements:[],
+      improvement:{
+        baselineReady:false,
+        baselineScore:null,
+        baselineStartAt:null,
+        baselineEndAt:null,
+        currentAverage:null,
+        improvementRate:null
+      },
+      lastAnalysis:null
+    };
+
+    saveLocal();
+
+    if(currentUser){
+
+      try{
+
+        await setDoc(
+          doc(db,"users",currentUser.uid),
+          {
+            xp:0,
+            lastXPGain:0,
+            history:[],
+            achievements:[],
+            improvement:data.improvement,
+            lastAnalysis:null,
+            updatedAt:serverTimestamp()
+          },
+          {merge:true}
+        );
+
+      }catch(e){
+
+        console.error(e);
+
+      }
+
+    }
+
+    updateAllUI();
+
+    showRankingMessage(
+      "データをリセットしました。"
+    );
+
+  }
+);
 
 
-/* =====================================================
-   Wake Lock再取得
-===================================================== */
+/* =========================
+   VISIBILITY
+========================= */
 
 document.addEventListener(
- "visibilitychange",
- async()=>{
+  "visibilitychange",
+  async()=>{
 
-  if(
-   document.visibilityState==="visible"&&
-   measuring&&
-   !wakeLock
-  ){
-   await requestWakeLock();
+    if(
+      document.visibilityState==="visible" &&
+      measuring
+    ){
+
+      await requestWakeLock();
+
+    }
+
   }
- }
 );
 
 
-/* =====================================================
-   ページ終了
-===================================================== */
-
-window.addEventListener(
- "beforeunload",
- ()=>{
-
-  if(microphoneStream){
-
-   microphoneStream
-    .getTracks()
-    .forEach(track=>{
-     try{track.stop()}catch(error){}
-    });
-  }
- }
-);
-
-
-/* =====================================================
-   JavaScriptエラー
-===================================================== */
-
-window.addEventListener(
- "error",
- event=>{
-
-  console.error(
-   "ページJavaScriptエラー:",
-   event.error||event.message
-  );
-
-  if(!authInitializationFailed){
-
-   const status=
-    document.getElementById("accountStatus");
-
-   if(status&&!firebaseUser){
-
-    status.textContent=
-     "ページのJavaScriptでエラーが発生しました。ブラウザのコンソールを確認してください。";
-   }
-  }
- }
-);
-
-
-window.addEventListener(
- "unhandledrejection",
- event=>{
-
-  console.error(
-   "未処理のPromiseエラー:",
-   event.reason
-  );
- }
-);
-
-
-/* =====================================================
-   初期化
-===================================================== */
+/* =========================
+   INITIALIZE
+========================= */
 
 loadLocal();
 
-drawGraph();
-
-initializeAuth();
+updateAllUI();
 
 </script>
 
